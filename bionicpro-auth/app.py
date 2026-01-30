@@ -22,13 +22,27 @@ REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
 REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
 SESSION_COOKIE_NAME = 'BIONICPRO_SESSION'
 SESSION_LIFETIME = 3600  # 1 hour - longer than access_token (2 min)
-ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY', Fernet.generate_key().decode())
+ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY')
 
 # Redis client
 redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
 
+def load_encryption_key():
+    """Load and validate the Fernet encryption key from environment."""
+    if ENCRYPTION_KEY:
+        key_bytes = ENCRYPTION_KEY.encode()
+        try:
+            Fernet(key_bytes)
+            return key_bytes
+        except ValueError:
+            app.logger.warning(
+                "Invalid ENCRYPTION_KEY provided; generating a new key for this instance."
+            )
+    return Fernet.generate_key()
+
+
 # Encryption for refresh tokens
-fernet = Fernet(ENCRYPTION_KEY.encode() if isinstance(ENCRYPTION_KEY, str) else ENCRYPTION_KEY)
+fernet = fernet = Fernet(load_encryption_key())
 
 
 def generate_pkce_pair():
