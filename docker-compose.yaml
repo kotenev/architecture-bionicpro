@@ -47,6 +47,7 @@ services:
       - "8000:8000"
     environment:
       KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_PUBLIC_URL: http://localhost:8080
       KEYCLOAK_REALM: reports-realm
       CLIENT_ID: bionicpro-auth
       REDIRECT_URI: http://localhost:8000/auth/callback

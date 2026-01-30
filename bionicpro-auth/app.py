@@ -15,6 +15,7 @@ app = Flask(__name__)
 # Configuration
 KEYCLOAK_URL = os.getenv('KEYCLOAK_URL', 'http://keycloak:8080')
 KEYCLOAK_REALM = os.getenv('KEYCLOAK_REALM', 'reports-realm')
+KEYCLOAK_PUBLIC_URL = os.getenv('KEYCLOAK_PUBLIC_URL', KEYCLOAK_URL)
 CLIENT_ID = os.getenv('CLIENT_ID', 'bionicpro-auth')
 REDIRECT_URI = os.getenv('REDIRECT_URI', 'http://localhost:8000/auth/callback')
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
@@ -208,8 +209,9 @@ def login():
     # Store PKCE verifier and state temporarily
     redis_client.setex(f"pkce:{state}", 300, code_verifier)
 
-    config = get_keycloak_openid_config()
-    auth_endpoint = config['authorization_endpoint']
+    auth_endpoint = (
+        f"{KEYCLOAK_PUBLIC_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth"
+    )
 
     auth_url = (
         f"{auth_endpoint}?"
