@@ -15,7 +15,7 @@ app = Flask(__name__)
 # Configuration
 KEYCLOAK_URL = os.getenv('KEYCLOAK_URL', 'http://keycloak:8080')
 KEYCLOAK_REALM = os.getenv('KEYCLOAK_REALM', 'reports-realm')
-CLIENT_ID = os.getenv('CLIENT_ID', 'reports-frontend')
+CLIENT_ID = os.getenv('CLIENT_ID', 'bionicpro-auth')
 REDIRECT_URI = os.getenv('REDIRECT_URI', 'http://localhost:8000/auth/callback')
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
 REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
