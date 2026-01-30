@@ -116,11 +116,11 @@
         "publicClient": true,
         "standardFlowEnabled": true,
         "directAccessGrantsEnabled": false,
-        "pkceCodeChallengeMethod": "S256",
         "redirectUris": ["http://localhost:3000/*"],
         "webOrigins": ["http://localhost:3000"],
         "attributes": {
-          "pkce.code.challenge.method": "S256"
+          "pkce.code.challenge.method": "S256",
+          "pkce.code.challenge.required": "true"
         }
       },
       {
