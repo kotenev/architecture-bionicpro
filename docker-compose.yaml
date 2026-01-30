@@ -18,6 +18,7 @@ services:
       LDAP_ORGANISATION: "BionicPRO"
       LDAP_DOMAIN: "bionicpro.com"
       LDAP_BASE_DN: "dc=bionicpro,dc=com"
+      LDAP_SKIP_DEFAULT_TREE: "true"
       LDAP_ADMIN_PASSWORD: "admin"
       LDAP_CONFIG_PASSWORD: "config"
       LDAP_READONLY_USER: "true"
