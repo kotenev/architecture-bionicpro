@@ -125,11 +125,16 @@
       "publicClient": true,
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": false,
+      "consentRequired": true,
       "redirectUris": ["http://localhost:8000/*"],
       "webOrigins": ["http://localhost:8000", "http://localhost:3000"],
       "attributes": {
-        "pkce.code.challenge.method": "S256"
-      }
+        "pkce.code.challenge.method": "S256",
+        "display.on.consent.screen": "true",
+        "consent.screen.text": "BionicPRO запрашивает доступ к вашим данным профиля для персонализации сервиса протезов."
+      },
+      "defaultClientScopes": ["openid", "profile", "email", "bionicpro-profile"],
+      "optionalClientScopes": ["phone", "address"]
     },
     {
       "clientId": "reports-api",
@@ -217,6 +222,90 @@
     }
   ],
   "browserFlow": "browser-with-otp",
+  "clientScopes": [
+    {
+      "name": "bionicpro-profile",
+      "description": "Доступ к данным профиля для сервиса протезов BionicPRO",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true",
+        "consent.screen.text": "Доступ к вашему профилю: имя, email, телефон и данные из Яндекс ID для персонализации настроек протеза"
+      },
+      "protocolMappers": [
+        {
+          "name": "yandex-id-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "yandexId",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "yandex_id",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "yandex-avatar-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "yandexAvatarId",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "yandex_avatar_id",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "display-name-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "displayName",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "display_name",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "phone-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "phone",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "phone_number",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "identity-provider-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "identity_provider",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "identity_provider",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    }
+  ],
   "components": {
     "org.keycloak.storage.UserStorageProvider": [
       {
@@ -350,5 +439,128 @@
       }
     ]
   },
-  "userFederationMappers": []
+  "userFederationMappers": [],
+  "identityProviders": [
+    {
+      "alias": "yandex",
+      "displayName": "Яндекс ID",
+      "providerId": "oidc",
+      "enabled": true,
+      "updateProfileFirstLoginMode": "on",
+      "trustEmail": true,
+      "storeToken": true,
+      "addReadTokenRoleOnCreate": true,
+      "authenticateByDefault": false,
+      "linkOnly": false,
+      "firstBrokerLoginFlowAlias": "first broker login",
+      "config": {
+        "hideOnLoginPage": "false",
+        "validateSignature": "false",
+        "clientId": "${YANDEX_CLIENT_ID}",
+        "clientSecret": "${YANDEX_CLIENT_SECRET}",
+        "tokenUrl": "https://oauth.yandex.ru/token",
+        "authorizationUrl": "https://oauth.yandex.ru/authorize",
+        "userInfoUrl": "https://login.yandex.ru/info",
+        "defaultScope": "login:email login:info login:avatar",
+        "issuer": "https://oauth.yandex.ru",
+        "useJwksUrl": "false",
+        "syncMode": "IMPORT",
+        "clientAuthMethod": "client_secret_post",
+        "pkceEnabled": "true",
+        "pkceMethod": "S256",
+        "prompt": "consent",
+        "guiOrder": "1"
+      }
+    }
+  ],
+  "identityProviderMappers": [
+    {
+      "name": "yandex-username",
+      "identityProviderAlias": "yandex",
+      "identityProviderMapper": "oidc-username-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "template": "${CLAIM.login}"
+      }
+    },
+    {
+      "name": "yandex-email",
+      "identityProviderAlias": "yandex",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "claim": "default_email",
+        "user.attribute": "email"
+      }
+    },
+    {
+      "name": "yandex-first-name",
+      "identityProviderAlias": "yandex",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "claim": "first_name",
+        "user.attribute": "firstName"
+      }
+    },
+    {
+      "name": "yandex-last-name",
+      "identityProviderAlias": "yandex",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "claim": "last_name",
+        "user.attribute": "lastName"
+      }
+    },
+    {
+      "name": "yandex-display-name",
+      "identityProviderAlias": "yandex",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "claim": "display_name",
+        "user.attribute": "displayName"
+      }
+    },
+    {
+      "name": "yandex-avatar-id",
+      "identityProviderAlias": "yandex",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "claim": "default_avatar_id",
+        "user.attribute": "yandexAvatarId"
+      }
+    },
+    {
+      "name": "yandex-phone",
+      "identityProviderAlias": "yandex",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "claim": "default_phone.number",
+        "user.attribute": "phone"
+      }
+    },
+    {
+      "name": "yandex-user-id",
+      "identityProviderAlias": "yandex",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "claim": "id",
+        "user.attribute": "yandexId"
+      }
+    },
+    {
+      "name": "yandex-role-user",
+      "identityProviderAlias": "yandex",
+      "identityProviderMapper": "hardcoded-role-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "role": "user"
+      }
+    }
+  ]
 }
