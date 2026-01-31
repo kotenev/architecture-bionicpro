@@ -199,6 +199,7 @@ services:
       context: ./airflow
       dockerfile: Dockerfile
     environment:
+      PATH: /home/airflow/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
       AIRFLOW__CORE__FERNET_KEY: 'your-fernet-key-must-be-32-bytes-long='
@@ -207,8 +208,8 @@ services:
       _AIRFLOW_WWW_USER_CREATE: 'true'
       _AIRFLOW_WWW_USER_USERNAME: admin
       _AIRFLOW_WWW_USER_PASSWORD: admin
-    entrypoint: /bin/bash
     command:
+      - bash
       - -c
       - |
         airflow db init
@@ -258,6 +259,7 @@ services:
       context: ./airflow
       dockerfile: Dockerfile
     environment:
+      PATH: /home/airflow/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
       AIRFLOW__CORE__FERNET_KEY: 'your-fernet-key-must-be-32-bytes-long='
@@ -287,8 +289,8 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
       AIRFLOW__CORE__FERNET_KEY: 'your-fernet-key-must-be-32-bytes-long='
-    entrypoint: /bin/bash
     command:
+      - bash
       - -c
       - |
         sleep 30
