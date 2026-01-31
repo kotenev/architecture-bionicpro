@@ -25,12 +25,14 @@ services:
       LDAP_READONLY_USER_USERNAME: "readonly"
       LDAP_READONLY_USER_PASSWORD: "readonly"
     volumes:
-      - ./ldap/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
+      - ./ldap/bootstrap.ldif:/opt/ldap-bootstrap/bootstrap.ldif
+      - ./ldap/entrypoint.sh:/opt/ldap-bootstrap/entrypoint.sh
       - ./ldap-data:/var/lib/ldap
       - ./ldap-config:/etc/ldap/slapd.d
     ports:
       - "389:389"
       - "636:636"
+    entrypoint: /opt/ldap-bootstrap/entrypoint.sh
     command: --copy-service
 
   keycloak:
