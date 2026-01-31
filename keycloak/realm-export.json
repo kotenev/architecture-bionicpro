@@ -472,15 +472,5 @@
       }
     }
   ],
-  "identityProviderMappers": [
-    {
-      "name": "yandex-role-user",
-      "identityProviderAlias": "yandex",
-      "identityProviderMapper": "hardcoded-role-idp-mapper",
-      "config": {
-        "syncMode": "INHERIT",
-        "role": "user"
-      }
-    }
-  ]
+  "identityProviderMappers": []
 }
