@@ -461,6 +461,8 @@
         "tokenUrl": "https://oauth.yandex.ru/token",
         "authorizationUrl": "https://oauth.yandex.ru/authorize",
         "userInfoUrl": "https://login.yandex.ru/info",
+        "userIdAttribute": "id",
+        "userNameAttribute": "login",
         "defaultScope": "login:email login:info login:avatar",
         "useJwksUrl": "false",
         "syncMode": "IMPORT",
