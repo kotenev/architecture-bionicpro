@@ -12,6 +12,26 @@ services:
     ports:
       - "5433:5432"
 
+  ldap:
+    image: osixia/openldap:1.5.0
+    environment:
+      LDAP_ORGANISATION: "BionicPRO"
+      LDAP_DOMAIN: "bionicpro.com"
+      LDAP_BASE_DN: "dc=bionicpro,dc=com"
+      LDAP_ADMIN_PASSWORD: "admin"
+      LDAP_CONFIG_PASSWORD: "config"
+      LDAP_READONLY_USER: "true"
+      LDAP_READONLY_USER_USERNAME: "readonly"
+      LDAP_READONLY_USER_PASSWORD: "readonly"
+    volumes:
+      - ./ldap/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif
+      - ./ldap-data:/var/lib/ldap
+      - ./ldap-config:/etc/ldap/slapd.d
+    ports:
+      - "389:389"
+      - "636:636"
+    command: --copy-service
+
   keycloak:
     image: quay.io/keycloak/keycloak:26.5.2
     environment:
@@ -30,6 +50,7 @@ services:
       - "8080:8080"
     depends_on:
       - keycloak_db
+      - ldap
 
   redis:
     image: redis:7-alpine
