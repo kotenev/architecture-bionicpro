@@ -5,10 +5,13 @@ import base64
 import json
 import time
 from functools import wraps
+from urllib.parse import urlencode
 from flask import Flask, request, jsonify, redirect, make_response
 import redis
 import requests
 from cryptography.fernet import Fernet
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
 
@@ -25,8 +28,163 @@ SESSION_COOKIE_NAME = 'BIONICPRO_SESSION'
 SESSION_LIFETIME = 3600  # 1 hour - longer than access_token (2 min)
 ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY')
 
+# PostgreSQL configuration
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://bionicpro_user:bionicpro_password@localhost:5434/bionicpro_db')
+
+# Yandex ID configuration
+YANDEX_CLIENT_ID = os.getenv('YANDEX_CLIENT_ID')
+YANDEX_CLIENT_SECRET = os.getenv('YANDEX_CLIENT_SECRET')
+YANDEX_USERINFO_URL = 'https://login.yandex.ru/info'
+
 # Redis client
 redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
+
+
+def get_db_connection():
+    """Get PostgreSQL database connection."""
+    return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+
+
+def get_user_profile(keycloak_user_id):
+    """Get user profile from database."""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM user_profiles WHERE keycloak_user_id = %s",
+            (keycloak_user_id,)
+        )
+        profile = cur.fetchone()
+        cur.close()
+        conn.close()
+        return dict(profile) if profile else None
+    except Exception as e:
+        app.logger.error(f"Error getting user profile: {e}")
+        return None
+
+
+def save_user_profile(profile_data):
+    """Save or update user profile in database."""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute(
+            """
+            INSERT INTO user_profiles (
+                keycloak_user_id, identity_provider, yandex_id, yandex_login,
+                yandex_avatar_id, email, first_name, last_name, display_name,
+                phone, avatar_url, consent_given, consent_given_at, consent_scopes,
+                last_login_at
+            ) VALUES (
+                %(keycloak_user_id)s, %(identity_provider)s, %(yandex_id)s, %(yandex_login)s,
+                %(yandex_avatar_id)s, %(email)s, %(first_name)s, %(last_name)s, %(display_name)s,
+                %(phone)s, %(avatar_url)s, %(consent_given)s, %(consent_given_at)s, %(consent_scopes)s,
+                CURRENT_TIMESTAMP
+            )
+            ON CONFLICT (keycloak_user_id) DO UPDATE SET
+                identity_provider = EXCLUDED.identity_provider,
+                yandex_id = COALESCE(EXCLUDED.yandex_id, user_profiles.yandex_id),
+                yandex_login = COALESCE(EXCLUDED.yandex_login, user_profiles.yandex_login),
+                yandex_avatar_id = COALESCE(EXCLUDED.yandex_avatar_id, user_profiles.yandex_avatar_id),
+                email = COALESCE(EXCLUDED.email, user_profiles.email),
+                first_name = COALESCE(EXCLUDED.first_name, user_profiles.first_name),
+                last_name = COALESCE(EXCLUDED.last_name, user_profiles.last_name),
+                display_name = COALESCE(EXCLUDED.display_name, user_profiles.display_name),
+                phone = COALESCE(EXCLUDED.phone, user_profiles.phone),
+                avatar_url = COALESCE(EXCLUDED.avatar_url, user_profiles.avatar_url),
+                consent_given = COALESCE(EXCLUDED.consent_given, user_profiles.consent_given),
+                consent_given_at = COALESCE(EXCLUDED.consent_given_at, user_profiles.consent_given_at),
+                consent_scopes = COALESCE(EXCLUDED.consent_scopes, user_profiles.consent_scopes),
+                last_login_at = CURRENT_TIMESTAMP
+            RETURNING id
+            """,
+            profile_data
+        )
+
+        result = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+        return result['id'] if result else None
+    except Exception as e:
+        app.logger.error(f"Error saving user profile: {e}")
+        return None
+
+
+def log_consent(user_profile_id, client_id, scopes, action, ip_address=None, user_agent=None):
+    """Log consent action to history."""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO consent_history (user_profile_id, client_id, scopes, action, ip_address, user_agent)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
+            (user_profile_id, client_id, scopes, action, ip_address, user_agent)
+        )
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        app.logger.error(f"Error logging consent: {e}")
+
+
+def get_keycloak_userinfo(access_token):
+    """Get user info from Keycloak userinfo endpoint."""
+    config = get_keycloak_openid_config()
+    userinfo_endpoint = config.get('userinfo_endpoint')
+
+    if not userinfo_endpoint:
+        return None
+
+    response = requests.get(
+        userinfo_endpoint,
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    if response.status_code == 200:
+        return response.json()
+    return None
+
+
+def get_yandex_profile_data(yandex_access_token):
+    """Get additional profile data from Yandex API."""
+    if not yandex_access_token:
+        return None
+
+    response = requests.get(
+        YANDEX_USERINFO_URL,
+        headers={'Authorization': f'OAuth {yandex_access_token}'},
+        params={'format': 'json'}
+    )
+
+    if response.status_code == 200:
+        return response.json()
+    return None
+
+
+def get_broker_token_from_keycloak(access_token, idp_alias):
+    """Get the brokered identity provider token from Keycloak."""
+    # This requires the user to have 'broker' scope and read-token role
+    url = f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}/broker/{idp_alias}/token"
+
+    response = requests.get(
+        url,
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+
+    if response.status_code == 200:
+        return response.json()
+    return None
+
+
+def build_avatar_url(avatar_id):
+    """Build Yandex avatar URL from avatar ID."""
+    if not avatar_id:
+        return None
+    return f"https://avatars.yandex.net/get-yapic/{avatar_id}/islands-200"
 
 def load_encryption_key():
     """Load and validate the Fernet encryption key from environment."""
@@ -265,6 +423,68 @@ def callback():
 
     save_session_data(session_id, session_data)
 
+    # Get user info from Keycloak and save profile
+    try:
+        userinfo = get_keycloak_userinfo(tokens['access_token'])
+        if userinfo:
+            identity_provider = userinfo.get('identity_provider')
+            keycloak_user_id = userinfo.get('sub')
+
+            # Build profile data
+            profile_data = {
+                'keycloak_user_id': keycloak_user_id,
+                'identity_provider': identity_provider,
+                'email': userinfo.get('email'),
+                'first_name': userinfo.get('given_name'),
+                'last_name': userinfo.get('family_name'),
+                'display_name': userinfo.get('display_name') or userinfo.get('name'),
+                'phone': userinfo.get('phone_number'),
+                'yandex_id': userinfo.get('yandex_id'),
+                'yandex_login': userinfo.get('preferred_username') if identity_provider == 'yandex' else None,
+                'yandex_avatar_id': userinfo.get('yandex_avatar_id'),
+                'avatar_url': build_avatar_url(userinfo.get('yandex_avatar_id')),
+                'consent_given': True,  # Consent was given during OAuth flow
+                'consent_given_at': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'consent_scopes': tokens.get('scope', '').split() if tokens.get('scope') else None
+            }
+
+            # If authenticated via Yandex, try to get additional data from Yandex API
+            if identity_provider == 'yandex':
+                try:
+                    broker_token = get_broker_token_from_keycloak(tokens['access_token'], 'yandex')
+                    if broker_token and broker_token.get('access_token'):
+                        yandex_profile = get_yandex_profile_data(broker_token['access_token'])
+                        if yandex_profile:
+                            # Enrich profile with Yandex data
+                            profile_data['yandex_id'] = yandex_profile.get('id')
+                            profile_data['yandex_login'] = yandex_profile.get('login')
+                            profile_data['yandex_avatar_id'] = yandex_profile.get('default_avatar_id')
+                            profile_data['avatar_url'] = build_avatar_url(yandex_profile.get('default_avatar_id'))
+                            profile_data['email'] = profile_data['email'] or yandex_profile.get('default_email')
+                            profile_data['first_name'] = profile_data['first_name'] or yandex_profile.get('first_name')
+                            profile_data['last_name'] = profile_data['last_name'] or yandex_profile.get('last_name')
+                            profile_data['display_name'] = profile_data['display_name'] or yandex_profile.get('display_name')
+                            if yandex_profile.get('default_phone'):
+                                profile_data['phone'] = yandex_profile['default_phone'].get('number')
+                except Exception as e:
+                    app.logger.warning(f"Could not fetch Yandex profile data: {e}")
+
+            # Save profile to database
+            profile_id = save_user_profile(profile_data)
+            if profile_id:
+                # Log consent
+                log_consent(
+                    profile_id,
+                    CLIENT_ID,
+                    profile_data['consent_scopes'] or [],
+                    'granted',
+                    request.remote_addr,
+                    request.headers.get('User-Agent')
+                )
+                app.logger.info(f"Saved profile for user {keycloak_user_id}")
+    except Exception as e:
+        app.logger.error(f"Error processing user profile: {e}")
+
     # Create response with session cookie
     response = make_response(redirect(FRONTEND_URL))
     create_session_cookie(response, session_id)
@@ -340,6 +560,240 @@ def get_session():
     return response
 
 
+@app.route('/auth/profile', methods=['GET'])
+@require_session
+def get_profile():
+    """Get user profile from database."""
+    session_data = request.session_data
+    new_session_id = request.new_session_id
+
+    # Get user ID from id_token
+    user_id = None
+    if session_data.get('id_token'):
+        try:
+            payload = session_data['id_token'].split('.')[1]
+            padding = 4 - len(payload) % 4
+            if padding != 4:
+                payload += '=' * padding
+            token_data = json.loads(base64.urlsafe_b64decode(payload))
+            user_id = token_data.get('sub')
+        except Exception:
+            pass
+
+    if not user_id:
+        response = make_response(jsonify({'error': 'User ID not found'}), 400)
+        create_session_cookie(response, new_session_id)
+        return response
+
+    # Get profile from database
+    profile = get_user_profile(user_id)
+
+    if not profile:
+        # Try to fetch from Keycloak and save
+        userinfo = get_keycloak_userinfo(session_data['access_token'])
+        if userinfo:
+            profile_data = {
+                'keycloak_user_id': user_id,
+                'identity_provider': userinfo.get('identity_provider'),
+                'email': userinfo.get('email'),
+                'first_name': userinfo.get('given_name'),
+                'last_name': userinfo.get('family_name'),
+                'display_name': userinfo.get('display_name') or userinfo.get('name'),
+                'phone': userinfo.get('phone_number'),
+                'yandex_id': userinfo.get('yandex_id'),
+                'yandex_login': None,
+                'yandex_avatar_id': userinfo.get('yandex_avatar_id'),
+                'avatar_url': build_avatar_url(userinfo.get('yandex_avatar_id')),
+                'consent_given': True,
+                'consent_given_at': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'consent_scopes': None
+            }
+            save_user_profile(profile_data)
+            profile = get_user_profile(user_id)
+
+    if not profile:
+        response = make_response(jsonify({'error': 'Profile not found'}), 404)
+        create_session_cookie(response, new_session_id)
+        return response
+
+    # Remove sensitive fields and convert datetime objects
+    safe_profile = {
+        'id': profile.get('id'),
+        'email': profile.get('email'),
+        'first_name': profile.get('first_name'),
+        'last_name': profile.get('last_name'),
+        'display_name': profile.get('display_name'),
+        'phone': profile.get('phone'),
+        'avatar_url': profile.get('avatar_url'),
+        'identity_provider': profile.get('identity_provider'),
+        'yandex_id': profile.get('yandex_id'),
+        'consent_given': profile.get('consent_given'),
+        'created_at': profile.get('created_at').isoformat() if profile.get('created_at') else None,
+        'last_login_at': profile.get('last_login_at').isoformat() if profile.get('last_login_at') else None
+    }
+
+    response = make_response(jsonify({'profile': safe_profile}))
+    create_session_cookie(response, new_session_id)
+    return response
+
+
+@app.route('/auth/consent', methods=['POST'])
+@require_session
+def update_consent():
+    """Update user consent settings."""
+    session_data = request.session_data
+    new_session_id = request.new_session_id
+
+    data = request.get_json()
+    if not data:
+        response = make_response(jsonify({'error': 'No data provided'}), 400)
+        create_session_cookie(response, new_session_id)
+        return response
+
+    # Get user ID from id_token
+    user_id = None
+    if session_data.get('id_token'):
+        try:
+            payload = session_data['id_token'].split('.')[1]
+            padding = 4 - len(payload) % 4
+            if padding != 4:
+                payload += '=' * padding
+            token_data = json.loads(base64.urlsafe_b64decode(payload))
+            user_id = token_data.get('sub')
+        except Exception:
+            pass
+
+    if not user_id:
+        response = make_response(jsonify({'error': 'User ID not found'}), 400)
+        create_session_cookie(response, new_session_id)
+        return response
+
+    profile = get_user_profile(user_id)
+    if not profile:
+        response = make_response(jsonify({'error': 'Profile not found'}), 404)
+        create_session_cookie(response, new_session_id)
+        return response
+
+    consent_given = data.get('consent_given', True)
+    scopes = data.get('scopes', [])
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        if consent_given:
+            cur.execute(
+                """
+                UPDATE user_profiles
+                SET consent_given = TRUE, consent_given_at = CURRENT_TIMESTAMP, consent_scopes = %s
+                WHERE keycloak_user_id = %s
+                """,
+                (scopes, user_id)
+            )
+            action = 'granted'
+        else:
+            cur.execute(
+                """
+                UPDATE user_profiles
+                SET consent_given = FALSE, consent_scopes = NULL
+                WHERE keycloak_user_id = %s
+                """,
+                (user_id,)
+            )
+            action = 'revoked'
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        # Log consent action
+        log_consent(
+            profile['id'],
+            CLIENT_ID,
+            scopes,
+            action,
+            request.remote_addr,
+            request.headers.get('User-Agent')
+        )
+
+        response = make_response(jsonify({'status': 'success', 'action': action}))
+        create_session_cookie(response, new_session_id)
+        return response
+    except Exception as e:
+        app.logger.error(f"Error updating consent: {e}")
+        response = make_response(jsonify({'error': 'Failed to update consent'}), 500)
+        create_session_cookie(response, new_session_id)
+        return response
+
+
+@app.route('/auth/consent/history', methods=['GET'])
+@require_session
+def get_consent_history():
+    """Get user's consent history."""
+    session_data = request.session_data
+    new_session_id = request.new_session_id
+
+    # Get user ID from id_token
+    user_id = None
+    if session_data.get('id_token'):
+        try:
+            payload = session_data['id_token'].split('.')[1]
+            padding = 4 - len(payload) % 4
+            if padding != 4:
+                payload += '=' * padding
+            token_data = json.loads(base64.urlsafe_b64decode(payload))
+            user_id = token_data.get('sub')
+        except Exception:
+            pass
+
+    if not user_id:
+        response = make_response(jsonify({'error': 'User ID not found'}), 400)
+        create_session_cookie(response, new_session_id)
+        return response
+
+    profile = get_user_profile(user_id)
+    if not profile:
+        response = make_response(jsonify({'error': 'Profile not found'}), 404)
+        create_session_cookie(response, new_session_id)
+        return response
+
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            """
+            SELECT client_id, scopes, action, created_at
+            FROM consent_history
+            WHERE user_profile_id = %s
+            ORDER BY created_at DESC
+            LIMIT 50
+            """,
+            (profile['id'],)
+        )
+        history = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        history_list = [
+            {
+                'client_id': row['client_id'],
+                'scopes': row['scopes'],
+                'action': row['action'],
+                'created_at': row['created_at'].isoformat() if row['created_at'] else None
+            }
+            for row in history
+        ]
+
+        response = make_response(jsonify({'history': history_list}))
+        create_session_cookie(response, new_session_id)
+        return response
+    except Exception as e:
+        app.logger.error(f"Error getting consent history: {e}")
+        response = make_response(jsonify({'error': 'Failed to get consent history'}), 500)
+        create_session_cookie(response, new_session_id)
+        return response
+
+
 @app.route('/api/proxy/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
 @require_session
 def api_proxy(path):
@@ -393,9 +847,22 @@ def health():
     except Exception:
         redis_status = 'unhealthy'
 
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT 1")
+        cur.close()
+        conn.close()
+        db_status = 'healthy'
+    except Exception:
+        db_status = 'unhealthy'
+
+    overall_status = 'healthy' if redis_status == 'healthy' and db_status == 'healthy' else 'degraded'
+
     return jsonify({
-        'status': 'healthy',
-        'redis': redis_status
+        'status': overall_status,
+        'redis': redis_status,
+        'database': db_status
     })
 
 
