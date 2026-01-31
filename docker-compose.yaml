@@ -33,7 +33,7 @@ services:
       - "389:389"
       - "636:636"
     entrypoint: /opt/ldap-bootstrap/entrypoint.sh
-    command: --copy-service
+    command: --copy-service --loglevel debug
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.5.2
