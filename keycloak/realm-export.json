@@ -444,7 +444,7 @@
     {
       "alias": "yandex",
       "displayName": "Яндекс ID",
-      "providerId": "oidc",
+      "providerId": "oauth2",
       "enabled": true,
       "updateProfileFirstLoginMode": "on",
       "trustEmail": true,
@@ -462,7 +462,6 @@
         "authorizationUrl": "https://oauth.yandex.ru/authorize",
         "userInfoUrl": "https://login.yandex.ru/info",
         "defaultScope": "login:email login:info login:avatar",
-        "issuer": "https://oauth.yandex.ru",
         "useJwksUrl": "false",
         "syncMode": "IMPORT",
         "clientAuthMethod": "client_secret_post",
