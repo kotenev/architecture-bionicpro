@@ -1,11 +1,3 @@
-# Base DN
-dn: dc=bionicpro,dc=com
-objectClass: top
-objectClass: dcObject
-objectClass: organization
-o: BionicPRO
-dc: bionicpro
-
 # Organizational Units
 dn: ou=People,dc=bionicpro,dc=com
 objectClass: top
