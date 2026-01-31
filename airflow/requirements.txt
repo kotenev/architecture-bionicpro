@@ -1,0 +1,15 @@
+# ============================================================================
+# BionicPRO Airflow ETL Dependencies
+# ============================================================================
+
+# PostgreSQL провайдер для Airflow
+apache-airflow-providers-postgres>=5.10.0
+
+# ClickHouse драйвер
+clickhouse-driver>=0.2.6
+
+# Data processing
+pandas>=2.0.0
+
+# Common SQL провайдер
+apache-airflow-providers-common-sql>=1.11.0
