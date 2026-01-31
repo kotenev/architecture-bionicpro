@@ -5,6 +5,9 @@ FROM apache/airflow:2.8.1-python3.11
 
 USER root
 
+# CLI Airflow теперь находится в переменной PATH для entrypoint health check
+ENV PATH="/home/airflow/.local/bin:${PATH}"
+
 # Установка системных зависимостей
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
