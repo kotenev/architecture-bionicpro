@@ -44,6 +44,9 @@ services:
       KC_DB_URL: jdbc:postgresql://keycloak_db:5432/keycloak_db
       KC_DB_USERNAME: keycloak_user
       KC_DB_PASSWORD: keycloak_password
+      # Yandex ID OAuth credentials (получите на https://oauth.yandex.ru/)
+      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID:-your-yandex-client-id}
+      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET:-your-yandex-client-secret}
     command:
       - start-dev
       - --import-realm
@@ -63,6 +66,18 @@ services:
       - ./redis-data:/data
     command: redis-server --appendonly yes
 
+  bionicpro_db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: bionicpro_db
+      POSTGRES_USER: bionicpro_user
+      POSTGRES_PASSWORD: bionicpro_password
+    volumes:
+      - ./postgres-bionicpro-data:/var/lib/postgresql/data
+      - ./bionicpro-auth/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5434:5432"
+
   bionicpro-auth:
     build:
       context: ./bionicpro-auth
@@ -81,9 +96,15 @@ services:
       ENCRYPTION_KEY: "your-32-byte-base64-encoded-key-here="
       SECURE_COOKIES: "false"
       DEBUG: "false"
+      # PostgreSQL for user profiles
+      DATABASE_URL: postgresql://bionicpro_user:bionicpro_password@bionicpro_db:5432/bionicpro_db
+      # Yandex ID credentials (for fetching additional profile data)
+      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID:-}
+      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET:-}
     depends_on:
       - keycloak
       - redis
+      - bionicpro_db
 
   frontend:
     build:
