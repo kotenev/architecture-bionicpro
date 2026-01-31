@@ -219,8 +219,8 @@ services:
     command:
       - -c
       - |
-        airflow db migrate
-        airflow users create \
+        /home/airflow/.local/bin/airflow db migrate
+        /home/airflow/.local/bin/airflow users create \
           --username admin \
           --password admin \
           --firstname Admin \
