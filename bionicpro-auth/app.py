@@ -22,6 +22,7 @@ KEYCLOAK_PUBLIC_URL = os.getenv('KEYCLOAK_PUBLIC_URL', KEYCLOAK_URL)
 CLIENT_ID = os.getenv('CLIENT_ID', 'bionicpro-auth')
 REDIRECT_URI = os.getenv('REDIRECT_URI', 'http://localhost:8000/auth/callback')
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
+KEYCLOAK_SCOPES = os.getenv('KEYCLOAK_SCOPES', 'openid')
 REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
 REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
 SESSION_COOKIE_NAME = 'BIONICPRO_SESSION'
@@ -371,16 +372,17 @@ def login():
         f"{KEYCLOAK_PUBLIC_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/auth"
     )
 
-    auth_url = (
-        f"{auth_endpoint}?"
-        f"client_id={CLIENT_ID}&"
-        f"redirect_uri={REDIRECT_URI}&"
-        f"response_type=code&"
-        f"scope=openid profile email&"
-        f"state={state}&"
-        f"code_challenge={code_challenge}&"
-        f"code_challenge_method=S256"
-    )
+    query_params = {
+        'client_id': CLIENT_ID,
+        'redirect_uri': REDIRECT_URI,
+        'response_type': 'code',
+        'scope': KEYCLOAK_SCOPES,
+        'state': state,
+        'code_challenge': code_challenge,
+        'code_challenge_method': 'S256'
+    }
+
+    auth_url = f"{auth_endpoint}?{urlencode(query_params)}"
 
     return redirect(auth_url)
 
