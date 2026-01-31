@@ -209,7 +209,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: 'your-fernet-key-must-be-32-bytes-long='
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       _AIRFLOW_DB_MIGRATE: 'true'
       _AIRFLOW_WWW_USER_CREATE: 'true'
@@ -240,7 +240,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: 'your-fernet-key-must-be-32-bytes-long='
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
     command: webserver
@@ -269,7 +269,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: 'your-fernet-key-must-be-32-bytes-long='
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     command: scheduler
     healthcheck:
@@ -297,7 +297,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: 'your-fernet-key-must-be-32-bytes-long='
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
     entrypoint: /bin/bash
     command:
       - -c
