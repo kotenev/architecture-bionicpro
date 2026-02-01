@@ -1,5 +1,7 @@
 """
 Configuration settings for Reports Service.
+
+Задание 4: Добавлена поддержка CDC архитектуры (Debezium → Kafka → ClickHouse).
 """
 
 from pydantic_settings import BaseSettings
@@ -11,7 +13,7 @@ class Settings(BaseSettings):
 
     # Service info
     app_name: str = "BionicPRO Reports Service"
-    app_version: str = "1.1.0"
+    app_version: str = "1.2.0"  # Updated for CDC support
     debug: bool = False
 
     # ClickHouse connection
@@ -49,6 +51,13 @@ class Settings(BaseSettings):
     # CDN configuration (Задание 3)
     cdn_base_url: str = "http://localhost:8002"
     cdn_enabled: bool = True
+
+    # Kafka configuration (Задание 4 - CDC)
+    kafka_bootstrap_servers: str = "kafka:29092"
+    kafka_cdc_topic_prefix: str = "crm"
+
+    # CDC mode (Задание 4)
+    cdc_enabled: bool = True  # Use CDC data from ClickHouse instead of direct CRM queries
 
     class Config:
         env_file = ".env"

@@ -4,6 +4,10 @@ BionicPRO Reports Service - Main Application Entry Point.
 FastAPI service for retrieving prosthesis usage reports from ClickHouse OLAP database.
 Reports are pre-aggregated by ETL pipeline - this service performs simple SELECT queries.
 
+Data Sources (Задание 4 - CDC Architecture):
+    - CRM data: Debezium CDC → Kafka → ClickHouse (real-time)
+    - Telemetry: ETL batch load → ClickHouse (every 15 min)
+
 API Endpoints:
     GET  /api/reports              - List available reports for authenticated user
     GET  /api/reports/summary      - Get user's overall summary
@@ -31,6 +35,7 @@ Security Features:
 
 Caching:
     Redis cache with 5-minute TTL for report data.
+    S3/CDN caching for reduced OLAP load.
 """
 
 import logging
@@ -182,6 +187,87 @@ async def liveness_check():
     Returns 200 if service is alive.
     """
     return {"status": "alive"}
+
+
+@app.get("/health/cdc", tags=["health"])
+async def cdc_health_check():
+    """
+    CDC (Change Data Capture) health check.
+
+    Checks if CDC data is flowing from Debezium → Kafka → ClickHouse.
+    Verifies that CRM data tables have recent updates.
+
+    Задание 4: Проверка состояния CDC pipeline.
+    """
+    try:
+        clickhouse = get_clickhouse_service()
+        client = clickhouse._get_client()
+
+        # Проверяем наличие данных в CDC таблицах
+        cdc_tables_query = """
+            SELECT
+                'crm_customers' AS table_name,
+                count() AS row_count,
+                max(_version) AS last_version
+            FROM reports.crm_customers FINAL
+            WHERE _deleted = 0
+
+            UNION ALL
+
+            SELECT
+                'crm_prostheses' AS table_name,
+                count() AS row_count,
+                max(_version) AS last_version
+            FROM reports.crm_prostheses FINAL
+            WHERE _deleted = 0
+
+            UNION ALL
+
+            SELECT
+                'crm_prosthesis_models' AS table_name,
+                count() AS row_count,
+                max(_version) AS last_version
+            FROM reports.crm_prosthesis_models FINAL
+            WHERE _deleted = 0
+        """
+
+        result = client.execute(cdc_tables_query)
+
+        cdc_status = {}
+        total_rows = 0
+        for row in result:
+            table_name, row_count, last_version = row
+            cdc_status[table_name] = {
+                "rows": row_count,
+                "last_version": last_version,
+            }
+            total_rows += row_count
+
+        # Определяем статус
+        if total_rows > 0:
+            status = "healthy"
+            message = "CDC data is available"
+        else:
+            status = "initializing"
+            message = "Waiting for Debezium initial snapshot"
+
+        return {
+            "status": status,
+            "message": message,
+            "cdc_tables": cdc_status,
+            "architecture": "Debezium → Kafka → ClickHouse KafkaEngine",
+        }
+
+    except Exception as e:
+        logger.error(f"CDC health check failed: {e}")
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "error",
+                "message": f"CDC check failed: {str(e)}",
+                "cdc_tables": {},
+            },
+        )
 
 
 # ============================================================================

@@ -131,6 +131,7 @@ services:
   # ============================================================================
 
   # CRM Database - источник данных о клиентах и протезах
+  # Настроен для CDC (Change Data Capture) с Debezium
   crm_db:
     image: postgres:14
     environment:
@@ -139,9 +140,18 @@ services:
       POSTGRES_PASSWORD: crm_password
     volumes:
       - ./postgres-crm-data:/var/lib/postgresql/data
-      - ./databases/crm_db_init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./databases/crm_db_init.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - ./databases/crm_db_cdc_setup.sql:/docker-entrypoint-initdb.d/02_cdc_setup.sql
     ports:
       - "5435:5432"
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"
+      - "-c"
+      - "max_wal_senders=4"
+      - "-c"
+      - "max_replication_slots=4"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U crm_user -d crm_db"]
       interval: 10s
@@ -370,6 +380,10 @@ services:
       # CDN configuration
       CDN_BASE_URL: http://localhost:8002
       CDN_ENABLED: "true"
+      # Kafka/CDC configuration (Задание 4)
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_CDC_TOPIC_PREFIX: crm
+      CDC_ENABLED: "true"
       # Debug
       DEBUG: "false"
     healthcheck:
@@ -384,6 +398,8 @@ services:
       redis:
         condition: service_started
       minio:
+        condition: service_healthy
+      kafka:
         condition: service_healthy
 
   # ============================================================================
@@ -442,3 +458,129 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  # ============================================================================
+  # CDC Infrastructure (Задание 4)
+  # Debezium + Kafka для Change Data Capture из CRM DB
+  # ============================================================================
+
+  # Zookeeper - координатор для Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    volumes:
+      - ./zookeeper-data:/var/lib/zookeeper/data
+      - ./zookeeper-log:/var/lib/zookeeper/log
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka - шина сообщений для CDC событий
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - ./kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # Debezium Connect - CDC коннектор для PostgreSQL
+  debezium:
+    image: debezium/connect:2.4
+    container_name: debezium
+    depends_on:
+      kafka:
+        condition: service_healthy
+      crm_db:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: kafka:29092
+      GROUP_ID: debezium-connect
+      CONFIG_STORAGE_TOPIC: debezium_connect_configs
+      OFFSET_STORAGE_TOPIC: debezium_connect_offsets
+      STATUS_STORAGE_TOPIC: debezium_connect_statuses
+      CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      STATUS_STORAGE_REPLICATION_FACTOR: 1
+      KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+    volumes:
+      - ./debezium/connectors:/kafka/connect
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/connectors"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  # Debezium Connector Init - регистрация коннектора после запуска
+  debezium-init:
+    image: curlimages/curl:8.5.0
+    container_name: debezium-init
+    depends_on:
+      debezium:
+        condition: service_healthy
+    volumes:
+      - ./debezium/register-connector.sh:/register-connector.sh:ro
+      - ./debezium/crm-connector.json:/crm-connector.json:ro
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        echo "Waiting for Debezium Connect to be ready..."
+        sleep 10
+        echo "Registering CRM PostgreSQL Connector..."
+        curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" \
+          http://debezium:8083/connectors/ -d @/crm-connector.json || true
+        echo "Connector registration complete!"
+        sleep 5
+        curl http://debezium:8083/connectors/crm-connector/status || true
+
+  # Kafka UI - веб-интерфейс для мониторинга Kafka (опционально)
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.1
+    container_name: kafka-ui
+    ports:
+      - "8084:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: bionicpro-cdc
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: debezium
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://debezium:8083
+      DYNAMIC_CONFIG_ENABLED: "true"
+    depends_on:
+      kafka:
+        condition: service_healthy

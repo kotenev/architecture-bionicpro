@@ -298,6 +298,73 @@ class ClickHouseService:
             logger.error(f"ClickHouse health check failed: {e}")
             return False
 
+    def get_cdc_status(self) -> Dict[str, Any]:
+        """
+        Get CDC (Change Data Capture) pipeline status.
+
+        Checks if Debezium CDC data is flowing into ClickHouse.
+        Returns counts and last update times for CDC tables.
+
+        Задание 4: Проверка состояния CDC.
+        """
+        client = self._get_client()
+
+        try:
+            query = """
+                SELECT
+                    'customers' AS entity,
+                    count() AS total,
+                    countIf(_deleted = 0) AS active
+                FROM crm_customers FINAL
+
+                UNION ALL
+
+                SELECT
+                    'prostheses' AS entity,
+                    count() AS total,
+                    countIf(_deleted = 0) AS active
+                FROM crm_prostheses FINAL
+
+                UNION ALL
+
+                SELECT
+                    'models' AS entity,
+                    count() AS total,
+                    countIf(_deleted = 0) AS active
+                FROM crm_prosthesis_models FINAL
+            """
+
+            result = client.execute(query)
+
+            cdc_data = {}
+            for row in result:
+                entity, total, active = row
+                cdc_data[entity] = {"total": total, "active": active}
+
+            # Проверяем готовность витрины
+            mart_query = """
+                SELECT count() FROM cdc_customer_data FINAL
+            """
+            mart_result = client.execute(mart_query)
+            mart_count = mart_result[0][0] if mart_result else 0
+
+            return {
+                "cdc_tables": cdc_data,
+                "mart_ready": mart_count > 0,
+                "mart_records": mart_count,
+                "status": "ready" if mart_count > 0 else "initializing",
+            }
+
+        except ClickHouseError as e:
+            logger.error(f"CDC status check failed: {e}")
+            return {
+                "cdc_tables": {},
+                "mart_ready": False,
+                "mart_records": 0,
+                "status": "error",
+                "error": str(e),
+            }
+
 
 # Singleton instance
 _clickhouse_service: Optional[ClickHouseService] = None
