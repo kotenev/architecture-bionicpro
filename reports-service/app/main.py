@@ -5,14 +5,29 @@ FastAPI service for retrieving prosthesis usage reports from ClickHouse OLAP dat
 Reports are pre-aggregated by ETL pipeline - this service performs simple SELECT queries.
 
 API Endpoints:
-    GET  /api/reports          - List available reports for user
-    GET  /api/reports/summary  - Get user's overall summary
-    GET  /api/reports/{date}   - Get detailed daily report
-    DELETE /api/reports/cache  - Clear user's cache
+    GET  /api/reports              - List available reports for authenticated user
+    GET  /api/reports/summary      - Get user's overall summary
+    GET  /api/reports/{date}       - Get detailed daily report
+    DELETE /api/reports/cache      - Clear user's cache
+
+Admin Endpoints (require 'administrator' role):
+    GET  /api/reports/admin/{user_id}           - Get reports for any user
+    GET  /api/reports/admin/{user_id}/{date}    - Get daily report for any user
+    GET  /api/reports/admin/{user_id}/summary   - Get summary for any user
 
 Authentication:
     Bearer token (JWT) from Keycloak via bionicpro-auth BFF.
-    Users can only access their own reports.
+    - Token signature verified with Keycloak public key
+    - Token expiration validated
+    - Users can only access their own reports (IDOR protection)
+    - Administrators can access any user's reports
+
+Security Features:
+    - JWT validation with RS256 signature verification
+    - User isolation: users can only see their own data
+    - Audit logging: all access to reports is logged
+    - Security headers: X-Content-Type-Options, X-Frame-Options, etc.
+    - Rate limiting ready (configure in reverse proxy)
 
 Caching:
     Redis cache with 5-minute TTL for report data.
@@ -29,6 +44,7 @@ from app.config import get_settings
 from app.routers import reports
 from app.services.clickhouse_service import get_clickhouse_service
 from app.services.cache_service import get_cache_service
+from app.auth.audit_middleware import AuditMiddleware, SecurityHeadersMiddleware
 
 # Configure logging
 logging.basicConfig(
@@ -47,6 +63,8 @@ async def lifespan(app: FastAPI):
     logger.info(f"Starting {settings.app_name} v{settings.app_version}")
     logger.info(f"ClickHouse: {settings.clickhouse_host}:{settings.clickhouse_port}")
     logger.info(f"Redis: {settings.redis_host}:{settings.redis_port}")
+    logger.info(f"Keycloak: {settings.keycloak_url}/realms/{settings.keycloak_realm}")
+    logger.info("Security: JWT validation enabled, audit logging enabled")
 
     yield
 
@@ -67,13 +85,19 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
+# Add security headers middleware (first in chain)
+app.add_middleware(SecurityHeadersMiddleware)
+
+# Add audit middleware for logging access
+app.add_middleware(AuditMiddleware)
+
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "DELETE"],  # Only allow safe methods
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 
@@ -93,6 +117,11 @@ async def root():
         "version": settings.app_version,
         "status": "running",
         "docs": "/docs",
+        "security": {
+            "authentication": "JWT Bearer token required",
+            "authorization": "Users can only access their own reports",
+            "audit": "All access is logged",
+        },
     }
 
 
@@ -153,12 +182,16 @@ async def liveness_check():
 async def global_exception_handler(request: Request, exc: Exception):
     """Global exception handler for unhandled errors."""
     logger.error(f"Unhandled exception: {exc}", exc_info=True)
+
+    # Don't expose internal errors in production
+    detail = str(exc) if settings.debug else "An unexpected error occurred"
+
     return JSONResponse(
         status_code=500,
         content={
             "success": False,
             "error": "Internal server error",
-            "detail": str(exc) if settings.debug else None,
+            "detail": detail,
         },
     )
 
