@@ -266,9 +266,9 @@ SELECT
     c.updated_at AS customer_updated_at,
     p.updated_at AS prosthesis_updated_at,
     greatest(c.updated_at, p.updated_at) AS last_updated_at
-FROM reports.crm_customers c FINAL
-JOIN reports.crm_prostheses p FINAL ON c.customer_id = p.customer_id
-JOIN reports.crm_prosthesis_models m FINAL ON p.model_id = m.model_id
+FROM reports.crm_customers c
+JOIN reports.crm_prostheses p ON c.customer_id = p.customer_id
+JOIN reports.crm_prosthesis_models m ON p.model_id = m.model_id
 WHERE p.status = 'active'
   AND c._deleted = 0
   AND p._deleted = 0
@@ -321,9 +321,9 @@ AS SELECT
     p.firmware_version,
     greatest(c.updated_at, p.updated_at) AS last_updated_at,
     toUInt64(greatest(c._version, p._version)) AS _version
-FROM reports.crm_customers c FINAL
-JOIN reports.crm_prostheses p FINAL ON c.customer_id = p.customer_id
-JOIN reports.crm_prosthesis_models m FINAL ON p.model_id = m.model_id
+FROM reports.crm_customers c
+JOIN reports.crm_prostheses p ON c.customer_id = p.customer_id
+JOIN reports.crm_prosthesis_models m ON p.model_id = m.model_id
 WHERE p.status = 'active'
   AND p.chip_id IS NOT NULL
   AND c._deleted = 0
@@ -368,7 +368,7 @@ SELECT
     count() AS active_hours
 
 FROM reports.user_prosthesis_stats t
-LEFT JOIN reports.cdc_customer_data c FINAL ON t.chip_id = c.chip_id
+LEFT JOIN reports.cdc_customer_data c ON t.chip_id = c.chip_id
 GROUP BY
     t.user_id,
     c.customer_name,
