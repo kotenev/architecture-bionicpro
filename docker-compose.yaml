@@ -100,14 +100,14 @@ services:
       FRONTEND_URL: http://localhost:3000
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      ENCRYPTION_KEY: "your-32-byte-base64-encoded-key-here="
+      ENCRYPTION_KEY: ${AIRFLOW_FERNET_KEY:your-fernet-key-must-be-32-bytes-long=}
       SECURE_COOKIES: "false"
       DEBUG: "false"
       # PostgreSQL for user profiles
       DATABASE_URL: postgresql://bionicpro_user:bionicpro_password@bionicpro_db:5432/bionicpro_db
       # Yandex ID credentials (for fetching additional profile data)
-      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID:-}
-      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET:-}
+      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID:-your-yandex-client-id}
+      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET:-your-yandex-client-secret}
       # Reports Service URL for proxy
       REPORTS_SERVICE_URL: http://reports-service:8001
     depends_on:
@@ -221,7 +221,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:your-fernet-key-must-be-32-bytes-long=}
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       _AIRFLOW_DB_MIGRATE: 'true'
       _AIRFLOW_WWW_USER_CREATE: 'true'
@@ -252,7 +252,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:your-fernet-key-must-be-32-bytes-long=}
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
     command: webserver
@@ -281,7 +281,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:your-fernet-key-must-be-32-bytes-long=}
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     command: scheduler
     healthcheck:
@@ -309,7 +309,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:your-fernet-key-must-be-32-bytes-long=}
     entrypoint: /bin/bash
     command:
       - -c
