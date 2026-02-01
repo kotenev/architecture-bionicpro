@@ -514,7 +514,9 @@ services:
 
   # Debezium Connect - CDC коннектор для PostgreSQL
   debezium:
-    image: debezium/connect:2.4
+    build:
+      context: ./debezium
+      dockerfile: Dockerfile
     container_name: debezium
     depends_on:
       kafka:
@@ -537,7 +539,7 @@ services:
       KEY_CONVERTER_SCHEMAS_ENABLE: "false"
       VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
     volumes:
-      - ./debezium/connectors:/kafka/connect
+      - ./debezium/connectors:/kafka/connect/connectors
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8083/connectors"]
       interval: 10s
@@ -584,3 +586,7 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
+
+volumes:
+  debezium-plugins:
+    driver: local
