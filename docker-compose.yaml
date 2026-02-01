@@ -328,3 +328,47 @@ services:
     depends_on:
       airflow-webserver:
         condition: service_healthy
+
+  # ============================================================================
+  # Reports Service (Задание 2, Задача 3)
+  # ============================================================================
+
+  # Reports Service - API для получения отчётов из ClickHouse
+  reports-service:
+    build:
+      context: ./reports-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      # ClickHouse connection
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_PORT: 9000
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ""
+      CLICKHOUSE_DATABASE: reports
+      # Redis cache
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 1
+      CACHE_TTL_SECONDS: 300
+      # Auth
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: reports-realm
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-your-jwt-secret-key-change-in-production}
+      AUTH_SERVICE_URL: http://bionicpro-auth:8000
+      # CORS
+      ALLOWED_ORIGINS: '["http://localhost:3000", "http://localhost:8000"]'
+      # Debug
+      DEBUG: "false"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8001/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+      redis:
+        condition: service_started
