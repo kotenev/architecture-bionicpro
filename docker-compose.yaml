@@ -108,6 +108,8 @@ services:
       # Yandex ID credentials (for fetching additional profile data)
       YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID:-}
       YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET:-}
+      # Reports Service URL for proxy
+      REPORTS_SERVICE_URL: http://reports-service:8001
     depends_on:
       - keycloak
       - redis

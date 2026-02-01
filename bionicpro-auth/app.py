@@ -840,6 +840,103 @@ def api_proxy(path):
         return response
 
 
+# =============================================================================
+# Reports Service Proxy
+# =============================================================================
+
+REPORTS_SERVICE_URL = os.getenv('REPORTS_SERVICE_URL', 'http://reports-service:8001')
+
+
+@app.route('/api/reports', methods=['GET'])
+@app.route('/api/reports/<path:subpath>', methods=['GET', 'DELETE'])
+@require_session
+def reports_proxy(subpath=''):
+    """
+    Proxy requests to Reports Service with access token injection.
+
+    Routes:
+        GET /api/reports - List of user's reports
+        GET /api/reports/summary - User's summary
+        GET /api/reports/{date} - Daily report
+        DELETE /api/reports/cache - Clear user's cache
+
+    Security:
+        - Requires valid session
+        - Access token is injected as Bearer token
+        - Reports Service validates token and enforces user isolation
+    """
+    session_data = request.session_data
+    new_session_id = request.new_session_id
+    access_token = session_data['access_token']
+
+    # Build target URL
+    if subpath:
+        target_url = f"{REPORTS_SERVICE_URL}/api/reports/{subpath}"
+    else:
+        target_url = f"{REPORTS_SERVICE_URL}/api/reports"
+
+    # Forward request with access token
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+    }
+
+    # Add X-Forwarded headers for audit logging
+    headers['X-Forwarded-For'] = request.remote_addr
+    headers['X-Forwarded-User-Agent'] = request.headers.get('User-Agent', '')
+
+    app.logger.info(f"Proxying reports request: {request.method} {target_url}")
+
+    try:
+        resp = requests.request(
+            method=request.method,
+            url=target_url,
+            headers=headers,
+            params=request.args,
+            timeout=30
+        )
+
+        response = make_response(resp.content, resp.status_code)
+        response.headers['Content-Type'] = 'application/json'
+
+        # Copy X-Request-ID for tracing
+        if 'X-Request-ID' in resp.headers:
+            response.headers['X-Request-ID'] = resp.headers['X-Request-ID']
+
+        # Update session cookie with rotated session ID
+        create_session_cookie(response, new_session_id)
+
+        return response
+
+    except requests.exceptions.Timeout:
+        app.logger.error("Reports service timeout")
+        response = make_response(
+            jsonify({'success': False, 'error': 'Reports service timeout'}),
+            504
+        )
+        create_session_cookie(response, new_session_id)
+        return response
+
+    except requests.exceptions.ConnectionError:
+        app.logger.error("Reports service unavailable")
+        response = make_response(
+            jsonify({'success': False, 'error': 'Reports service unavailable'}),
+            503
+        )
+        create_session_cookie(response, new_session_id)
+        return response
+
+    except requests.exceptions.RequestException as e:
+        app.logger.error(f"Reports proxy error: {e}")
+        response = make_response(
+            jsonify({'success': False, 'error': 'Failed to fetch reports'}),
+            502
+        )
+        create_session_cookie(response, new_session_id)
+        return response
+
+
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint."""
