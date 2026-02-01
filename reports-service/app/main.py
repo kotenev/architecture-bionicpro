@@ -44,6 +44,7 @@ from app.config import get_settings
 from app.routers import reports
 from app.services.clickhouse_service import get_clickhouse_service
 from app.services.cache_service import get_cache_service
+from app.services.s3_service import get_s3_service
 from app.auth.audit_middleware import AuditMiddleware, SecurityHeadersMiddleware
 
 # Configure logging
@@ -63,6 +64,8 @@ async def lifespan(app: FastAPI):
     logger.info(f"Starting {settings.app_name} v{settings.app_version}")
     logger.info(f"ClickHouse: {settings.clickhouse_host}:{settings.clickhouse_port}")
     logger.info(f"Redis: {settings.redis_host}:{settings.redis_port}")
+    logger.info(f"S3/MinIO: {settings.s3_endpoint_url} (bucket: {settings.s3_bucket_name})")
+    logger.info(f"CDN: {settings.cdn_base_url} (enabled: {settings.cdn_enabled})")
     logger.info(f"Keycloak: {settings.keycloak_url}/realms/{settings.keycloak_realm}")
     logger.info("Security: JWT validation enabled, audit logging enabled")
 
@@ -72,6 +75,7 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down Reports Service")
     get_clickhouse_service().close()
     get_cache_service().close()
+    get_s3_service().close()
 
 
 # Create FastAPI application
@@ -130,18 +134,24 @@ async def health_check():
     """
     Health check endpoint.
 
-    Checks connectivity to ClickHouse and Redis.
+    Checks connectivity to ClickHouse, Redis, and S3/MinIO.
     """
     clickhouse_ok = get_clickhouse_service().health_check()
     redis_ok = get_cache_service().health_check()
+    s3_ok = get_s3_service().health_check()
 
-    status = "healthy" if (clickhouse_ok and redis_ok) else "degraded"
+    status = "healthy" if (clickhouse_ok and redis_ok and s3_ok) else "degraded"
 
     return {
         "status": status,
         "dependencies": {
             "clickhouse": "ok" if clickhouse_ok else "error",
             "redis": "ok" if redis_ok else "error",
+            "s3": "ok" if s3_ok else "error",
+        },
+        "cdn": {
+            "enabled": settings.cdn_enabled,
+            "base_url": settings.cdn_base_url,
         },
     }
 

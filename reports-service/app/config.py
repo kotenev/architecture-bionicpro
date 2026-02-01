@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     # Service info
     app_name: str = "BionicPRO Reports Service"
-    app_version: str = "1.0.0"
+    app_version: str = "1.1.0"
     debug: bool = False
 
     # ClickHouse connection
@@ -38,6 +38,17 @@ class Settings(BaseSettings):
 
     # CORS
     allowed_origins: list[str] = ["http://localhost:3000", "http://localhost:8000"]
+
+    # S3 / MinIO configuration (Задание 3)
+    s3_endpoint_url: str = "http://minio:9000"
+    s3_access_key: str = "minioadmin"
+    s3_secret_key: str = "minioadmin123"
+    s3_bucket_name: str = "reports-bucket"
+    s3_region: str = "us-east-1"
+
+    # CDN configuration (Задание 3)
+    cdn_base_url: str = "http://localhost:8002"
+    cdn_enabled: bool = True
 
     class Config:
         env_file = ".env"

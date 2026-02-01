@@ -11,6 +11,7 @@ DAG: bionicpro_reports_etl
     2. extract_telemetry_data - извлечение данных телеметрии из Telemetry DB
     3. transform_and_join - объединение и трансформация данных
     4. load_to_clickhouse - загрузка витрины в ClickHouse
+    5. invalidate_cdn_cache - инвалидация кэша S3/CDN для затронутых пользователей (Задание 3)
 """
 
 from datetime import datetime, timedelta
@@ -43,6 +44,9 @@ CLICKHOUSE_CONN_ID = "bionicpro_clickhouse"
 # Параметры ETL
 ETL_LOOKBACK_HOURS = 2  # Обрабатываем данные за последние N часов
 ETL_BATCH_SIZE = 10000  # Размер пакета для вставки
+
+# Reports Service (Задание 3 - инвалидация кэша)
+REPORTS_SERVICE_URL = "http://reports-service:8001"
 
 # ============================================================================
 # Аргументы DAG по умолчанию
@@ -377,10 +381,95 @@ def load_to_clickhouse(**context) -> Dict[str, Any]:
 
     logger.info(f"Total records loaded to ClickHouse: {total_inserted}")
 
+    # Сохраняем список user_ids для последующей инвалидации кэша
+    affected_user_ids = mart_df["user_id"].unique().tolist()
+    ti.xcom_push(key="affected_user_ids", value=affected_user_ids)
+
     return {
         "records_loaded": total_inserted,
+        "affected_users": len(affected_user_ids),
         "status": "success",
     }
+
+
+# ============================================================================
+# Функция инвалидации кэша (Задание 3)
+# ============================================================================
+def invalidate_cdn_cache(**context) -> Dict[str, Any]:
+    """
+    Инвалидирует кэш S3/CDN для пользователей, чьи данные были обновлены.
+
+    Вызывает POST /api/reports/invalidate на Reports Service.
+    Это удаляет:
+    - JSON файлы из S3 (MinIO)
+    - Записи из Redis кэша
+
+    CDN (Nginx) кэш истечёт по TTL (5 минут).
+
+    Задание 3: Снижение нагрузки на базу данных
+    """
+    import requests
+
+    logger.info("Starting CDN cache invalidation")
+
+    ti = context["ti"]
+
+    # Получаем список затронутых пользователей из предыдущей задачи
+    affected_user_ids = ti.xcom_pull(key="affected_user_ids", task_ids="load_to_clickhouse")
+
+    if not affected_user_ids:
+        logger.info("No affected users to invalidate cache for")
+        return {"invalidated_users": 0, "status": "no_users"}
+
+    logger.info(f"Invalidating cache for {len(affected_user_ids)} users")
+
+    # Получаем admin token для авторизации
+    # В production это должен быть service account token
+    # Для упрощения используем статический API key или service-to-service auth
+    try:
+        # Вызываем Reports Service API для инвалидации
+        # Примечание: для service-to-service вызовов можно использовать внутренний эндпойнт
+        # или API key вместо JWT
+        response = requests.post(
+            f"{REPORTS_SERVICE_URL}/api/reports/internal/invalidate",
+            json={
+                "user_ids": affected_user_ids,
+                "invalidate_all": False,
+            },
+            headers={
+                "Content-Type": "application/json",
+                "X-Internal-Service": "airflow-etl",  # Внутренний сервис
+            },
+            timeout=60,
+        )
+
+        if response.status_code == 200:
+            result = response.json()
+            logger.info(f"Cache invalidation successful: {result}")
+            return {
+                "invalidated_users": len(affected_user_ids),
+                "details": result,
+                "status": "success",
+            }
+        else:
+            logger.warning(
+                f"Cache invalidation returned status {response.status_code}: {response.text}"
+            )
+            # Не фейлим задачу - данные уже загружены, кэш истечёт по TTL
+            return {
+                "invalidated_users": 0,
+                "status": "partial_failure",
+                "error": f"HTTP {response.status_code}",
+            }
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed to call Reports Service for cache invalidation: {e}")
+        # Не фейлим задачу - данные уже загружены, кэш истечёт по TTL
+        return {
+            "invalidated_users": 0,
+            "status": "failed",
+            "error": str(e),
+        }
 
 
 # ============================================================================
@@ -452,8 +541,28 @@ with DAG(
         """,
     )
 
+    # Task 5: Инвалидация кэша S3/CDN (Задание 3)
+    invalidate_cache = PythonOperator(
+        task_id="invalidate_cdn_cache",
+        python_callable=invalidate_cdn_cache,
+        provide_context=True,
+        doc_md="""
+        ### Invalidate CDN Cache (Задание 3)
+        Инвалидирует кэш для затронутых пользователей после загрузки данных.
+        - Удаляет JSON файлы из S3 (MinIO)
+        - Очищает Redis кэш
+        - CDN кэш истечёт по TTL (5 минут)
+
+        Это обеспечивает получение актуальных отчётов пользователями
+        без повторных запросов к ClickHouse.
+        """,
+        # Не блокирует DAG при ошибке - данные уже загружены
+        trigger_rule="all_done",
+    )
+
     # Определение зависимостей задач
     # extract_crm и extract_telemetry выполняются параллельно
     # transform ждёт завершения обоих extract
     # load выполняется после transform
-    [extract_crm, extract_telemetry] >> transform >> load
+    # invalidate_cache выполняется после load (Задание 3)
+    [extract_crm, extract_telemetry] >> transform >> load >> invalidate_cache

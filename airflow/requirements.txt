@@ -13,3 +13,6 @@ pandas==2.0.0
 
 # Common SQL провайдер
 apache-airflow-providers-common-sql==1.11.0
+
+# HTTP клиент для вызова Reports Service API (Задание 3)
+requests==2.31.0

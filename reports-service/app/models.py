@@ -126,6 +126,63 @@ class ErrorResponse(BaseModel):
 
 
 # ============================================================================
+# CDN Response Models (Задание 3)
+# ============================================================================
+
+class CDNReportResponse(BaseModel):
+    """Response with CDN URL for pre-generated report."""
+
+    success: bool = True
+    cdn_url: str = Field(..., description="CDN URL to fetch the report")
+    cached: bool = Field(..., description="Whether report was already cached in S3")
+    cache_ttl_seconds: int = Field(300, description="Cache TTL in seconds")
+    expires_at: Optional[datetime] = Field(None, description="When cache expires")
+
+
+class CDNReportsListResponse(BaseModel):
+    """Response with CDN URL for reports list."""
+
+    success: bool = True
+    cdn_url: str = Field(..., description="CDN URL to fetch reports list")
+    cached: bool = Field(..., description="Whether data was already cached")
+    user_id: str = Field(..., description="User ID")
+
+
+class CDNSummaryResponse(BaseModel):
+    """Response with CDN URL for user summary."""
+
+    success: bool = True
+    cdn_url: str = Field(..., description="CDN URL to fetch summary")
+    cached: bool = Field(..., description="Whether data was already cached")
+    user_id: str = Field(..., description="User ID")
+
+
+class CDNDailyReportResponse(BaseModel):
+    """Response with CDN URL for daily report."""
+
+    success: bool = True
+    cdn_url: str = Field(..., description="CDN URL to fetch daily report")
+    cached: bool = Field(..., description="Whether data was already cached")
+    user_id: str = Field(..., description="User ID")
+    report_date: date = Field(..., description="Report date")
+
+
+class CacheInvalidationRequest(BaseModel):
+    """Request to invalidate cache for users."""
+
+    user_ids: List[str] = Field(..., description="List of user IDs to invalidate")
+    invalidate_all: bool = Field(False, description="Invalidate all user data")
+
+
+class CacheInvalidationResponse(BaseModel):
+    """Response for cache invalidation."""
+
+    success: bool = True
+    invalidated_users: int = Field(..., description="Number of users invalidated")
+    details: Optional[dict] = Field(None, description="Per-user invalidation details")
+
+
+# ============================================================================
 # Auth Models
 # ============================================================================
 

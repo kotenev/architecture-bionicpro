@@ -24,3 +24,7 @@ httpx==0.26.0
 
 # Date handling
 python-dateutil==2.8.2
+
+# S3/MinIO client (Задание 3)
+boto3==1.34.25
+botocore==1.34.25
