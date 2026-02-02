@@ -42,7 +42,7 @@ TELEMETRY_CONN_ID = "bionicpro_telemetry_db"
 CLICKHOUSE_CONN_ID = "bionicpro_clickhouse"
 
 # Параметры ETL
-ETL_LOOKBACK_HOURS = 2  # Обрабатываем данные за последние N часов
+ETL_LOOKBACK_HOURS = 168  # Обрабатываем данные за последние N часов (168 = 7 дней для начальной загрузки)
 ETL_BATCH_SIZE = 10000  # Размер пакета для вставки
 
 # Reports Service (Задание 3 - инвалидация кэша)
