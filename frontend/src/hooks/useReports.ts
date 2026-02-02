@@ -98,7 +98,7 @@ export const useReports = (): UseReportsReturn => {
           customer_name: '',
           prosthesis_model: '',
           total_reports: 0,
-          date_range: { earliest: null, latest: null },
+          date_range: { first_date: null, last_date: null },
           reports: []
         });
         setError(null);
