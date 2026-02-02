@@ -7,6 +7,7 @@ import time
 from functools import wraps
 from urllib.parse import urlencode
 from flask import Flask, request, jsonify, redirect, make_response
+from flask_cors import CORS
 import redis
 import requests
 from cryptography.fernet import Fernet
@@ -14,6 +15,13 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
+
+# Configure CORS to allow requests from frontend
+CORS(app,
+     origins=[os.getenv('FRONTEND_URL', 'http://localhost:3000')],
+     supports_credentials=True,
+     allow_headers=['Content-Type', 'Authorization'],
+     methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
 
 # Configuration
 KEYCLOAK_URL = os.getenv('KEYCLOAK_URL', 'http://keycloak:8080')
@@ -487,8 +495,9 @@ def callback():
     except Exception as e:
         app.logger.error(f"Error processing user profile: {e}")
 
-    # Create response with session cookie
-    response = make_response(redirect(FRONTEND_URL))
+    # Create response with session cookie and success parameter
+    redirect_url = f"{FRONTEND_URL}?auth=success"
+    response = make_response(redirect(redirect_url))
     create_session_cookie(response, session_id)
 
     return response

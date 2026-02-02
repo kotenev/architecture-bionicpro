@@ -65,6 +65,17 @@ services:
       ldap:
         condition: service_started
 
+  # Init service to configure master realm SSL settings
+  # Disables HTTPS requirement for local development
+  keycloak-init:
+    image: quay.io/keycloak/keycloak:26.5.2
+    volumes:
+      - ./keycloak/configure-master-realm.sh:/opt/configure-master-realm.sh
+    entrypoint: ["/bin/bash", "/opt/configure-master-realm.sh"]
+    depends_on:
+      - keycloak
+    restart: on-failure
+
   redis:
     image: redis:7-alpine
     ports:
@@ -338,6 +349,27 @@ services:
         airflow dags unpause bionicpro_reports_etl || true
         echo "Airflow connections initialized!"
     depends_on:
+      airflow-webserver:
+        condition: service_healthy
+
+  # Airflow ETL Trigger - автоматический запуск ETL для демонстрационных данных
+  airflow-etl-trigger:
+    build:
+      context: ./airflow
+      dockerfile: Dockerfile
+    entrypoint: /bin/bash
+    command:
+      - /opt/airflow/scripts/trigger-initial-etl.sh
+    environment:
+      AIRFLOW_URL: http://airflow-webserver:8080
+      AIRFLOW_USERNAME: admin
+      AIRFLOW_PASSWORD: admin
+      DAG_ID: bionicpro_reports_etl
+    volumes:
+      - ./airflow/scripts:/opt/airflow/scripts:ro
+    depends_on:
+      airflow-connections:
+        condition: service_completed_successfully
       airflow-webserver:
         condition: service_healthy
 

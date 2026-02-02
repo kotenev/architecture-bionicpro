@@ -91,6 +91,20 @@ export const useReports = (): UseReportsReturn => {
       const response = await fetchWithAuth('/api/reports');
       const data = await response.json();
 
+      // 404 is OK - just means no reports available yet
+      if (response.status === 404) {
+        setReportsList({
+          user_id: '',
+          customer_name: '',
+          prosthesis_model: '',
+          total_reports: 0,
+          date_range: { earliest: null, latest: null },
+          reports: []
+        });
+        setError(null);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(handleError(response, data));
       }
@@ -160,6 +174,13 @@ export const useReports = (): UseReportsReturn => {
     try {
       const response = await fetchWithAuth('/api/reports/summary');
       const data = await response.json();
+
+      // 404 is OK - just means no data available yet
+      if (response.status === 404) {
+        setUserSummary(null);
+        setError(null);
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(handleError(response, data));

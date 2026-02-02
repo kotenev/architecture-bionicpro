@@ -340,9 +340,9 @@ def load_to_clickhouse(**context) -> Dict[str, Any]:
     )
 
     # Преобразуем DataFrame в список кортежей для вставки
-    # Конвертируем даты в правильный формат
-    mart_df["report_date"] = pd.to_datetime(mart_df["report_date"]).dt.strftime("%Y-%m-%d")
-    mart_df["source_updated_at"] = pd.to_datetime(mart_df["source_updated_at"]).dt.strftime("%Y-%m-%d %H:%M:%S")
+    # Конвертируем даты в правильный формат для ClickHouse
+    mart_df["report_date"] = pd.to_datetime(mart_df["report_date"]).dt.date
+    mart_df["source_updated_at"] = pd.to_datetime(mart_df["source_updated_at"])
 
     columns = [
         "user_id", "prosthesis_id", "chip_id", "report_date", "report_hour",

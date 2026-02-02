@@ -42,6 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
       }
     } catch (error) {
+      console.error('Session check error:', error);
       setAuthenticated(false);
       setUser(null);
     } finally {
@@ -50,7 +51,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
-    checkSession();
+    // Check if we just returned from OAuth callback
+    const urlParams = new URLSearchParams(window.location.search);
+    const authParam = urlParams.get('auth');
+    const errorParam = urlParams.get('error');
+
+    // Clean up URL parameters
+    if (authParam || errorParam) {
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+
+    if (errorParam) {
+      // OAuth error occurred
+      console.error('OAuth error:', errorParam);
+      setAuthenticated(false);
+      setUser(null);
+      setInitialized(true);
+    } else if (authParam === 'success') {
+      // Give the cookie time to be set, then check session
+      setTimeout(() => {
+        checkSession();
+      }, 100);
+    } else {
+      // Normal session check
+      checkSession();
+    }
   }, [checkSession]);
 
   const login = () => {

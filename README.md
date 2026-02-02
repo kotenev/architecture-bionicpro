@@ -50,11 +50,22 @@ Before running the application, you need to set up the environment variables:
    docker-compose up -d
    ```
 
-4. Access the services:
-   - Frontend: http://localhost:3000
-   - Keycloak Admin: http://localhost:8080
+4. **Wait for initial setup** (~2-3 minutes):
+   - All services will initialize automatically
+   - ETL pipeline will run automatically to populate demo reports
+   - Check progress: `docker-compose logs -f airflow-etl-trigger`
+
+5. Access the services:
+   - **Frontend**: http://localhost:3000 (Login with test users to see reports)
+   - Keycloak Admin: http://localhost:8080 (admin/admin)
    - Airflow UI: http://localhost:8081 (admin/admin)
+   - Reports API: http://localhost:8001/health
    - ClickHouse HTTP: http://localhost:8123
+
+6. **Test Users** (for frontend login):
+   - Username: `ivan.petrov` | Password: `password123` (has prosthesis reports)
+   - Username: `john.mueller` | Password: `password123` (has prosthesis reports)
+   - Username: `alexey.kozlov` | Password: `password123` (administrator)
 
 ## Architecture Components
 
@@ -169,13 +180,15 @@ Implementation of ETL pipeline and Reports API for prosthesis usage data.
 
 3. **Start Airflow**:
    ```bash
-   docker-compose up -d airflow-init airflow-webserver airflow-scheduler
+   docker-compose up -d airflow-init airflow-webserver airflow-scheduler airflow-connections airflow-etl-trigger
    ```
+
+   **Note**: The `airflow-etl-trigger` service automatically runs the initial ETL after Airflow is ready, populating ClickHouse with demo reports. This ensures users can immediately see reports after login.
 
 4. **Access Airflow UI**:
    - URL: http://localhost:8081
    - Credentials: admin / admin
-   - Enable DAG: `bionicpro_reports_etl`
+   - DAG `bionicpro_reports_etl` is auto-enabled and triggered on startup
 
 5. **Start Reports Service**:
    ```bash
@@ -187,17 +200,19 @@ Implementation of ETL pipeline and Reports API for prosthesis usage data.
    # Health check
    curl http://localhost:8001/health
 
-   # Get reports (requires JWT token)
-   curl -H "Authorization: Bearer <token>" http://localhost:8001/api/reports
+   # Get reports (requires JWT token from authenticated session)
+   # Login via frontend at http://localhost:3000 to get a session
    ```
 
 #### ETL Schedule
 
 The `bionicpro_reports_etl` DAG runs every 15 minutes and performs:
 1. Extract CRM data (customers, prostheses, models)
-2. Extract telemetry data (hourly aggregates)
+2. Extract telemetry data (hourly aggregates from last 7 days)
 3. Transform and join datasets by chip_id
 4. Load to ClickHouse `reports.user_prosthesis_stats`
+
+**Initial Load**: On first startup, the ETL is triggered automatically by the `airflow-etl-trigger` service, which loads demo data for test users (ivan.petrov, john.mueller, etc.)
 
 #### Reports API Endpoints
 
