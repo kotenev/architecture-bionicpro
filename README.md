@@ -792,3 +792,66 @@ docker-compose logs --tail=100 airflow-scheduler
 # Save logs to file
 docker-compose logs > logs.txt 2>&1
 ```
+
+---
+
+## Documentation (MkDocs)
+
+Полная документация доступна в формате MkDocs Knowledge Base.
+
+### Запуск локально
+
+```bash
+# Установка зависимостей
+pip install -r docs/requirements.txt
+
+# Запуск dev-сервера
+mkdocs serve
+
+# Открыть в браузере
+open http://localhost:8000
+```
+
+### Сборка статического сайта
+
+```bash
+# Сборка в каталог site/
+mkdocs build
+
+# Сборка и деплой на GitHub Pages
+mkdocs gh-deploy
+```
+
+### Структура документации
+
+```
+docs/
+├── index.md                    # Главная страница
+├── architecture/
+│   ├── overview.md             # Обзор архитектуры
+│   ├── security.md             # Task 1: Security
+│   ├── reports-etl.md          # Task 2: Reports & ETL
+│   ├── s3-cdn.md               # Task 3: S3/CDN
+│   ├── cdc.md                  # Task 4: CDC
+│   └── data-model.md           # Модель данных
+├── deployment/
+│   ├── quickstart.md           # Быстрый старт
+│   ├── environment.md          # Настройка окружения
+│   ├── services.md             # Справочник сервисов
+│   └── troubleshooting.md      # Решение проблем
+├── api/
+│   ├── reports.md              # Reports API
+│   ├── auth.md                 # Auth API (BFF)
+│   └── cdc-health.md           # CDC Health API
+└── diagrams/
+    └── c4-diagrams.md          # C4 диаграммы
+```
+
+### Содержание документации
+
+| Раздел | Описание |
+|--------|----------|
+| **Architecture** | Детальное описание архитектуры всех компонентов |
+| **Deployment** | Инструкции по развёртыванию и настройке |
+| **API Reference** | Документация REST API endpoints |
+| **Diagrams** | C4 архитектурные диаграммы |

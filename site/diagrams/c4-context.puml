@@ -1,0 +1,33 @@
+@startuml BionicPRO_C4_Context
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title BionicPRO System Context Diagram (Level 1)
+
+Person(prosthesis_user, "Пользователь протеза", "Владелец бионического протеза, использует мобильное приложение для мониторинга")
+Person(buyer, "Покупатель", "Заказывает и оплачивает протезы через интернет-магазин")
+Person(operator, "Оператор CRM", "Внутренний сотрудник, управляет заказами и клиентами")
+Person(ml_engineer, "ML-инженер", "Анализирует данные телеметрии для улучшения алгоритмов")
+Person(admin, "Администратор", "Управляет системой и пользователями")
+
+System(bionicpro, "BionicPRO Platform", "Платформа управления бионическими протезами: аутентификация, отчёты, телеметрия, CRM")
+
+System_Ext(prosthesis, "Бионический протез", "Устройство с чипом ESP32, передаёт телеметрию через 4G/WiFi")
+System_Ext(ldap_ru, "LDAP Russia", "Каталог пользователей российского представительства")
+System_Ext(ldap_eu, "LDAP Europe", "Каталог пользователей европейского представительства")
+System_Ext(yandex_id, "Яндекс ID", "Внешний OAuth2 провайдер для российских пользователей")
+System_Ext(payment, "Платёжная система", "Обработка платежей за протезы")
+
+Rel(prosthesis_user, bionicpro, "Просматривает отчёты, настраивает протез", "HTTPS")
+Rel(buyer, bionicpro, "Заказывает протезы", "HTTPS")
+Rel(operator, bionicpro, "Управляет заказами и клиентами", "HTTPS")
+Rel(ml_engineer, bionicpro, "Анализирует данные", "SQL/HTTPS")
+Rel(admin, bionicpro, "Администрирует систему", "HTTPS")
+
+Rel(prosthesis, bionicpro, "Передаёт телеметрию", "HTTPS/4G")
+Rel(bionicpro, ldap_ru, "Аутентификация пользователей РФ", "LDAPS")
+Rel(bionicpro, ldap_eu, "Аутентификация пользователей EU", "LDAPS")
+Rel(bionicpro, yandex_id, "OAuth2 аутентификация", "HTTPS")
+Rel(bionicpro, payment, "Обработка платежей", "HTTPS")
+
+SHOW_LEGEND()
+@enduml

@@ -1,0 +1,89 @@
+site_name: BionicPRO Architecture Documentation
+site_description: Enterprise architecture documentation for BionicPRO bionic prosthetics platform
+site_author: BionicPRO Team
+site_url: https://bionicpro.example.com/docs
+
+repo_name: bionicpro/architecture
+repo_url: https://github.com/bionicpro/architecture
+
+theme:
+  name: material
+  language: ru
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search:
+      lang: ru
+  - mermaid2
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - admonition
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Architecture:
+    - Overview: architecture/overview.md
+    - Security (Task 1): architecture/security.md
+    - Reports & ETL (Task 2): architecture/reports-etl.md
+    - S3/CDN Caching (Task 3): architecture/s3-cdn.md
+    - CDC Pipeline (Task 4): architecture/cdc.md
+    - Data Model: architecture/data-model.md
+  - Deployment:
+    - Quick Start: deployment/quickstart.md
+    - Environment Setup: deployment/environment.md
+    - Service Reference: deployment/services.md
+    - Troubleshooting: deployment/troubleshooting.md
+  - API Reference:
+    - Reports API: api/reports.md
+    - Auth API: api/auth.md
+    - CDC Health: api/cdc-health.md
+  - Diagrams:
+    - C4 Diagrams: diagrams/c4-diagrams.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/bionicpro
+  generator: false
+
+copyright: Copyright &copy; 2024 BionicPRO
