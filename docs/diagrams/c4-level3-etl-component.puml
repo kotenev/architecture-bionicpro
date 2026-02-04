@@ -1,0 +1,78 @@
+@startuml BionicPRO_C4_Level3_ETL_Component
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title BionicPRO - C4 Level 3: ETL Pipeline Components
+
+Container_Boundary(airflow, "Apache Airflow") {
+
+    Component(webserver, "Webserver", "Flask, Gunicorn", "Web UI:\nDAG monitoring,\nmanual triggers,\nlogs viewer")
+
+    Component(scheduler, "Scheduler", "Python", "DAG parsing,\ntask scheduling,\nexecutor management")
+
+    Component(executor, "Local Executor", "Python", "Task execution\nin subprocesses")
+
+    Component(metadata_db, "Metadata DB", "PostgreSQL", "DAG runs, task instances,\nXCom, connections")
+}
+
+Container_Boundary(etl_jobs, "ETL Jobs") {
+
+    Component(dag_reports, "bionicpro_reports_etl", "Airflow DAG", "Основной ETL DAG:\nschedule: */15 * * * *")
+
+    Component(dag_cdc, "bionicpro_reports_cdc_etl", "Airflow DAG", "CDC-based ETL DAG:\nчитает CRM из ClickHouse")
+
+    Component(extract_crm, "extract_crm_data", "PythonOperator", "Извлечение:\ncustomers, prostheses,\nprosthesis_models")
+
+    Component(extract_telemetry, "extract_telemetry_data", "PythonOperator", "Извлечение:\nraw_telemetry\n(aggregated)")
+
+    Component(extract_cdc, "extract_crm_from_clickhouse", "PythonOperator", "Извлечение CRM\nиз CDC таблиц ClickHouse")
+
+    Component(transform, "transform_and_join", "PythonOperator", "JOIN по chip_id,\nрасчёт метрик:\nerror_rate, avg_response")
+
+    Component(load, "load_to_clickhouse", "PythonOperator", "INSERT в\nuser_prosthesis_stats")
+
+    Component(invalidate, "invalidate_cdn_cache", "PythonOperator", "POST /api/reports/invalidate")
+
+    Component(postgres_hook, "PostgresHook", "Airflow Hook", "Подключение к\nPostgreSQL")
+
+    Component(http_hook, "HttpHook", "Airflow Hook", "HTTP запросы к\nReports Service")
+}
+
+' External dependencies
+ContainerDb_Ext(crm_db, "CRM Database", "PostgreSQL")
+ContainerDb_Ext(telemetry_db, "Telemetry Database", "PostgreSQL")
+ContainerDb_Ext(clickhouse, "ClickHouse", "OLAP")
+Container_Ext(reports_svc, "Reports Service", "Cache invalidation")
+
+' Airflow internal
+Rel(webserver, metadata_db, "Query", "SQL")
+Rel(scheduler, metadata_db, "Update", "SQL")
+Rel(scheduler, executor, "Submit tasks")
+Rel(executor, dag_reports, "Execute")
+Rel(executor, dag_cdc, "Execute")
+
+' DAG structure - Reports ETL
+Rel(dag_reports, extract_crm, "Task 1")
+Rel(dag_reports, extract_telemetry, "Task 2")
+Rel(extract_crm, transform, "XCom")
+Rel(extract_telemetry, transform, "XCom")
+Rel(transform, load, "XCom")
+Rel(load, invalidate, "Trigger")
+
+' DAG structure - CDC ETL
+Rel(dag_cdc, extract_cdc, "Task 1")
+Rel(dag_cdc, extract_telemetry, "Task 2")
+Rel(extract_cdc, transform, "XCom")
+
+' External relationships
+Rel(extract_crm, crm_db, "SELECT", "PostgresHook")
+Rel(extract_telemetry, telemetry_db, "SELECT", "PostgresHook")
+Rel(extract_cdc, clickhouse, "SELECT", "HTTP")
+Rel(load, clickhouse, "INSERT", "Native")
+Rel(invalidate, reports_svc, "POST", "HttpHook")
+
+Rel(extract_crm, postgres_hook, "Uses")
+Rel(extract_telemetry, postgres_hook, "Uses")
+Rel(invalidate, http_hook, "Uses")
+
+SHOW_LEGEND()
+@enduml

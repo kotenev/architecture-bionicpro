@@ -1,0 +1,71 @@
+# C4 Level 1: System Context
+
+## Описание
+
+System Context Diagram показывает систему BionicPRO в контексте её пользователей и внешних систем.
+
+## Диаграмма
+
+```plantuml
+@startuml BionicPRO_C4_Level1_Context
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title BionicPRO - C4 Level 1: System Context Diagram
+
+' ==================== ACTORS ====================
+Person(prosthesis_user, "Пользователь протеза", "Владелец бионического протеза, использует приложение для мониторинга и настройки")
+Person(buyer, "Покупатель", "Заказывает и оплачивает протезы через интернет-магазин")
+Person(operator, "Оператор CRM", "Внутренний сотрудник, управляет заказами и клиентами")
+Person(ml_engineer, "ML-инженер", "Анализирует данные телеметрии для улучшения алгоритмов управления протезом")
+Person(admin, "Администратор", "Управляет системой, пользователями и безопасностью")
+
+' ==================== MAIN SYSTEM ====================
+System(bionicpro, "BionicPRO Platform", "Платформа управления бионическими протезами:\n- Аутентификация и авторизация\n- Сбор и анализ телеметрии\n- Формирование отчётов\n- CRM и управление заказами")
+
+' ==================== EXTERNAL SYSTEMS ====================
+System_Ext(prosthesis, "Бионический протез", "Устройство с чипом ESP32/C++\nПередаёт телеметрию через 4G/WiFi")
+System_Ext(ldap_ru, "LDAP Russia", "Каталог пользователей\nроссийского представительства")
+System_Ext(ldap_eu, "LDAP Europe", "Каталог пользователей\nевропейского представительства")
+System_Ext(yandex_id, "Яндекс ID", "Внешний OAuth2/OIDC провайдер\nдля российских пользователей")
+System_Ext(other_idp, "Other IdPs", "Google, Apple и др.\nвнешние провайдеры идентификации")
+
+' ==================== RELATIONSHIPS ====================
+Rel(prosthesis_user, bionicpro, "Просматривает отчёты,\nнастраивает протез", "HTTPS")
+Rel(buyer, bionicpro, "Заказывает протезы,\nотслеживает доставку", "HTTPS")
+Rel(operator, bionicpro, "Управляет заказами,\nработает с клиентами", "HTTPS")
+Rel(ml_engineer, bionicpro, "Анализирует данные,\nобучает модели", "SQL/HTTPS")
+Rel(admin, bionicpro, "Администрирует\nсистему", "HTTPS")
+
+Rel(prosthesis, bionicpro, "Передаёт телеметрию:\nмиосигналы, движения,\nбатарея, ошибки", "HTTPS/4G")
+Rel_L(bionicpro, ldap_ru, "User Federation", "LDAPS")
+Rel_R(bionicpro, ldap_eu, "User Federation", "LDAPS")
+Rel(bionicpro, yandex_id, "Identity Brokering", "OAuth2/OIDC")
+Rel(bionicpro, other_idp, "Identity Brokering", "OAuth2/OIDC")
+
+SHOW_LEGEND()
+@enduml
+```
+
+## Акторы (Users)
+
+| Актор | Описание | Основные действия |
+|-------|----------|-------------------|
+| **Пользователь протеза** | Владелец бионического протеза | Просмотр отчётов, настройка протеза |
+| **Покупатель** | Потенциальный клиент | Заказ и оплата протезов |
+| **Оператор CRM** | Внутренний сотрудник | Управление заказами и клиентами |
+| **ML-инженер** | Специалист по данным | Анализ телеметрии, обучение моделей |
+| **Администратор** | Системный администратор | Управление пользователями и безопасностью |
+
+## Внешние системы
+
+| Система | Назначение | Протокол |
+|---------|------------|----------|
+| **Бионический протез** | Источник телеметрии | HTTPS/4G |
+| **LDAP Russia** | Каталог пользователей РФ | LDAPS |
+| **LDAP Europe** | Каталог пользователей EU | LDAPS |
+| **Яндекс ID** | OAuth2 провайдер | OIDC |
+| **Other IdPs** | Другие провайдеры | OAuth2/OIDC |
+
+## Исходный файл
+
+[c4-level1-context.puml](c4-level1-context.puml)

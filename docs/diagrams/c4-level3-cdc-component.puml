@@ -1,0 +1,93 @@
+@startuml BionicPRO_C4_Level3_CDC_Component
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title BionicPRO - C4 Level 3: CDC Pipeline Components
+
+Container_Boundary(cdc_source, "CRM Database (PostgreSQL)") {
+
+    Component(wal, "WAL (Write-Ahead Log)", "PostgreSQL", "wal_level=logical\nЛогическая репликация")
+
+    Component(publication, "Publication", "PostgreSQL", "crm_publication:\ncustomers, prostheses,\nprosthesis_models")
+
+    Component(repl_slot, "Replication Slot", "PostgreSQL", "debezium_crm_slot\nСохраняет позицию чтения")
+}
+
+Container_Boundary(debezium, "Debezium Connect") {
+
+    Component(connector, "PostgreSQL Connector", "Java, Debezium", "Читает WAL,\nгенерирует CDC события")
+
+    Component(transforms, "SMT Transforms", "Java", "ExtractNewRecordState:\nubwrap envelope,\ndrop tombstones")
+
+    Component(converter, "JSON Converter", "Kafka Connect", "Сериализация событий\nв JSON формат")
+
+    Component(rest_api, "REST API", "JAX-RS", "Управление коннекторами:\nCRUD, status, restart")
+}
+
+Container_Boundary(kafka, "Apache Kafka") {
+
+    Component(topic_customers, "crm.crm.customers", "Kafka Topic", "События изменений\nтаблицы customers")
+
+    Component(topic_prostheses, "crm.crm.prostheses", "Kafka Topic", "События изменений\nтаблицы prostheses")
+
+    Component(topic_models, "crm.crm.prosthesis_models", "Kafka Topic", "События изменений\nтаблицы models")
+
+    Component(connect_topics, "Connect Internal Topics", "Kafka Topics", "configs, offsets,\nstatuses")
+}
+
+Container_Boundary(clickhouse_cdc, "ClickHouse CDC Layer") {
+
+    Component(kafka_engine_cust, "kafka_crm_customers", "KafkaEngine Table", "Потребление из\ncrm.crm.customers")
+
+    Component(kafka_engine_pros, "kafka_crm_prostheses", "KafkaEngine Table", "Потребление из\ncrm.crm.prostheses")
+
+    Component(kafka_engine_mod, "kafka_crm_models", "KafkaEngine Table", "Потребление из\ncrm.crm.prosthesis_models")
+
+    Component(mv_customers, "mv_kafka_customers", "MaterializedView", "Трансформация JSON,\nINSERT в target")
+
+    Component(mv_prostheses, "mv_kafka_prostheses", "MaterializedView", "Трансформация JSON,\nINSERT в target")
+
+    Component(mv_models, "mv_kafka_models", "MaterializedView", "Трансформация JSON,\nINSERT в target")
+
+    Component(target_cust, "crm_customers", "ReplacingMergeTree", "Дедупликация по _version")
+
+    Component(target_pros, "crm_prostheses", "ReplacingMergeTree", "Дедупликация по _version")
+
+    Component(target_mod, "crm_prosthesis_models", "ReplacingMergeTree", "Дедупликация по _version")
+
+    Component(cdc_view, "cdc_customer_data", "View", "JOIN всех CDC таблиц\nдля отчётов")
+}
+
+' CDC Source relationships
+Rel(wal, publication, "Contains")
+Rel(publication, repl_slot, "Uses")
+
+' Debezium relationships
+Rel(repl_slot, connector, "Stream WAL", "Logical Replication")
+Rel(connector, transforms, "Events")
+Rel(transforms, converter, "Transformed")
+Rel(converter, topic_customers, "Publish")
+Rel(converter, topic_prostheses, "Publish")
+Rel(converter, topic_models, "Publish")
+Rel(connector, connect_topics, "Internal")
+
+' Kafka to ClickHouse
+Rel(topic_customers, kafka_engine_cust, "Consume", "KafkaEngine")
+Rel(topic_prostheses, kafka_engine_pros, "Consume", "KafkaEngine")
+Rel(topic_models, kafka_engine_mod, "Consume", "KafkaEngine")
+
+' MaterializedViews
+Rel(kafka_engine_cust, mv_customers, "Trigger")
+Rel(kafka_engine_pros, mv_prostheses, "Trigger")
+Rel(kafka_engine_mod, mv_models, "Trigger")
+
+Rel(mv_customers, target_cust, "INSERT")
+Rel(mv_prostheses, target_pros, "INSERT")
+Rel(mv_models, target_mod, "INSERT")
+
+' View joins
+Rel(cdc_view, target_cust, "SELECT FINAL")
+Rel(cdc_view, target_pros, "SELECT FINAL")
+Rel(cdc_view, target_mod, "SELECT FINAL")
+
+SHOW_LEGEND()
+@enduml
