@@ -381,12 +381,13 @@ ORDER BY t.report_date DESC;
 
 -- ============================================================================
 -- Индексы и оптимизации
+-- ИДЕМПОТЕНТНО: индексы создаются только если их ещё нет
 -- ============================================================================
 
 -- Создаём индекс для быстрого поиска по chip_id
 ALTER TABLE reports.crm_prostheses
-    ADD INDEX idx_chip_id chip_id TYPE bloom_filter GRANULARITY 1;
+    ADD INDEX IF NOT EXISTS idx_chip_id chip_id TYPE bloom_filter GRANULARITY 1;
 
 -- Создаём индекс для быстрого поиска по external_id
 ALTER TABLE reports.crm_customers
-    ADD INDEX idx_external_id external_id TYPE bloom_filter GRANULARITY 1;
+    ADD INDEX IF NOT EXISTS idx_external_id external_id TYPE bloom_filter GRANULARITY 1;

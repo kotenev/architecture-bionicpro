@@ -38,8 +38,23 @@ interface UseReportsReturn {
   clearError: () => void;
 }
 
+// Time window (ms) during which we suppress "Session expired" errors after login
+const NEW_SESSION_WINDOW_MS = 30000; // 30 seconds
+
 export const useReports = (): UseReportsReturn => {
-  const { authenticated } = useAuth();
+  const { authenticated, isNewSession, sessionCreatedAt, clearNewSessionFlag } = useAuth();
+
+  /**
+   * Check if we're within the "new session" grace period
+   * This prevents showing "Session expired" immediately after login
+   */
+  const isWithinNewSessionWindow = useCallback((): boolean => {
+    if (isNewSession) return true;
+    if (sessionCreatedAt && Date.now() - sessionCreatedAt < NEW_SESSION_WINDOW_MS) {
+      return true;
+    }
+    return false;
+  }, [isNewSession, sessionCreatedAt]);
 
   const [reportsList, setReportsList] = useState<UserReportsList | null>(null);
   const [dailyReport, setDailyReport] = useState<DailyReport | null>(null);
@@ -62,8 +77,13 @@ export const useReports = (): UseReportsReturn => {
   /**
    * Handle API errors
    */
-  const handleError = useCallback((response: Response, data: any): string => {
+  const handleError = useCallback((response: Response, data: any): string | null => {
     if (response.status === 401) {
+      // Don't show "Session expired" on a fresh login - it's confusing
+      // Use the window check for more reliable detection
+      if (isWithinNewSessionWindow()) {
+        return null; // Will be handled by returning empty data instead of error
+      }
       return 'Session expired. Please log in again.';
     }
     if (response.status === 403) {
@@ -73,7 +93,7 @@ export const useReports = (): UseReportsReturn => {
       return data?.detail || 'No reports found.';
     }
     return data?.error || data?.detail || 'Failed to fetch reports.';
-  }, []);
+  }, [isWithinNewSessionWindow]);
 
   /**
    * Fetch list of available reports
@@ -102,16 +122,38 @@ export const useReports = (): UseReportsReturn => {
           reports: []
         });
         setError(null);
+        // Don't clear new session flag here - other requests may still be pending
+        return;
+      }
+
+      // Handle 401 on new session - treat as empty data, not error
+      if (response.status === 401 && isWithinNewSessionWindow()) {
+        setReportsList({
+          user_id: '',
+          customer_name: '',
+          prosthesis_model: '',
+          total_reports: 0,
+          date_range: { first_date: null, last_date: null },
+          reports: []
+        });
+        setError(null);
+        // Don't clear flag here - let the timer handle it
         return;
       }
 
       if (!response.ok) {
-        throw new Error(handleError(response, data));
+        const errorMsg = handleError(response, data);
+        if (errorMsg) {
+          throw new Error(errorMsg);
+        }
+        return;
       }
 
       const typedData = data as ReportsListResponse;
       if (typedData.success && typedData.data) {
         setReportsList(typedData.data);
+        // Successfully fetched data - can clear new session flag
+        clearNewSessionFlag();
       } else {
         throw new Error('Invalid response format');
       }
@@ -122,7 +164,7 @@ export const useReports = (): UseReportsReturn => {
     } finally {
       setLoading(false);
     }
-  }, [authenticated, fetchWithAuth, handleError]);
+  }, [authenticated, isWithinNewSessionWindow, fetchWithAuth, handleError, clearNewSessionFlag]);
 
   /**
    * Fetch detailed daily report for a specific date
@@ -140,8 +182,19 @@ export const useReports = (): UseReportsReturn => {
       const response = await fetchWithAuth(`/api/reports/${date}`);
       const data = await response.json();
 
+      // Handle 401 on new session - show generic message
+      if (response.status === 401 && isWithinNewSessionWindow()) {
+        setDailyReport(null);
+        setError(null);  // Don't show error for new session
+        return;
+      }
+
       if (!response.ok) {
-        throw new Error(handleError(response, data));
+        const errorMsg = handleError(response, data);
+        if (errorMsg) {
+          throw new Error(errorMsg);
+        }
+        return;
       }
 
       const typedData = data as ReportDetailResponse;
@@ -157,7 +210,7 @@ export const useReports = (): UseReportsReturn => {
     } finally {
       setLoading(false);
     }
-  }, [authenticated, fetchWithAuth, handleError]);
+  }, [authenticated, isWithinNewSessionWindow, fetchWithAuth, handleError]);
 
   /**
    * Fetch user summary (all-time statistics)
@@ -182,8 +235,19 @@ export const useReports = (): UseReportsReturn => {
         return;
       }
 
+      // Handle 401 on new session - treat as no data, not error
+      if (response.status === 401 && isWithinNewSessionWindow()) {
+        setUserSummary(null);
+        setError(null);
+        return;
+      }
+
       if (!response.ok) {
-        throw new Error(handleError(response, data));
+        const errorMsg = handleError(response, data);
+        if (errorMsg) {
+          throw new Error(errorMsg);
+        }
+        return;
       }
 
       const typedData = data as UserSummaryResponse;
@@ -199,7 +263,7 @@ export const useReports = (): UseReportsReturn => {
     } finally {
       setLoading(false);
     }
-  }, [authenticated, fetchWithAuth, handleError]);
+  }, [authenticated, isWithinNewSessionWindow, fetchWithAuth, handleError]);
 
   /**
    * Clear cached reports

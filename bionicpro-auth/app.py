@@ -34,7 +34,7 @@ KEYCLOAK_SCOPES = os.getenv('KEYCLOAK_SCOPES', 'openid')
 REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
 REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
 SESSION_COOKIE_NAME = 'BIONICPRO_SESSION'
-SESSION_LIFETIME = 3600  # 1 hour - longer than access_token (2 min)
+SESSION_LIFETIME = 14400  # 4 hours - comfortable work session without re-login
 ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY')
 
 # PostgreSQL configuration
@@ -496,8 +496,25 @@ def callback():
         app.logger.error(f"Error processing user profile: {e}")
 
     # Create response with session cookie and success parameter
+    # Use HTML with JavaScript redirect instead of HTTP redirect
+    # to ensure cookie is set before redirecting to frontend
     redirect_url = f"{FRONTEND_URL}?auth=success"
-    response = make_response(redirect(redirect_url))
+    html = f'''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Login Successful</title>
+    </head>
+    <body>
+        <p>Login successful. Redirecting...</p>
+        <script>
+            window.location.href = "{redirect_url}";
+        </script>
+    </body>
+    </html>
+    '''
+    response = make_response(html, 200)
+    response.headers['Content-Type'] = 'text/html'
     create_session_cookie(response, session_id)
 
     return response

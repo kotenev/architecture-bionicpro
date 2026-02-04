@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
 interface User {
   sub?: string;
@@ -12,20 +12,37 @@ interface User {
 interface AuthContextType {
   authenticated: boolean;
   initialized: boolean;
+  isNewSession: boolean;
+  sessionCreatedAt: number | null;
   user: User | null;
   login: () => void;
   logout: () => Promise<void>;
   fetchWithAuth: (url: string, options?: RequestInit) => Promise<Response>;
+  clearNewSessionFlag: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AUTH_URL = process.env.REACT_APP_AUTH_URL || 'http://localhost:8000';
 
+// Time window (ms) during which we consider the session "new" and suppress "Session expired" errors
+const NEW_SESSION_WINDOW_MS = 30000; // 30 seconds
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [isNewSession, setIsNewSession] = useState(false);
+  const [sessionCreatedAt, setSessionCreatedAt] = useState<number | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const newSessionTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const clearNewSessionFlag = useCallback(() => {
+    // Only clear if not within the new session window
+    if (sessionCreatedAt && Date.now() - sessionCreatedAt < NEW_SESSION_WINDOW_MS) {
+      return; // Don't clear yet - still in new session window
+    }
+    setIsNewSession(false);
+  }, [sessionCreatedAt]);
 
   const checkSession = useCallback(async () => {
     try {
@@ -67,16 +84,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('OAuth error:', errorParam);
       setAuthenticated(false);
       setUser(null);
+      setIsNewSession(false);
+      setSessionCreatedAt(null);
       setInitialized(true);
     } else if (authParam === 'success') {
+      // Mark this as a new session (just logged in)
+      const now = Date.now();
+      setIsNewSession(true);
+      setSessionCreatedAt(now);
+
+      // Auto-clear new session flag after the window expires
+      if (newSessionTimerRef.current) {
+        clearTimeout(newSessionTimerRef.current);
+      }
+      newSessionTimerRef.current = setTimeout(() => {
+        setIsNewSession(false);
+      }, NEW_SESSION_WINDOW_MS);
+
       // Give the cookie time to be set, then check session
       setTimeout(() => {
         checkSession();
       }, 100);
     } else {
-      // Normal session check
+      // Normal session check (not a new login)
       checkSession();
     }
+
+    // Cleanup timer on unmount
+    return () => {
+      if (newSessionTimerRef.current) {
+        clearTimeout(newSessionTimerRef.current);
+      }
+    };
   }, [checkSession]);
 
   const login = () => {
@@ -111,10 +150,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         authenticated,
         initialized,
+        isNewSession,
+        sessionCreatedAt,
         user,
         login,
         logout,
-        fetchWithAuth
+        fetchWithAuth,
+        clearNewSessionFlag
       }}
     >
       {children}

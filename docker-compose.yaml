@@ -50,8 +50,8 @@ services:
       KC_DB_USERNAME: keycloak_user
       KC_DB_PASSWORD: keycloak_password
       # Yandex ID OAuth credentials (получите на https://oauth.yandex.ru/)
-      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID:-your-yandex-client-id}
-      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET:-your-yandex-client-secret}
+      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID:-}
+      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET:-}
     command:
       - start-dev
       - --import-realm
@@ -111,14 +111,14 @@ services:
       FRONTEND_URL: http://localhost:3000
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your-fernet-key-must-be-32-bytes-long}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-}
       SECURE_COOKIES: "false"
       DEBUG: "false"
       # PostgreSQL for user profiles
       DATABASE_URL: postgresql://bionicpro_user:bionicpro_password@bionicpro_db:5432/bionicpro_db
       # Yandex ID credentials (for fetching additional profile data)
-      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID:-your-yandex-client-id}
-      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET:-your-yandex-client-secret}
+      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID:-}
+      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET:-}
       # Reports Service URL for proxy
       REPORTS_SERVICE_URL: http://reports-service:8001
     depends_on:
@@ -208,6 +208,30 @@ services:
       timeout: 5s
       retries: 5
 
+  # ClickHouse Init - инициализация схемы и демо-данных
+  clickhouse-init:
+    image: clickhouse/clickhouse-server:24.1
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+    volumes:
+      - ./clickhouse/init:/docker-entrypoint-initdb.d:ro
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        echo "Checking if ClickHouse database 'reports' exists..."
+        DB_EXISTS=$$(clickhouse-client --host clickhouse --query "SELECT count() FROM system.databases WHERE name = 'reports'" 2>/dev/null || echo "0")
+
+        if [ "$$DB_EXISTS" = "0" ]; then
+          echo "Database 'reports' does not exist. Initializing..."
+          clickhouse-client --host clickhouse --queries-file /docker-entrypoint-initdb.d/01_init_schema.sql
+          clickhouse-client --host clickhouse --queries-file /docker-entrypoint-initdb.d/02_cdc_kafka_tables.sql
+          echo "ClickHouse initialization complete!"
+        else
+          echo "Database 'reports' already exists. Skipping initialization."
+        fi
+
   # Airflow PostgreSQL - база метаданных Airflow
   airflow_db:
     image: postgres:14
@@ -232,7 +256,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-your-fernet-key-must-be-32-bytes-long}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-}
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       _AIRFLOW_DB_MIGRATE: 'true'
       _AIRFLOW_WWW_USER_CREATE: 'true'
@@ -263,7 +287,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-your-fernet-key-must-be-32-bytes-long}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-}
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
     command: webserver
@@ -283,6 +307,8 @@ services:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
+      clickhouse-init:
+        condition: service_completed_successfully
 
   # Airflow Scheduler - планировщик DAG
   airflow-scheduler:
@@ -292,7 +318,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-your-fernet-key-must-be-32-bytes-long}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-}
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     command: scheduler
     healthcheck:
@@ -310,6 +336,8 @@ services:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
+      clickhouse-init:
+        condition: service_completed_successfully
 
   # Airflow Connections Init - создание connections после запуска
   airflow-connections:
@@ -320,7 +348,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-your-fernet-key-must-be-32-bytes-long}
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:-}
     entrypoint: /bin/bash
     command:
       - -c
@@ -399,7 +427,7 @@ services:
       # Auth
       KEYCLOAK_URL: http://keycloak:8080
       KEYCLOAK_REALM: reports-realm
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-your-jwt-secret-key-change-in-production}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-}
       AUTH_SERVICE_URL: http://bionicpro-auth:8000
       # CORS
       ALLOWED_ORIGINS: '["http://localhost:3000", "http://localhost:8000"]'
@@ -427,6 +455,8 @@ services:
     depends_on:
       clickhouse:
         condition: service_healthy
+      clickhouse-init:
+        condition: service_completed_successfully
       redis:
         condition: service_started
       minio:

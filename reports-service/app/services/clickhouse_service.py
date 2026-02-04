@@ -78,22 +78,24 @@ class ClickHouseService:
         customer_name, prosthesis_model, total_reports, first_date, last_date = info_result[0]
 
         # Get report summaries
-        reports_query = """
+        # Note: LIMIT and OFFSET cannot be parameterized in clickhouse-driver
+        # Using f-string is safe here since limit/offset are always integers
+        reports_query = f"""
             SELECT
                 report_date,
                 sum(movements_count) AS total_movements,
                 sum(error_count) AS total_errors,
-                count() AS active_hours
+                count(DISTINCT report_hour) AS active_hours
             FROM user_prosthesis_stats
             WHERE user_id = %(user_id)s
             GROUP BY report_date
             ORDER BY report_date DESC
-            LIMIT %(limit)s OFFSET %(offset)s
+            LIMIT {limit} OFFSET {offset}
         """
 
         reports_result = client.execute(
             reports_query,
-            {"user_id": user_id, "limit": limit, "offset": offset}
+            {"user_id": user_id}
         )
 
         reports = [
@@ -156,7 +158,7 @@ class ClickHouseService:
                 min(min_battery_level) AS min_battery_level,
                 max(max_actuator_temp) AS max_actuator_temp,
                 sum(error_count) AS total_errors,
-                count() AS active_hours
+                count(DISTINCT report_hour) AS active_hours
             FROM user_prosthesis_stats
             WHERE user_id = %(user_id)s
               AND report_date = %(report_date)s
