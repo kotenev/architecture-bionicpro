@@ -4,68 +4,205 @@
 
 BionicPRO is a Russian company that produces and sells bionic prosthetics. This project implements a comprehensive architecture solution for managing user authentication, data collection from prosthetic devices, and generating reports. The system addresses security vulnerabilities discovered after a previous breach and implements enhanced data privacy controls.
 
-## Security Configuration
+## Table of Contents
 
-### Environment Variables Setup
+- [Quick Start](#quick-start)
+- [Environment Configuration](#environment-configuration)
+- [Service Architecture](#architecture-components)
+- [Deployment Guide](#detailed-deployment-guide)
+- [Troubleshooting](#troubleshooting)
 
-Before running the application, you need to set up the environment variables:
+## Quick Start
 
-1. Copy the example environment file:
-   ```bash
-   cp .env.example .env
-   ```
+```bash
+# 1. Clone repository
+git clone <repository-url>
+cd architecture-bionicpro
 
-2. Edit the `.env` file to add your actual values:
-   ```bash
-   # Generate a new Fernet key for Airflow
-   python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
-   ```
+# 2. Configure environment (see detailed instructions below)
+cp .env.example .env
+# Edit .env and set required values
 
-3. Update the `.env` file with your generated key and other credentials.
+# 3. Start all services
+docker-compose up -d
 
-### Important Security Notes
+# 4. Wait for initialization (2-3 minutes)
+docker-compose logs -f airflow-etl-trigger
 
-- The `AIRFLOW__CORE__FERNET_KEY` is used to encrypt sensitive data in Airflow, such as connection passwords.
-- Never commit the `.env` file to the repository. It's already included in `.gitignore`.
-- For production deployments, use a secrets management system (HashiCorp Vault, AWS Secrets Manager, etc.).
+# 5. Access the application
+open http://localhost:3000
+```
+
+## Environment Configuration
+
+### Step 1: Create Environment File
+
+```bash
+cp .env.example .env
+```
+
+### Step 2: Generate Required Secrets
+
+The system requires three secret keys to be configured in `.env`:
+
+#### 2.1 Generate Airflow Fernet Key
+
+Used to encrypt sensitive data in Airflow (connections, variables).
+
+```bash
+python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+Add the output to `.env`:
+```bash
+AIRFLOW_FERNET_KEY=<generated-key>
+```
+
+#### 2.2 Generate BFF Encryption Key
+
+Used to encrypt OAuth tokens stored in Redis.
+
+```bash
+python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+Add the output to `.env`:
+```bash
+ENCRYPTION_KEY=<generated-key>
+```
+
+#### 2.3 Generate JWT Secret Key
+
+Used for signing/verifying JWT tokens in Reports Service.
+
+```bash
+python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+# Or: openssl rand -base64 32
+```
+
+Add the output to `.env`:
+```bash
+JWT_SECRET_KEY=<generated-key>
+```
+
+### Step 3: (Optional) Configure Yandex ID
+
+For external identity provider integration:
+
+1. Register application at https://oauth.yandex.ru/
+2. Set Callback URL: `http://localhost:8080/realms/reports-realm/broker/yandex/endpoint`
+3. Add credentials to `.env`:
+
+```bash
+YANDEX_CLIENT_ID=<your-client-id>
+YANDEX_CLIENT_SECRET=<your-client-secret>
+```
+
+### Complete .env Example
+
+```bash
+# Required
+AIRFLOW_FERNET_KEY=Wv1Qp3R5t7Y9uBdEfGhJkLmNoP2sUwXz4a6C8i0qR1s=
+ENCRYPTION_KEY=kL3mN5pQ7rS9tV1xZ3bD5fH7jL9nP1sU3wY5a7c9e1g=
+JWT_SECRET_KEY=your-secure-jwt-secret-key-here-32chars
+
+# Optional
+YANDEX_CLIENT_ID=
+YANDEX_CLIENT_SECRET=
+```
+
+### Security Notes
+
+- **Never commit `.env` to version control** (already in `.gitignore`)
+- For production, use secrets management (HashiCorp Vault, AWS Secrets Manager, etc.)
+- Rotate keys periodically in production environments
+- Each key must be unique - do not reuse the same key for different purposes
+
+## Prerequisites
+
+- Docker Engine 20.10+
+- Docker Compose 2.0+
+- 8GB RAM minimum (16GB recommended)
+- 20GB free disk space
+- Python 3.8+ (only for generating keys)
 
 ## Running the Application
 
-### Prerequisites
-- Docker and Docker Compose
-- Python 3.8+
+### Full Stack Deployment
 
-### Setup Instructions
+```bash
+# Start all services
+docker-compose up -d
 
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd architecture-bionicpro
-   ```
+# Monitor initialization
+docker-compose logs -f airflow-etl-trigger
 
-2. Set up environment variables (see above)
+# Verify all services are running
+docker-compose ps
+```
 
-3. Build and start the services:
-   ```bash
-   docker-compose up -d
-   ```
+### Verify Services Health
 
-4. **Wait for initial setup** (~2-3 minutes):
-   - All services will initialize automatically
-   - ETL pipeline will run automatically to populate demo reports
-   - Check progress: `docker-compose logs -f airflow-etl-trigger`
+```bash
+# Keycloak
+curl -s http://localhost:8080/health/ready | jq .
 
-5. Access the services:
-   - **Frontend**: http://localhost:3000 (Login with test users to see reports)
-   - Keycloak Admin: http://localhost:8080 (admin/admin)
-   - Airflow UI: http://localhost:8081 (admin/admin)
-   - Reports API: http://localhost:8001/health
-   - ClickHouse HTTP: http://localhost:8123
+# Airflow
+curl -s http://localhost:8081/health | jq .
 
-6. **Test Users** (for frontend login):
-   - Username: `ivan.petrov` | Password: `password123` (has prosthesis reports)
-   - Username: `john.mueller` | Password: `password123` (has prosthesis reports)
-   - Username: `alexey.kozlov` | Password: `password123` (administrator)
+# Reports Service
+curl -s http://localhost:8001/health/live | jq .
+
+# ClickHouse
+curl -s "http://localhost:8123/?query=SELECT%201"
+
+# Debezium CDC
+curl -s http://localhost:8083/connectors | jq .
+```
+
+### Access Web Interfaces
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| **Frontend** | http://localhost:3000 | LDAP users (see below) |
+| Keycloak Admin | http://localhost:8080/admin | admin / admin |
+| Airflow UI | http://localhost:8081 | admin / admin |
+| MinIO Console | http://localhost:9001 | minioadmin / minioadmin123 |
+| Kafka UI | http://localhost:8084 | - |
+| Reports API Docs | http://localhost:8001/docs | - |
+
+### Test Users (LDAP)
+
+All passwords: `password123`
+
+| Username | Role | Description |
+|----------|------|-------------|
+| ivan.petrov | prothetic_user | Has prosthesis reports |
+| john.mueller | prothetic_user | Has prosthesis reports |
+| maria.sidorova | user | Regular user |
+| anna.schmidt | user | Regular user |
+| alexey.kozlov | administrator | Admin access |
+
+### Stopping Services
+
+```bash
+# Stop all services (preserves data)
+docker-compose down
+
+# Stop and remove all data (clean start)
+./scripts/clean.sh
+```
+
+### Regenerating Demo Data
+
+```bash
+# Regenerate reports for all test users (7 days of data)
+docker-compose exec clickhouse clickhouse-client \
+  --queries-file /docker-entrypoint-initdb.d/03_regenerate_demo_data.sql
+
+# Trigger ETL to refresh
+docker-compose exec airflow-webserver airflow dags trigger bionicpro_reports_etl
+```
 
 ## Architecture Components
 
@@ -444,59 +581,115 @@ See: `diagrams/(TO-BE) BionicPRO_C4_container_CDC_Architecture_Task4.puml`
 
 ## Full Stack Deployment
 
-To deploy all components at once:
+For complete setup instructions, see [Environment Configuration](#environment-configuration) and [Running the Application](#running-the-application) sections above.
+
+### Quick Reference Commands
 
 ```bash
-# 1. Set environment variables
-cp .env.example .env
-# Edit .env with your values
-
-# 2. Start all services
+# Full system start
 docker-compose up -d
 
-# 3. Wait for initialization (2-3 minutes)
-sleep 180
+# View all logs
+docker-compose logs -f
 
-# 4. Verify all services
+# View specific service logs
+docker-compose logs -f reports-service
+
+# Check service status
 docker-compose ps
 
-# 5. Run initial ETL
-docker-compose exec airflow-webserver airflow dags trigger bionicpro_reports_etl
+# Restart a service
+docker-compose restart reports-service
+
+# Scale down unused services (e.g., disable CDC)
+docker-compose stop debezium kafka zookeeper kafka-ui
 ```
 
 ## Service Ports Summary
 
-| Service | Port | Description |
-|---------|------|-------------|
-| Frontend | 3000 | React application |
-| bionicpro-auth | 8000 | BFF authentication service |
-| Reports Service | 8001 | Reports REST API |
-| Nginx CDN | 8002 | CDN reverse proxy |
-| Keycloak | 8080 | Identity management |
-| Airflow | 8081 | ETL orchestration |
-| Debezium | 8083 | CDC connector |
-| Kafka UI | 8084 | Kafka monitoring |
-| ClickHouse HTTP | 8123 | OLAP database |
-| MinIO Console | 9001 | S3 storage UI |
-| MinIO S3 API | 9002 | S3 API endpoint |
-| Kafka | 9092 | Message broker |
-| LDAP | 389 | Directory service |
+| Service | Port | Description | Health Check |
+|---------|------|-------------|--------------|
+| Frontend | 3000 | React SPA | http://localhost:3000 |
+| BFF Auth | 8000 | Token management | http://localhost:8000/health |
+| Reports Service | 8001 | Reports REST API | http://localhost:8001/health/live |
+| Nginx CDN | 8002 | S3 caching proxy | http://localhost:8002/health |
+| Keycloak | 8080 | Identity provider | http://localhost:8080/health/ready |
+| Airflow | 8081 | ETL orchestration | http://localhost:8081/health |
+| Debezium | 8083 | CDC connector | http://localhost:8083/connectors |
+| Kafka UI | 8084 | Kafka monitoring | http://localhost:8084 |
+| ClickHouse HTTP | 8123 | OLAP database | http://localhost:8123/?query=SELECT%201 |
+| MinIO Console | 9001 | S3 storage UI | http://localhost:9001 |
+| MinIO S3 API | 9002 | S3 API endpoint | http://localhost:9002/minio/health/live |
+| Kafka | 9092 | Message broker | - |
+| ClickHouse Native | 9000 | ClickHouse TCP | - |
+| LDAP | 389 | Directory service | - |
+
+### Database Ports (for debugging)
+
+| Database | Port | Connection String |
+|----------|------|-------------------|
+| Keycloak DB | 5433 | `postgresql://keycloak_user:keycloak_password@localhost:5433/keycloak_db` |
+| BionicPRO DB | 5434 | `postgresql://bionicpro_user:bionicpro_password@localhost:5434/bionicpro_db` |
+| CRM DB | 5435 | `postgresql://crm_user:crm_password@localhost:5435/crm_db` |
+| Telemetry DB | 5436 | `postgresql://telemetry_user:telemetry_password@localhost:5436/telemetry_db` |
 
 ## Troubleshooting
 
-### Keycloak not starting
+### Environment Variables Not Set
+
+**Symptom**: Services fail to start or show encryption errors.
+
+```bash
+# Verify .env file exists and has values
+cat .env
+
+# Check if variables are loaded (should show your values)
+docker-compose config | grep -E "AIRFLOW_FERNET_KEY|ENCRYPTION_KEY|JWT_SECRET_KEY"
+```
+
+**Fix**: Ensure all required variables are set in `.env` file (see [Environment Configuration](#environment-configuration)).
+
+### Keycloak Not Starting
+
 ```bash
 # Check logs
 docker-compose logs keycloak
 
-# Ensure keycloak-db is running
-docker-compose up -d keycloak-db
+# Common issues:
+# 1. Database not ready - wait for keycloak_db
+docker-compose up -d keycloak_db
 sleep 30
 docker-compose up -d keycloak
+
+# 2. Port 8080 already in use
+lsof -i :8080
+# Kill conflicting process or change port in docker-compose.yaml
 ```
 
-### Debezium connector not registering
+### Authentication Errors
+
+**Symptom**: "Invalid token" or "Token validation failed" errors.
+
 ```bash
+# 1. Verify Keycloak is running
+curl -s http://localhost:8080/health/ready
+
+# 2. Check BFF can reach Keycloak
+docker-compose logs bionicpro-auth | grep -i error
+
+# 3. Verify realm configuration
+curl -s http://localhost:8080/realms/reports-realm/.well-known/openid-configuration | jq .
+
+# 4. Clear Redis session cache
+docker-compose exec redis redis-cli FLUSHALL
+```
+
+### Debezium Connector Not Registering
+
+```bash
+# Check Debezium logs
+docker-compose logs debezium
+
 # Re-run initialization
 docker-compose restart debezium-init
 
@@ -504,28 +697,98 @@ docker-compose restart debezium-init
 curl -X POST -H "Content-Type: application/json" \
   --data @debezium/crm-connector.json \
   http://localhost:8083/connectors
+
+# Check connector status
+curl -s http://localhost:8083/connectors/crm-connector/status | jq .
 ```
 
-### ClickHouse CDC tables empty
+### ClickHouse CDC Tables Empty
+
 ```bash
-# Check Kafka topics have data
+# 1. Check Kafka topics have data
 docker-compose exec kafka kafka-console-consumer \
   --bootstrap-server localhost:9092 \
   --topic crm.crm.customers \
   --from-beginning --max-messages 1
 
-# Verify KafkaEngine is consuming
+# 2. Verify KafkaEngine is consuming
 curl "http://localhost:8123/" -d "SELECT * FROM system.kafka_consumers"
+
+# 3. Check CDC tables
+curl "http://localhost:8123/" -d "SELECT count() FROM reports.crm_customers"
 ```
 
-### Airflow DAG not running
+### Airflow DAG Not Running
+
 ```bash
 # Check DAG status
 docker-compose exec airflow-webserver airflow dags list
+
+# Check if DAG is paused
+docker-compose exec airflow-webserver airflow dags unpause bionicpro_reports_etl
 
 # Trigger manually
 docker-compose exec airflow-webserver airflow dags trigger bionicpro_reports_etl
 
 # Check task logs
 docker-compose logs airflow-scheduler
+docker-compose exec airflow-webserver airflow tasks list bionicpro_reports_etl
+```
+
+### No Reports Displayed in Frontend
+
+```bash
+# 1. Check ClickHouse has data
+curl "http://localhost:8123/" -d "SELECT count() FROM reports.user_prosthesis_stats"
+
+# 2. If empty, regenerate demo data
+docker-compose exec clickhouse clickhouse-client \
+  --queries-file /docker-entrypoint-initdb.d/03_regenerate_demo_data.sql
+
+# 3. Trigger ETL
+docker-compose exec airflow-webserver airflow dags trigger bionicpro_reports_etl
+
+# 4. Check Reports Service logs
+docker-compose logs reports-service | tail -50
+```
+
+### Container Memory Issues
+
+```bash
+# Check memory usage
+docker stats --no-stream
+
+# If containers are OOM killed, increase Docker memory limit
+# Docker Desktop: Preferences > Resources > Memory (set to 8GB+)
+
+# Or reduce memory by stopping unused services
+docker-compose stop kafka-ui  # Optional monitoring service
+```
+
+### Clean Restart (Reset All Data)
+
+```bash
+# Stop all containers and remove data volumes
+./scripts/clean.sh
+
+# Or manually:
+docker-compose down -v
+rm -rf ./postgres-*-data ./clickhouse-data ./minio-data ./redis-data ./ldap-*
+docker-compose up -d
+```
+
+### Viewing Detailed Logs
+
+```bash
+# All services
+docker-compose logs -f
+
+# Specific service with timestamps
+docker-compose logs -f --timestamps reports-service
+
+# Last 100 lines
+docker-compose logs --tail=100 airflow-scheduler
+
+# Save logs to file
+docker-compose logs > logs.txt 2>&1
 ```
