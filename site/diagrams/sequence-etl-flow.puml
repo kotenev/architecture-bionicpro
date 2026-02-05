@@ -1,0 +1,86 @@
+@startuml BionicPRO_Sequence_ETL_Flow
+!theme plain
+
+title BionicPRO - ETL Pipeline Flow
+
+participant "Airflow\nScheduler" as Sched
+participant "Airflow\nExecutor" as Exec
+participant "CRM DB\n(PostgreSQL)" as CRM
+participant "Telemetry DB\n(PostgreSQL)" as TEL
+participant "ClickHouse\nOLAP" as CH
+participant "Reports\nService" as RS
+
+== DAG Trigger (every 15 minutes) ==
+
+Sched -> Sched: Check DAG schedule\nbionicpro_reports_etl
+
+Sched -> Exec: Submit DAG run
+
+== Task 1 & 2: Parallel Extract ==
+
+par Extract CRM Data
+    Exec -> CRM: SELECT customers, prostheses, models\nWHERE updated_at >= NOW() - 7 days
+
+    CRM --> Exec: CRM DataFrame\n(customers joined with prostheses)
+and Extract Telemetry Data
+    Exec -> TEL: SELECT chip_id, DATE_TRUNC('hour', event_time),\nCOUNT(*), AVG(response_time), ...\nGROUP BY chip_id, hour\nWHERE event_time >= NOW() - 7 days
+
+    TEL --> Exec: Telemetry DataFrame\n(hourly aggregates)
+end
+
+Exec -> Exec: Store in XCom:\n- crm_data\n- telemetry_data
+
+== Task 3: Transform ==
+
+Exec -> Exec: Pull from XCom:\n- crm_data\n- telemetry_data
+
+Exec -> Exec: JOIN on chip_id
+
+note right of Exec
+  Transformations:
+  1. JOIN crm_data с telemetry_data by chip_id
+  2. Calculate error_rate = error_count / movements_count
+  3. Add date column from hour
+  4. Rename columns to match target schema
+  5. Validate data types
+end note
+
+Exec -> Exec: Store transformed_data in XCom
+
+== Task 4: Load ==
+
+Exec -> Exec: Pull transformed_data from XCom
+
+Exec -> CH: INSERT INTO reports.user_prosthesis_stats\n(batch insert)
+
+CH --> Exec: Rows inserted
+
+Exec -> Exec: Collect affected user_ids
+
+Exec -> Exec: Store user_ids in XCom
+
+== Task 5: Invalidate Cache ==
+
+Exec -> Exec: Pull user_ids from XCom
+
+loop for each user_id
+    Exec -> RS: POST /api/reports/invalidate\n{ "user_id": "{user_id}" }
+    RS --> Exec: 200 OK
+end
+
+Exec -> Sched: DAG run completed
+
+== Error Handling ==
+
+alt Task Failure
+    Exec -> Exec: Task failed
+
+    Exec -> Exec: Retry (max 3 times)\nwith 5 min delay
+
+    alt All retries failed
+        Exec -> Sched: Mark task as FAILED
+        Sched -> Sched: Send alert\n(email/Slack)
+    end
+end
+
+@enduml

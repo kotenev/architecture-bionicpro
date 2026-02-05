@@ -1,0 +1,78 @@
+@startuml BionicPRO_Sequence_Auth_Flow
+!theme plain
+
+title BionicPRO - Authentication Flow (OAuth2 PKCE)
+
+actor User
+participant "Frontend\n(React)" as FE
+participant "BFF Auth\n(Flask)" as BFF
+participant "Redis" as Redis
+participant "Keycloak" as KC
+participant "LDAP" as LDAP
+
+== Login Initiation ==
+
+User -> FE: Click "Login"
+FE -> BFF: GET /auth/login
+
+BFF -> BFF: Generate PKCE:\n- code_verifier (random)\n- code_challenge = SHA256(verifier)
+BFF -> Redis: Store code_verifier\nwith state key
+BFF --> FE: 302 Redirect to Keycloak\n+ code_challenge (S256)
+
+== Keycloak Authentication ==
+
+FE -> KC: Authorization Request\n+ code_challenge
+KC -> KC: Show login form
+User -> KC: Enter credentials
+
+KC -> LDAP: Validate credentials
+LDAP --> KC: User found + attributes
+
+alt MFA Required
+    KC -> KC: Show TOTP form
+    User -> KC: Enter TOTP code
+    KC -> KC: Validate TOTP
+end
+
+KC --> FE: 302 Redirect to callback\n+ authorization_code
+
+== Token Exchange ==
+
+FE -> BFF: GET /auth/callback\n?code=xxx&state=yyy
+
+BFF -> Redis: Get code_verifier\nby state
+Redis --> BFF: code_verifier
+
+BFF -> KC: POST /token\n+ code + code_verifier
+KC -> KC: Validate PKCE:\nSHA256(verifier) == challenge
+KC --> BFF: access_token + refresh_token
+
+BFF -> BFF: Encrypt tokens\n(Fernet)
+BFF -> Redis: Store encrypted tokens\n+ user_info
+BFF -> BFF: Generate session_id
+
+BFF --> FE: 302 Redirect to frontend\nSet-Cookie: session_id\n(HttpOnly, Secure, SameSite)
+
+== Authenticated Request ==
+
+User -> FE: View reports
+FE -> BFF: GET /api/reports\nCookie: session_id
+
+BFF -> Redis: Get session\nby session_id
+Redis --> BFF: encrypted tokens + user_info
+
+BFF -> BFF: Decrypt access_token
+
+alt Token Expired
+    BFF -> KC: POST /token\n+ refresh_token
+    KC --> BFF: new access_token
+    BFF -> BFF: Encrypt new token
+    BFF -> Redis: Update tokens
+end
+
+BFF -> "Reports\nService" as RS: GET /api/reports\nAuthorization: Bearer {token}
+RS --> BFF: Reports data
+BFF --> FE: Reports JSON
+FE --> User: Display reports
+
+@enduml

@@ -1,0 +1,95 @@
+@startuml BionicPRO_Sequence_Reports_Flow
+!theme plain
+
+title BionicPRO - Reports Flow with CDN Caching
+
+actor User
+participant "Frontend\n(React)" as FE
+participant "BFF Auth\n(Flask)" as BFF
+participant "Reports Service\n(FastAPI)" as RS
+participant "Redis\nCache" as Redis
+participant "ClickHouse\nOLAP" as CH
+participant "MinIO\nS3" as S3
+participant "Nginx\nCDN" as CDN
+
+== Request Report via CDN ==
+
+User -> FE: View daily report\n(2024-01-15)
+FE -> BFF: GET /api/reports/cdn/2024-01-15\nCookie: session_id
+
+BFF -> BFF: Validate session\nGet access_token
+
+BFF -> RS: GET /api/reports/cdn/2024-01-15\nAuthorization: Bearer {token}
+
+RS -> RS: Validate JWT\nExtract user_id
+
+RS -> S3: HEAD {user_id}/daily/2024-01-15/report.json
+
+alt Cache HIT (S3 has report)
+    S3 --> RS: 200 OK (exists)
+    RS -> RS: Generate CDN URL
+    RS --> BFF: { "cdn_url": "http://cdn/reports/..." }
+    BFF --> FE: CDN URL
+
+    FE -> CDN: GET /reports/{user_id}/daily/2024-01-15/report.json
+
+    alt CDN Cache HIT
+        CDN --> FE: Report JSON\nX-Cache-Status: HIT
+    else CDN Cache MISS
+        CDN -> S3: GET object
+        S3 --> CDN: Report JSON
+        CDN -> CDN: Store in cache\n(TTL 5min)
+        CDN --> FE: Report JSON\nX-Cache-Status: MISS
+    end
+
+else Cache MISS (S3 doesn't have report)
+    S3 --> RS: 404 Not Found
+
+    RS -> CH: SELECT from user_prosthesis_stats\nWHERE ldap_username = ? AND date = ?
+    CH --> RS: Report data
+
+    RS -> RS: Generate JSON report
+
+    RS -> S3: PUT {user_id}/daily/2024-01-15/report.json
+    S3 --> RS: 200 OK
+
+    RS -> RS: Generate CDN URL
+    RS --> BFF: { "cdn_url": "http://cdn/reports/..." }
+    BFF --> FE: CDN URL
+
+    FE -> CDN: GET /reports/{user_id}/daily/2024-01-15/report.json
+    CDN -> S3: GET object
+    S3 --> CDN: Report JSON
+    CDN --> FE: Report JSON\nX-Cache-Status: MISS
+end
+
+FE --> User: Display report
+
+== Cache Invalidation (after ETL) ==
+
+participant "Airflow\nETL" as AF
+
+AF -> AF: ETL completed\nUpdated user_ids: [u1, u2, u3]
+
+loop for each user_id
+    AF -> RS: POST /api/reports/invalidate\n{ "user_id": "u1" }
+
+    RS -> S3: DELETE {user_id}/list/*
+    RS -> S3: DELETE {user_id}/summary/*
+    RS -> S3: DELETE {user_id}/daily/*
+
+    RS -> Redis: DEL report:{user_id}:*
+
+    RS --> AF: { "status": "invalidated" }
+end
+
+note right of CDN
+  CDN cache will expire
+  by TTL (5 minutes)
+
+  Next request will
+  fetch fresh data
+  from S3
+end note
+
+@enduml

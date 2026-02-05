@@ -1,0 +1,186 @@
+@startuml BionicPRO_C4_Level4_BFF_Classes
+!theme plain
+
+title BionicPRO - C4 Level 4: BFF Auth Service Class Diagram
+
+package "bionicpro-auth" {
+
+    package "Controllers" {
+        class AuthController {
+            - pkce_service: PKCEService
+            - token_service: TokenService
+            - session_service: SessionService
+            --
+            + login(): Response
+            + callback(code: str, state: str): Response
+            + logout(): Response
+            + me(): Response
+        }
+
+        class ProxyController {
+            - session_service: SessionService
+            - token_service: TokenService
+            --
+            + proxy_request(path: str): Response
+        }
+
+        class HealthController {
+            - redis_client: RedisClient
+            - keycloak_client: KeycloakClient
+            --
+            + health(): Response
+            + ready(): Response
+        }
+    }
+
+    package "Services" {
+        class PKCEService {
+            --
+            + generate_verifier(): str
+            + generate_challenge(verifier: str): str
+            + validate_challenge(verifier: str, challenge: str): bool
+        }
+
+        class TokenService {
+            - keycloak_client: KeycloakClient
+            - redis_client: RedisClient
+            - encryption: EncryptionService
+            --
+            + exchange_code(code: str, verifier: str): TokenPair
+            + refresh_tokens(session_id: str): TokenPair
+            + get_access_token(session_id: str): str
+            + store_tokens(session_id: str, tokens: TokenPair): void
+            + revoke_tokens(session_id: str): void
+        }
+
+        class SessionService {
+            - redis_client: RedisClient
+            --
+            + create_session(user_info: UserInfo): str
+            + get_session(session_id: str): Session
+            + validate_session(session_id: str): bool
+            + rotate_session_id(old_id: str): str
+            + destroy_session(session_id: str): void
+        }
+
+        class EncryptionService {
+            - fernet: Fernet
+            --
+            + encrypt(plaintext: str): str
+            + decrypt(ciphertext: str): str
+        }
+    }
+
+    package "Clients" {
+        class KeycloakClient {
+            - base_url: str
+            - realm: str
+            - client_id: str
+            --
+            + get_auth_url(state: str, challenge: str): str
+            + exchange_code(code: str, verifier: str): TokenResponse
+            + refresh_token(refresh_token: str): TokenResponse
+            + get_user_info(access_token: str): UserInfo
+            + logout(refresh_token: str): void
+            + get_public_key(): RSAPublicKey
+        }
+
+        class RedisClient {
+            - connection: Redis
+            - prefix: str
+            --
+            + set(key: str, value: str, ttl: int): void
+            + get(key: str): Optional[str]
+            + delete(key: str): void
+            + exists(key: str): bool
+            + set_json(key: str, data: dict, ttl: int): void
+            + get_json(key: str): Optional[dict]
+        }
+    }
+
+    package "Models" {
+        class TokenPair {
+            + access_token: str
+            + refresh_token: str
+            + expires_in: int
+            + token_type: str
+        }
+
+        class Session {
+            + session_id: str
+            + user_info: UserInfo
+            + created_at: datetime
+            + expires_at: datetime
+        }
+
+        class UserInfo {
+            + sub: str
+            + preferred_username: str
+            + email: str
+            + name: str
+            + roles: List[str]
+            + groups: List[str]
+        }
+    }
+
+    package "Middleware" {
+        class SessionMiddleware {
+            - session_service: SessionService
+            --
+            + before_request(): void
+            + after_request(response: Response): Response
+        }
+
+        class SecurityHeadersMiddleware {
+            --
+            + after_request(response: Response): Response
+        }
+
+        class CORSMiddleware {
+            - allowed_origins: List[str]
+            --
+            + after_request(response: Response): Response
+        }
+    }
+
+    package "Config" {
+        class Settings {
+            + KEYCLOAK_URL: str
+            + KEYCLOAK_PUBLIC_URL: str
+            + KEYCLOAK_REALM: str
+            + CLIENT_ID: str
+            + REDIRECT_URI: str
+            + FRONTEND_URL: str
+            + REDIS_HOST: str
+            + REDIS_PORT: int
+            + ENCRYPTION_KEY: str
+            + SECURE_COOKIES: bool
+            + SESSION_TTL: int
+        }
+    }
+}
+
+' Relationships
+AuthController --> PKCEService
+AuthController --> TokenService
+AuthController --> SessionService
+
+ProxyController --> SessionService
+ProxyController --> TokenService
+
+TokenService --> KeycloakClient
+TokenService --> RedisClient
+TokenService --> EncryptionService
+
+SessionService --> RedisClient
+
+TokenService --> TokenPair
+SessionService --> Session
+KeycloakClient --> UserInfo
+
+SessionMiddleware --> SessionService
+
+HealthController --> RedisClient
+HealthController --> KeycloakClient
+
+@enduml

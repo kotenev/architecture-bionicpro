@@ -1,0 +1,112 @@
+@startuml BionicPRO_Sequence_CDC_Flow
+!theme plain
+
+title BionicPRO - CDC Data Flow (Debezium → Kafka → ClickHouse)
+
+participant "CRM\nPostgreSQL" as CRM
+participant "WAL\n(Logical)" as WAL
+participant "Debezium\nConnector" as DBZ
+participant "Kafka\nBroker" as KFK
+participant "ClickHouse\nKafkaEngine" as KE
+participant "Materialized\nView" as MV
+participant "Target Table\n(ReplacingMergeTree)" as TT
+
+== Data Change in CRM ==
+
+CRM -> CRM: INSERT INTO crm.customers\n(id, name, email, ldap_username)
+
+CRM -> WAL: Write to WAL\n(wal_level=logical)
+
+== Debezium Capture ==
+
+WAL -> DBZ: Stream WAL events\n(Logical Replication)
+
+DBZ -> DBZ: Parse PostgreSQL\nlogical decoding
+
+DBZ -> DBZ: Apply SMT:\nExtractNewRecordState
+
+note right of DBZ
+  Debezium Event:
+  {
+    "id": "uuid",
+    "name": "Ivan Petrov",
+    "email": "ivan@...",
+    "__op": "c",
+    "__source_ts_ms": 1704067200000
+  }
+end note
+
+DBZ -> KFK: Publish to topic\ncrm.crm.customers
+
+== Kafka to ClickHouse ==
+
+KFK -> KE: KafkaEngine polls\n(consumer group)
+
+KE -> KE: Deserialize JSON
+
+KE -> MV: Trigger Materialized View
+
+MV -> MV: Transform:\n- Extract fields from JSON\n- Set _version = __source_ts_ms\n- Set _deleted = (__op == 'd')
+
+MV -> TT: INSERT INTO crm_customers
+
+TT -> TT: ReplacingMergeTree\ndeduplication by _version
+
+== Update Flow ==
+
+CRM -> CRM: UPDATE crm.customers\nSET name = 'New Name'\nWHERE id = 'uuid'
+
+CRM -> WAL: Write UPDATE to WAL
+
+WAL -> DBZ: Stream update event
+
+note right of DBZ
+  Update Event:
+  {
+    "id": "uuid",
+    "name": "New Name",
+    "__op": "u",
+    "__source_ts_ms": 1704070800000
+  }
+end note
+
+DBZ -> KFK: Publish update
+
+KFK -> KE: Consume
+KE -> MV: Trigger
+MV -> TT: INSERT (new version)
+
+TT -> TT: ReplacingMergeTree:\nkeeps latest _version
+
+== Delete Flow ==
+
+CRM -> CRM: DELETE FROM crm.customers\nWHERE id = 'uuid'
+
+CRM -> WAL: Write DELETE to WAL
+
+WAL -> DBZ: Stream delete event
+
+note right of DBZ
+  Delete Event:
+  {
+    "id": "uuid",
+    "__op": "d",
+    "__source_ts_ms": 1704074400000
+  }
+end note
+
+DBZ -> KFK: Publish delete
+KFK -> KE: Consume
+KE -> MV: Trigger
+MV -> TT: INSERT with _deleted = 1
+
+note right of TT
+  Query with FINAL:
+  SELECT * FROM crm_customers FINAL
+  WHERE _deleted = 0
+
+  Returns only non-deleted,
+  latest version rows
+end note
+
+@enduml

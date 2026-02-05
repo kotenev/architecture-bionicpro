@@ -1,0 +1,691 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archimate:model xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:archimate="http://www.archimatetool.com/archimate" name="BionicPRO Architecture" id="id-bionicpro-model" version="5.0.0">
+  <folder name="Strategy" id="id-strategy" type="strategy"/>
+  <folder name="Business" id="id-business" type="business">
+    <!-- Business Actors -->
+    <element xsi:type="archimate:BusinessActor" name="Пользователь протеза" id="id-actor-prosthesis-user">
+      <documentation>Владелец бионического протеза, использует мобильное приложение для мониторинга и настройки протеза</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessActor" name="Покупатель" id="id-actor-buyer">
+      <documentation>Заказывает и оплачивает протезы через интернет-магазин</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessActor" name="Оператор CRM" id="id-actor-operator">
+      <documentation>Внутренний сотрудник, управляет заказами и клиентами</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessActor" name="ML-инженер" id="id-actor-ml-engineer">
+      <documentation>Анализирует данные телеметрии для улучшения алгоритмов управления протезом</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessActor" name="Администратор" id="id-actor-admin">
+      <documentation>Управляет системой, пользователями и безопасностью</documentation>
+    </element>
+    <!-- Business Roles -->
+    <element xsi:type="archimate:BusinessRole" name="Prothetic User Role" id="id-role-prothetic"/>
+    <element xsi:type="archimate:BusinessRole" name="User Role" id="id-role-user"/>
+    <element xsi:type="archimate:BusinessRole" name="Administrator Role" id="id-role-admin"/>
+    <!-- Business Processes -->
+    <element xsi:type="archimate:BusinessProcess" name="Просмотр отчётов" id="id-bp-view-reports">
+      <documentation>Пользователь просматривает отчёты о работе своего протеза</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessProcess" name="Настройка протеза" id="id-bp-configure-prosthesis">
+      <documentation>Пользователь настраивает параметры работы протеза</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessProcess" name="Управление заказами" id="id-bp-manage-orders">
+      <documentation>Оператор управляет заказами клиентов</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessProcess" name="Аутентификация пользователя" id="id-bp-auth">
+      <documentation>Процесс аутентификации и авторизации пользователя</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessProcess" name="Сбор телеметрии" id="id-bp-collect-telemetry">
+      <documentation>Сбор данных телеметрии с протезов</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessProcess" name="Анализ данных" id="id-bp-analyze-data">
+      <documentation>ML-инженер анализирует данные для улучшения алгоритмов</documentation>
+    </element>
+    <!-- Business Services -->
+    <element xsi:type="archimate:BusinessService" name="Сервис отчётности" id="id-bs-reports">
+      <documentation>Предоставление отчётов о работе протезов</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessService" name="Сервис аутентификации" id="id-bs-auth">
+      <documentation>Безопасная аутентификация пользователей</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessService" name="CRM сервис" id="id-bs-crm">
+      <documentation>Управление взаимоотношениями с клиентами</documentation>
+    </element>
+    <!-- Business Objects -->
+    <element xsi:type="archimate:BusinessObject" name="Отчёт о протезе" id="id-bo-report"/>
+    <element xsi:type="archimate:BusinessObject" name="Данные клиента" id="id-bo-customer-data"/>
+    <element xsi:type="archimate:BusinessObject" name="Заказ" id="id-bo-order"/>
+    <element xsi:type="archimate:BusinessObject" name="Телеметрия" id="id-bo-telemetry"/>
+  </folder>
+  <folder name="Application" id="id-application" type="application">
+    <!-- Application Components -->
+    <element xsi:type="archimate:ApplicationComponent" name="Frontend SPA" id="id-app-frontend">
+      <documentation>React 18 веб-приложение для пользователей протезов. Порт: 3000</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationComponent" name="BFF Auth Service" id="id-app-bff">
+      <documentation>Backend-for-Frontend сервис аутентификации (Flask). Реализует PKCE flow, хранит токены серверно. Порт: 8000</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationComponent" name="Reports Service" id="id-app-reports">
+      <documentation>FastAPI сервис отчётов. REST API для получения отчётов из ClickHouse. Порт: 8001</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationComponent" name="Keycloak" id="id-app-keycloak">
+      <documentation>Identity Provider. OAuth2/OIDC, User Federation с LDAP, Identity Brokering. Порт: 8080</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationComponent" name="Apache Airflow" id="id-app-airflow">
+      <documentation>ETL оркестратор. Расписание DAG, мониторинг. Порт: 8081</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationComponent" name="Debezium Connect" id="id-app-debezium">
+      <documentation>CDC коннектор для PostgreSQL. Читает WAL, публикует в Kafka. Порт: 8083</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationComponent" name="Nginx CDN" id="id-app-nginx">
+      <documentation>Reverse proxy с кэшированием отчётов. TTL 5 минут. Порт: 8002</documentation>
+    </element>
+    <!-- Application Services -->
+    <element xsi:type="archimate:ApplicationService" name="Auth API" id="id-as-auth">
+      <documentation>/auth/login, /auth/callback, /auth/logout, /auth/me</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationService" name="Reports API" id="id-as-reports">
+      <documentation>/api/reports, /api/reports/{date}, /api/reports/cdn/*</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationService" name="OAuth2 OIDC" id="id-as-oauth">
+      <documentation>OAuth2 Authorization Code + PKCE flow</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationService" name="ETL Service" id="id-as-etl">
+      <documentation>Периодический ETL каждые 15 минут</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationService" name="CDC Service" id="id-as-cdc">
+      <documentation>Real-time Change Data Capture</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationService" name="CDN Cache" id="id-as-cdn">
+      <documentation>HTTP кэширование отчётов</documentation>
+    </element>
+    <!-- Application Interfaces -->
+    <element xsi:type="archimate:ApplicationInterface" name="REST API Interface" id="id-ai-rest"/>
+    <element xsi:type="archimate:ApplicationInterface" name="OAuth2 Interface" id="id-ai-oauth"/>
+    <element xsi:type="archimate:ApplicationInterface" name="S3 API Interface" id="id-ai-s3"/>
+    <element xsi:type="archimate:ApplicationInterface" name="Kafka Protocol" id="id-ai-kafka"/>
+    <!-- Data Objects -->
+    <element xsi:type="archimate:DataObject" name="JWT Token" id="id-do-jwt"/>
+    <element xsi:type="archimate:DataObject" name="Session" id="id-do-session"/>
+    <element xsi:type="archimate:DataObject" name="Report JSON" id="id-do-report"/>
+    <element xsi:type="archimate:DataObject" name="CDC Event" id="id-do-cdc-event"/>
+    <!-- Application Functions -->
+    <element xsi:type="archimate:ApplicationFunction" name="PKCE Generation" id="id-af-pkce">
+      <documentation>Генерация code_verifier и code_challenge (S256)</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationFunction" name="Token Encryption" id="id-af-encrypt">
+      <documentation>Fernet шифрование токенов в Redis</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationFunction" name="Report Generation" id="id-af-report-gen">
+      <documentation>Генерация JSON отчётов из ClickHouse</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationFunction" name="Cache Invalidation" id="id-af-cache-inv">
+      <documentation>Инвалидация кэша после ETL</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationFunction" name="Data Transformation" id="id-af-transform">
+      <documentation>JOIN и трансформация данных в ETL</documentation>
+    </element>
+    <element xsi:type="archimate:ApplicationFunction" name="CDC Capture" id="id-af-cdc-capture">
+      <documentation>Захват изменений из WAL PostgreSQL</documentation>
+    </element>
+  </folder>
+  <folder name="Technology &amp; Physical" id="id-technology" type="technology">
+    <!-- Technology Services -->
+    <element xsi:type="archimate:TechnologyService" name="Container Orchestration" id="id-ts-docker">
+      <documentation>Docker Compose для оркестрации контейнеров</documentation>
+    </element>
+    <element xsi:type="archimate:TechnologyService" name="Object Storage" id="id-ts-s3">
+      <documentation>S3-совместимое хранилище (MinIO)</documentation>
+    </element>
+    <element xsi:type="archimate:TechnologyService" name="Message Broker" id="id-ts-kafka">
+      <documentation>Apache Kafka для CDC событий</documentation>
+    </element>
+    <element xsi:type="archimate:TechnologyService" name="OLAP Database" id="id-ts-olap">
+      <documentation>ClickHouse для аналитики</documentation>
+    </element>
+    <element xsi:type="archimate:TechnologyService" name="OLTP Database" id="id-ts-oltp">
+      <documentation>PostgreSQL для транзакций</documentation>
+    </element>
+    <element xsi:type="archimate:TechnologyService" name="Directory Service" id="id-ts-ldap">
+      <documentation>OpenLDAP для хранения пользователей</documentation>
+    </element>
+    <element xsi:type="archimate:TechnologyService" name="In-Memory Cache" id="id-ts-redis">
+      <documentation>Redis для сессий и кэша</documentation>
+    </element>
+    <!-- Nodes (Docker Containers) -->
+    <element xsi:type="archimate:Node" name="frontend-container" id="id-node-frontend">
+      <documentation>React Frontend Container. Port: 3000</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="bff-auth-container" id="id-node-bff">
+      <documentation>BFF Auth Container (Flask). Port: 8000</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="reports-service-container" id="id-node-reports">
+      <documentation>Reports Service Container (FastAPI). Port: 8001</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="keycloak-container" id="id-node-keycloak">
+      <documentation>Keycloak Container. Port: 8080</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="airflow-webserver-container" id="id-node-airflow-web">
+      <documentation>Airflow Webserver Container. Port: 8081</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="airflow-scheduler-container" id="id-node-airflow-sched">
+      <documentation>Airflow Scheduler Container</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="clickhouse-container" id="id-node-clickhouse">
+      <documentation>ClickHouse Container. Ports: 8123 (HTTP), 9000 (Native)</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="kafka-container" id="id-node-kafka">
+      <documentation>Kafka Container. Port: 9092</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="zookeeper-container" id="id-node-zookeeper">
+      <documentation>Zookeeper Container. Port: 2181</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="debezium-container" id="id-node-debezium">
+      <documentation>Debezium Connect Container. Port: 8083</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="minio-container" id="id-node-minio">
+      <documentation>MinIO Container. Ports: 9001 (Console), 9002 (S3 API)</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="nginx-cdn-container" id="id-node-nginx">
+      <documentation>Nginx CDN Container. Port: 8002</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="redis-container" id="id-node-redis">
+      <documentation>Redis Container. Port: 6379</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="ldap-container" id="id-node-ldap">
+      <documentation>OpenLDAP Container. Port: 389</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="crm-db-container" id="id-node-crm-db">
+      <documentation>CRM PostgreSQL Container. Port: 5435</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="telemetry-db-container" id="id-node-telemetry-db">
+      <documentation>Telemetry PostgreSQL Container. Port: 5436</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="keycloak-db-container" id="id-node-keycloak-db">
+      <documentation>Keycloak PostgreSQL Container. Port: 5433</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="airflow-db-container" id="id-node-airflow-db">
+      <documentation>Airflow PostgreSQL Container</documentation>
+    </element>
+    <element xsi:type="archimate:Node" name="Docker Host" id="id-node-docker-host">
+      <documentation>Docker Host machine running all containers</documentation>
+    </element>
+    <!-- System Software -->
+    <element xsi:type="archimate:SystemSoftware" name="Docker Engine" id="id-sw-docker"/>
+    <element xsi:type="archimate:SystemSoftware" name="Docker Compose" id="id-sw-compose"/>
+    <element xsi:type="archimate:SystemSoftware" name="PostgreSQL 14" id="id-sw-postgres"/>
+    <element xsi:type="archimate:SystemSoftware" name="ClickHouse 24.1" id="id-sw-clickhouse"/>
+    <element xsi:type="archimate:SystemSoftware" name="Apache Kafka 3.6" id="id-sw-kafka"/>
+    <element xsi:type="archimate:SystemSoftware" name="Redis 7" id="id-sw-redis"/>
+    <element xsi:type="archimate:SystemSoftware" name="OpenLDAP 1.5" id="id-sw-ldap"/>
+    <element xsi:type="archimate:SystemSoftware" name="MinIO" id="id-sw-minio"/>
+    <element xsi:type="archimate:SystemSoftware" name="Nginx 1.25" id="id-sw-nginx"/>
+    <!-- Artifacts -->
+    <element xsi:type="archimate:Artifact" name="docker-compose.yaml" id="id-art-compose"/>
+    <element xsi:type="archimate:Artifact" name="realm-export.json" id="id-art-realm"/>
+    <element xsi:type="archimate:Artifact" name="crm-connector.json" id="id-art-connector"/>
+    <element xsi:type="archimate:Artifact" name="nginx.conf" id="id-art-nginx-conf"/>
+    <element xsi:type="archimate:Artifact" name="01_init_schema.sql" id="id-art-schema"/>
+    <element xsi:type="archimate:Artifact" name="02_cdc_kafka_tables.sql" id="id-art-cdc-sql"/>
+    <element xsi:type="archimate:Artifact" name="bionicpro_reports_etl.py" id="id-art-dag"/>
+    <!-- Communication Networks -->
+    <element xsi:type="archimate:CommunicationNetwork" name="Docker Bridge Network" id="id-net-docker"/>
+    <element xsi:type="archimate:CommunicationNetwork" name="External Network" id="id-net-external"/>
+    <!-- Paths -->
+    <element xsi:type="archimate:Path" name="HTTPS" id="id-path-https"/>
+    <element xsi:type="archimate:Path" name="TCP" id="id-path-tcp"/>
+    <element xsi:type="archimate:Path" name="LDAPS" id="id-path-ldaps"/>
+  </folder>
+  <folder name="Motivation" id="id-motivation" type="motivation">
+    <!-- Goals -->
+    <element xsi:type="archimate:Goal" name="Безопасная аутентификация" id="id-goal-secure-auth">
+      <documentation>Обеспечить безопасную аутентификацию пользователей с MFA</documentation>
+    </element>
+    <element xsi:type="archimate:Goal" name="Отчётность в реальном времени" id="id-goal-realtime-reports">
+      <documentation>Предоставлять актуальные отчёты о работе протезов</documentation>
+    </element>
+    <element xsi:type="archimate:Goal" name="Разделение OLTP/OLAP нагрузок" id="id-goal-workload-sep">
+      <documentation>Разделить транзакционные и аналитические нагрузки</documentation>
+    </element>
+    <element xsi:type="archimate:Goal" name="Снижение нагрузки на БД" id="id-goal-reduce-db-load">
+      <documentation>Уменьшить нагрузку на базы данных через кэширование</documentation>
+    </element>
+    <!-- Principles -->
+    <element xsi:type="archimate:Principle" name="BFF Pattern" id="id-principle-bff">
+      <documentation>Токены хранятся на сервере, клиент работает только с session cookies</documentation>
+    </element>
+    <element xsi:type="archimate:Principle" name="OAuth2 PKCE" id="id-principle-pkce">
+      <documentation>Использовать PKCE для защиты authorization code flow</documentation>
+    </element>
+    <element xsi:type="archimate:Principle" name="CDC over ETL for CRM" id="id-principle-cdc">
+      <documentation>Использовать CDC вместо ETL для данных CRM</documentation>
+    </element>
+    <element xsi:type="archimate:Principle" name="Multi-tier Caching" id="id-principle-cache">
+      <documentation>Многоуровневое кэширование: Redis → S3 → Nginx CDN</documentation>
+    </element>
+    <!-- Requirements -->
+    <element xsi:type="archimate:Requirement" name="MFA обязательна" id="id-req-mfa">
+      <documentation>Все пользователи должны использовать двухфакторную аутентификацию</documentation>
+    </element>
+    <element xsi:type="archimate:Requirement" name="Токены не на клиенте" id="id-req-no-client-tokens">
+      <documentation>Access/Refresh токены не должны передаваться на клиент</documentation>
+    </element>
+    <element xsi:type="archimate:Requirement" name="ETL каждые 15 минут" id="id-req-etl-schedule">
+      <documentation>ETL pipeline должен выполняться каждые 15 минут</documentation>
+    </element>
+    <element xsi:type="archimate:Requirement" name="CDC latency &lt; 1s" id="id-req-cdc-latency">
+      <documentation>Задержка CDC репликации должна быть менее 1 секунды</documentation>
+    </element>
+    <element xsi:type="archimate:Requirement" name="Cache TTL 5 min" id="id-req-cache-ttl">
+      <documentation>TTL кэша CDN - 5 минут</documentation>
+    </element>
+    <!-- Constraints -->
+    <element xsi:type="archimate:Constraint" name="Docker deployment" id="id-constraint-docker">
+      <documentation>Система должна разворачиваться в Docker контейнерах</documentation>
+    </element>
+    <element xsi:type="archimate:Constraint" name="LDAP for user storage" id="id-constraint-ldap">
+      <documentation>Пользователи должны храниться в LDAP</documentation>
+    </element>
+  </folder>
+  <folder name="Implementation &amp; Migration" id="id-impl" type="implementation_migration">
+    <!-- Work Packages -->
+    <element xsi:type="archimate:WorkPackage" name="Task 1: Security Architecture" id="id-wp-task1">
+      <documentation>LDAP + Keycloak OAuth2/PKCE + BFF pattern + MFA</documentation>
+    </element>
+    <element xsi:type="archimate:WorkPackage" name="Task 2: Reports &amp; ETL" id="id-wp-task2">
+      <documentation>Airflow ETL + ClickHouse OLAP + FastAPI Reports Service</documentation>
+    </element>
+    <element xsi:type="archimate:WorkPackage" name="Task 3: S3/CDN Caching" id="id-wp-task3">
+      <documentation>MinIO S3 + Nginx CDN для снижения нагрузки на БД</documentation>
+    </element>
+    <element xsi:type="archimate:WorkPackage" name="Task 4: CDC Pipeline" id="id-wp-task4">
+      <documentation>Debezium + Kafka + ClickHouse KafkaEngine</documentation>
+    </element>
+    <!-- Deliverables -->
+    <element xsi:type="archimate:Deliverable" name="BFF Auth Service" id="id-del-bff"/>
+    <element xsi:type="archimate:Deliverable" name="Reports Service" id="id-del-reports"/>
+    <element xsi:type="archimate:Deliverable" name="ETL DAGs" id="id-del-etl"/>
+    <element xsi:type="archimate:Deliverable" name="CDC Pipeline" id="id-del-cdc"/>
+    <element xsi:type="archimate:Deliverable" name="CDN Configuration" id="id-del-cdn"/>
+  </folder>
+  <folder name="Other" id="id-other" type="other">
+    <!-- External Actors -->
+    <element xsi:type="archimate:BusinessActor" name="Бионический протез" id="id-ext-prosthesis">
+      <documentation>Устройство с чипом ESP32, передаёт телеметрию через 4G/WiFi</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessActor" name="Яндекс ID" id="id-ext-yandex">
+      <documentation>Внешний OAuth2 провайдер для российских пользователей</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessActor" name="LDAP Russia" id="id-ext-ldap-ru">
+      <documentation>Каталог пользователей российского представительства</documentation>
+    </element>
+    <element xsi:type="archimate:BusinessActor" name="LDAP Europe" id="id-ext-ldap-eu">
+      <documentation>Каталог пользователей европейского представительства</documentation>
+    </element>
+  </folder>
+  <folder name="Relations" id="id-relations" type="relations">
+    <!-- Business Layer Relations -->
+    <element xsi:type="archimate:AssignmentRelationship" id="id-rel-1" source="id-actor-prosthesis-user" target="id-role-prothetic"/>
+    <element xsi:type="archimate:AssignmentRelationship" id="id-rel-2" source="id-actor-operator" target="id-role-user"/>
+    <element xsi:type="archimate:AssignmentRelationship" id="id-rel-3" source="id-actor-admin" target="id-role-admin"/>
+    <element xsi:type="archimate:TriggeringRelationship" id="id-rel-4" source="id-actor-prosthesis-user" target="id-bp-view-reports"/>
+    <element xsi:type="archimate:TriggeringRelationship" id="id-rel-5" source="id-actor-prosthesis-user" target="id-bp-auth"/>
+    <element xsi:type="archimate:TriggeringRelationship" id="id-rel-6" source="id-actor-operator" target="id-bp-manage-orders"/>
+    <element xsi:type="archimate:TriggeringRelationship" id="id-rel-7" source="id-actor-ml-engineer" target="id-bp-analyze-data"/>
+    <element xsi:type="archimate:TriggeringRelationship" id="id-rel-8" source="id-ext-prosthesis" target="id-bp-collect-telemetry"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-9" source="id-bp-view-reports" target="id-bs-reports"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-10" source="id-bp-auth" target="id-bs-auth"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-11" source="id-bp-manage-orders" target="id-bs-crm"/>
+    <element xsi:type="archimate:AccessRelationship" id="id-rel-12" source="id-bp-view-reports" target="id-bo-report"/>
+    <element xsi:type="archimate:AccessRelationship" id="id-rel-13" source="id-bp-collect-telemetry" target="id-bo-telemetry"/>
+    <!-- Application Layer Relations -->
+    <element xsi:type="archimate:ServingRelationship" id="id-rel-20" source="id-app-frontend" target="id-actor-prosthesis-user"/>
+    <element xsi:type="archimate:ServingRelationship" id="id-rel-21" source="id-app-bff" target="id-app-frontend"/>
+    <element xsi:type="archimate:ServingRelationship" id="id-rel-22" source="id-app-reports" target="id-app-bff"/>
+    <element xsi:type="archimate:ServingRelationship" id="id-rel-23" source="id-app-keycloak" target="id-app-bff"/>
+    <element xsi:type="archimate:FlowRelationship" id="id-rel-24" source="id-app-bff" target="id-app-keycloak" name="OAuth2 PKCE"/>
+    <element xsi:type="archimate:FlowRelationship" id="id-rel-25" source="id-app-reports" target="id-app-nginx" name="CDN URL"/>
+    <element xsi:type="archimate:FlowRelationship" id="id-rel-26" source="id-app-airflow" target="id-app-reports" name="Invalidate cache"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-27" source="id-app-bff" target="id-as-auth"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-28" source="id-app-reports" target="id-as-reports"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-29" source="id-app-keycloak" target="id-as-oauth"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-30" source="id-app-airflow" target="id-as-etl"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-31" source="id-app-debezium" target="id-as-cdc"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-32" source="id-app-nginx" target="id-as-cdn"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-33" source="id-app-bff" target="id-af-pkce"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-34" source="id-app-bff" target="id-af-encrypt"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-35" source="id-app-reports" target="id-af-report-gen"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-36" source="id-app-reports" target="id-af-cache-inv"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-37" source="id-app-airflow" target="id-af-transform"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-38" source="id-app-debezium" target="id-af-cdc-capture"/>
+    <element xsi:type="archimate:AccessRelationship" id="id-rel-39" source="id-af-encrypt" target="id-do-session" accessType="readwrite"/>
+    <element xsi:type="archimate:AccessRelationship" id="id-rel-40" source="id-af-report-gen" target="id-do-report" accessType="write"/>
+    <element xsi:type="archimate:AccessRelationship" id="id-rel-41" source="id-af-cdc-capture" target="id-do-cdc-event" accessType="write"/>
+    <!-- Technology Layer Relations -->
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-50" source="id-node-frontend" target="id-app-frontend"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-51" source="id-node-bff" target="id-app-bff"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-52" source="id-node-reports" target="id-app-reports"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-53" source="id-node-keycloak" target="id-app-keycloak"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-54" source="id-node-airflow-web" target="id-app-airflow"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-55" source="id-node-debezium" target="id-app-debezium"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-56" source="id-node-nginx" target="id-app-nginx"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-57" source="id-node-docker-host" target="id-node-frontend"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-58" source="id-node-docker-host" target="id-node-bff"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-59" source="id-node-docker-host" target="id-node-reports"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-60" source="id-node-docker-host" target="id-node-keycloak"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-61" source="id-node-docker-host" target="id-node-clickhouse"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-62" source="id-node-docker-host" target="id-node-kafka"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-63" source="id-node-docker-host" target="id-node-minio"/>
+    <element xsi:type="archimate:CompositionRelationship" id="id-rel-64" source="id-node-docker-host" target="id-node-redis"/>
+    <element xsi:type="archimate:AssignmentRelationship" id="id-rel-65" source="id-node-crm-db" target="id-sw-postgres"/>
+    <element xsi:type="archimate:AssignmentRelationship" id="id-rel-66" source="id-node-clickhouse" target="id-sw-clickhouse"/>
+    <element xsi:type="archimate:AssignmentRelationship" id="id-rel-67" source="id-node-kafka" target="id-sw-kafka"/>
+    <element xsi:type="archimate:AssignmentRelationship" id="id-rel-68" source="id-node-redis" target="id-sw-redis"/>
+    <element xsi:type="archimate:AssignmentRelationship" id="id-rel-69" source="id-node-ldap" target="id-sw-ldap"/>
+    <element xsi:type="archimate:AssignmentRelationship" id="id-rel-70" source="id-node-minio" target="id-sw-minio"/>
+    <element xsi:type="archimate:ServingRelationship" id="id-rel-71" source="id-node-clickhouse" target="id-ts-olap"/>
+    <element xsi:type="archimate:ServingRelationship" id="id-rel-72" source="id-node-crm-db" target="id-ts-oltp"/>
+    <element xsi:type="archimate:ServingRelationship" id="id-rel-73" source="id-node-kafka" target="id-ts-kafka"/>
+    <element xsi:type="archimate:ServingRelationship" id="id-rel-74" source="id-node-minio" target="id-ts-s3"/>
+    <element xsi:type="archimate:ServingRelationship" id="id-rel-75" source="id-node-redis" target="id-ts-redis"/>
+    <element xsi:type="archimate:ServingRelationship" id="id-rel-76" source="id-node-ldap" target="id-ts-ldap"/>
+    <element xsi:type="archimate:AssociationRelationship" id="id-rel-77" source="id-node-frontend" target="id-net-docker"/>
+    <element xsi:type="archimate:AssociationRelationship" id="id-rel-78" source="id-node-bff" target="id-net-docker"/>
+    <element xsi:type="archimate:AssociationRelationship" id="id-rel-79" source="id-node-reports" target="id-net-docker"/>
+    <!-- Motivation Relations -->
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-80" source="id-principle-bff" target="id-goal-secure-auth"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-81" source="id-principle-pkce" target="id-goal-secure-auth"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-82" source="id-principle-cdc" target="id-goal-workload-sep"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-83" source="id-principle-cache" target="id-goal-reduce-db-load"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-84" source="id-as-etl" target="id-goal-realtime-reports"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-85" source="id-as-cdc" target="id-goal-realtime-reports"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-86" source="id-req-mfa" target="id-principle-bff"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-87" source="id-req-no-client-tokens" target="id-principle-bff"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-88" source="id-req-cdc-latency" target="id-principle-cdc"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-89" source="id-req-cache-ttl" target="id-principle-cache"/>
+    <element xsi:type="archimate:InfluenceRelationship" id="id-rel-90" source="id-constraint-docker" target="id-ts-docker"/>
+    <element xsi:type="archimate:InfluenceRelationship" id="id-rel-91" source="id-constraint-ldap" target="id-ts-ldap"/>
+    <!-- Implementation Relations -->
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-100" source="id-wp-task1" target="id-del-bff"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-101" source="id-wp-task2" target="id-del-reports"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-102" source="id-wp-task2" target="id-del-etl"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-103" source="id-wp-task3" target="id-del-cdn"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-104" source="id-wp-task4" target="id-del-cdc"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-105" source="id-del-bff" target="id-app-bff"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-106" source="id-del-reports" target="id-app-reports"/>
+    <element xsi:type="archimate:RealizationRelationship" id="id-rel-107" source="id-del-cdc" target="id-app-debezium"/>
+  </folder>
+  <folder name="Views" id="id-views" type="diagrams">
+    <!-- Business Layer View -->
+    <element xsi:type="archimate:ArchimateDiagramModel" name="1. Business Layer" id="id-view-business">
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-1" targetConnections="id-dconn-4 id-dconn-5" archimateElement="id-actor-prosthesis-user">
+        <bounds x="48" y="48" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-2" archimateElement="id-actor-buyer">
+        <bounds x="192" y="48" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-3" targetConnections="id-dconn-6" archimateElement="id-actor-operator">
+        <bounds x="336" y="48" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-4" targetConnections="id-dconn-7" archimateElement="id-actor-ml-engineer">
+        <bounds x="480" y="48" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-5" archimateElement="id-bp-view-reports">
+        <bounds x="48" y="156" width="120" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-4" source="id-dobj-5" target="id-dobj-1" archimateRelationship="id-rel-4"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-9" source="id-dobj-5" target="id-dobj-9" archimateRelationship="id-rel-9"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-6" archimateElement="id-bp-auth">
+        <bounds x="192" y="156" width="120" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-5" source="id-dobj-6" target="id-dobj-1" archimateRelationship="id-rel-5"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-10" source="id-dobj-6" target="id-dobj-10" archimateRelationship="id-rel-10"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-7" archimateElement="id-bp-manage-orders">
+        <bounds x="336" y="156" width="120" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-6" source="id-dobj-7" target="id-dobj-3" archimateRelationship="id-rel-6"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-11" source="id-dobj-7" target="id-dobj-11" archimateRelationship="id-rel-11"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-8" archimateElement="id-bp-analyze-data">
+        <bounds x="480" y="156" width="120" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-7" source="id-dobj-8" target="id-dobj-4" archimateRelationship="id-rel-7"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-9" targetConnections="id-dconn-9" archimateElement="id-bs-reports">
+        <bounds x="48" y="264" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-10" targetConnections="id-dconn-10" archimateElement="id-bs-auth">
+        <bounds x="192" y="264" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-11" targetConnections="id-dconn-11" archimateElement="id-bs-crm">
+        <bounds x="336" y="264" width="120" height="55"/>
+      </child>
+    </element>
+    <!-- Application Layer View -->
+    <element xsi:type="archimate:ArchimateDiagramModel" name="2. Application Layer" id="id-view-application">
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-20" archimateElement="id-app-frontend">
+        <bounds x="240" y="48" width="120" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-20" source="id-dobj-20" target="id-dobj-21" archimateRelationship="id-rel-21"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-21" targetConnections="id-dconn-20" archimateElement="id-app-bff">
+        <bounds x="240" y="144" width="120" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-22" source="id-dobj-21" target="id-dobj-22" archimateRelationship="id-rel-22"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-24" source="id-dobj-21" target="id-dobj-23" archimateRelationship="id-rel-24"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-22" targetConnections="id-dconn-22 id-dconn-26" archimateElement="id-app-reports">
+        <bounds x="96" y="240" width="120" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-25" source="id-dobj-22" target="id-dobj-27" archimateRelationship="id-rel-25"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-23" targetConnections="id-dconn-24" archimateElement="id-app-keycloak">
+        <bounds x="384" y="240" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-24" archimateElement="id-app-airflow">
+        <bounds x="48" y="336" width="120" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-26" source="id-dobj-24" target="id-dobj-22" archimateRelationship="id-rel-26"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-25" archimateElement="id-app-debezium">
+        <bounds x="192" y="336" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-27" targetConnections="id-dconn-25" archimateElement="id-app-nginx">
+        <bounds x="96" y="144" width="120" height="55"/>
+      </child>
+    </element>
+    <!-- Technology Layer View -->
+    <element xsi:type="archimate:ArchimateDiagramModel" name="3. Technology Layer - Deployment" id="id-view-technology">
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-40" archimateElement="id-node-docker-host">
+        <bounds x="24" y="24" width="720" height="480"/>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-41" archimateElement="id-node-frontend">
+          <bounds x="24" y="48" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-42" archimateElement="id-node-bff">
+          <bounds x="168" y="48" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-43" archimateElement="id-node-keycloak">
+          <bounds x="312" y="48" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-44" archimateElement="id-node-reports">
+          <bounds x="456" y="48" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-45" archimateElement="id-node-nginx">
+          <bounds x="576" y="48" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-46" archimateElement="id-node-airflow-web">
+          <bounds x="24" y="132" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-47" archimateElement="id-node-debezium">
+          <bounds x="168" y="132" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-48" archimateElement="id-node-kafka">
+          <bounds x="312" y="132" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-49" archimateElement="id-node-zookeeper">
+          <bounds x="456" y="132" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-50" archimateElement="id-node-clickhouse">
+          <bounds x="24" y="216" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-51" archimateElement="id-node-crm-db">
+          <bounds x="168" y="216" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-52" archimateElement="id-node-telemetry-db">
+          <bounds x="312" y="216" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-53" archimateElement="id-node-redis">
+          <bounds x="456" y="216" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-54" archimateElement="id-node-minio">
+          <bounds x="576" y="216" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-55" archimateElement="id-node-ldap">
+          <bounds x="24" y="300" width="120" height="55"/>
+        </child>
+        <child xsi:type="archimate:DiagramObject" id="id-dobj-56" archimateElement="id-net-docker">
+          <bounds x="24" y="384" width="672" height="55"/>
+        </child>
+      </child>
+    </element>
+    <!-- Motivation View -->
+    <element xsi:type="archimate:ArchimateDiagramModel" name="4. Motivation" id="id-view-motivation">
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-60" archimateElement="id-goal-secure-auth">
+        <bounds x="48" y="48" width="140" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-61" archimateElement="id-goal-realtime-reports">
+        <bounds x="216" y="48" width="140" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-62" archimateElement="id-goal-workload-sep">
+        <bounds x="384" y="48" width="140" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-63" archimateElement="id-goal-reduce-db-load">
+        <bounds x="552" y="48" width="140" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-64" archimateElement="id-principle-bff">
+        <bounds x="48" y="144" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-80" source="id-dobj-64" target="id-dobj-60" archimateRelationship="id-rel-80"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-65" archimateElement="id-principle-pkce">
+        <bounds x="216" y="144" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-81" source="id-dobj-65" target="id-dobj-60" archimateRelationship="id-rel-81"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-66" archimateElement="id-principle-cdc">
+        <bounds x="384" y="144" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-82" source="id-dobj-66" target="id-dobj-62" archimateRelationship="id-rel-82"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-67" archimateElement="id-principle-cache">
+        <bounds x="552" y="144" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-83" source="id-dobj-67" target="id-dobj-63" archimateRelationship="id-rel-83"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-68" archimateElement="id-req-mfa">
+        <bounds x="48" y="240" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-86" source="id-dobj-68" target="id-dobj-64" archimateRelationship="id-rel-86"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-69" archimateElement="id-req-no-client-tokens">
+        <bounds x="216" y="240" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-87" source="id-dobj-69" target="id-dobj-64" archimateRelationship="id-rel-87"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-70" archimateElement="id-req-cdc-latency">
+        <bounds x="384" y="240" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-88" source="id-dobj-70" target="id-dobj-66" archimateRelationship="id-rel-88"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-71" archimateElement="id-req-cache-ttl">
+        <bounds x="552" y="240" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-89" source="id-dobj-71" target="id-dobj-67" archimateRelationship="id-rel-89"/>
+      </child>
+    </element>
+    <!-- Implementation View -->
+    <element xsi:type="archimate:ArchimateDiagramModel" name="5. Implementation - Work Packages" id="id-view-implementation">
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-80" archimateElement="id-wp-task1">
+        <bounds x="48" y="48" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-100" source="id-dobj-80" target="id-dobj-84" archimateRelationship="id-rel-100"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-81" archimateElement="id-wp-task2">
+        <bounds x="216" y="48" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-101" source="id-dobj-81" target="id-dobj-85" archimateRelationship="id-rel-101"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-102" source="id-dobj-81" target="id-dobj-86" archimateRelationship="id-rel-102"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-82" archimateElement="id-wp-task3">
+        <bounds x="384" y="48" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-103" source="id-dobj-82" target="id-dobj-88" archimateRelationship="id-rel-103"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-83" archimateElement="id-wp-task4">
+        <bounds x="552" y="48" width="140" height="55"/>
+        <sourceConnection xsi:type="archimate:Connection" id="id-dconn-104" source="id-dobj-83" target="id-dobj-87" archimateRelationship="id-rel-104"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-84" targetConnections="id-dconn-100" archimateElement="id-del-bff">
+        <bounds x="48" y="144" width="140" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-85" targetConnections="id-dconn-101" archimateElement="id-del-reports">
+        <bounds x="168" y="144" width="140" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-86" targetConnections="id-dconn-102" archimateElement="id-del-etl">
+        <bounds x="288" y="144" width="140" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-87" targetConnections="id-dconn-104" archimateElement="id-del-cdc">
+        <bounds x="552" y="144" width="140" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-88" targetConnections="id-dconn-103" archimateElement="id-del-cdn">
+        <bounds x="408" y="144" width="140" height="55"/>
+      </child>
+    </element>
+    <!-- Data Flow View -->
+    <element xsi:type="archimate:ArchimateDiagramModel" name="6. Data Flow - CDC Pipeline" id="id-view-data-flow">
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-90" archimateElement="id-node-crm-db">
+        <bounds x="48" y="120" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-91" archimateElement="id-app-debezium">
+        <bounds x="216" y="120" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-92" archimateElement="id-node-kafka">
+        <bounds x="384" y="120" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-93" archimateElement="id-node-clickhouse">
+        <bounds x="552" y="120" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-94" archimateElement="id-app-reports">
+        <bounds x="552" y="216" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-95" archimateElement="id-do-cdc-event">
+        <bounds x="300" y="216" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:Note" id="id-note-1" textAlignment="1">
+        <bounds x="48" y="48" width="180" height="40"/>
+        <content>CDC Pipeline: CRM → Debezium → Kafka → ClickHouse</content>
+      </child>
+    </element>
+    <!-- Security Architecture View -->
+    <element xsi:type="archimate:ArchimateDiagramModel" name="7. Security Architecture" id="id-view-security">
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-100" archimateElement="id-actor-prosthesis-user">
+        <bounds x="264" y="24" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-101" archimateElement="id-app-frontend">
+        <bounds x="264" y="108" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-102" archimateElement="id-app-bff">
+        <bounds x="264" y="192" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-103" archimateElement="id-app-keycloak">
+        <bounds x="432" y="192" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-104" archimateElement="id-node-redis">
+        <bounds x="96" y="192" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-105" archimateElement="id-node-ldap">
+        <bounds x="432" y="288" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-106" archimateElement="id-ext-yandex">
+        <bounds x="576" y="192" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-107" archimateElement="id-af-pkce">
+        <bounds x="96" y="288" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:DiagramObject" id="id-dobj-108" archimateElement="id-af-encrypt">
+        <bounds x="264" y="288" width="120" height="55"/>
+      </child>
+      <child xsi:type="archimate:Note" id="id-note-2" textAlignment="1">
+        <bounds x="48" y="372" width="300" height="60"/>
+        <content>BFF Pattern:
+- Tokens stored server-side (Redis)
+- Client uses HTTP-only session cookies
+- PKCE (S256) for OAuth2 flow</content>
+      </child>
+    </element>
+  </folder>
+  <purpose>Архитектура платформы BionicPRO для управления бионическими протезами</purpose>
+</archimate:model>

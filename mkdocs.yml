@@ -97,6 +97,8 @@ nav:
     - C4 Level 4 - Code: diagrams/c4-level4.md
     - Sequence Diagrams: diagrams/sequences.md
     - Deployment: diagrams/deployment.md
+    - Structurizr DSL: diagrams/structurizr.md
+    - ArchiMate Model: diagrams/archimate.md
 
 extra:
   social:

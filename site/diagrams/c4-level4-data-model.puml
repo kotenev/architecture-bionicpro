@@ -1,0 +1,232 @@
+@startuml BionicPRO_Data_Model
+!theme plain
+
+title BionicPRO - Data Model Class Diagram
+
+package "OLTP: CRM Database (PostgreSQL)" {
+
+    class "crm.customers" as customers {
+        + id: UUID <<PK>>
+        + name: VARCHAR(255)
+        + email: VARCHAR(255) <<UNIQUE>>
+        + ldap_username: VARCHAR(100) <<UNIQUE>>
+        + phone: VARCHAR(50)
+        + created_at: TIMESTAMP
+        + updated_at: TIMESTAMP
+        --
+        <<INDEX>> idx_customers_ldap(ldap_username)
+    }
+
+    class "crm.prosthesis_models" as models {
+        + id: UUID <<PK>>
+        + name: VARCHAR(255)
+        + description: TEXT
+        + warranty_years: INTEGER
+        + created_at: TIMESTAMP
+    }
+
+    class "crm.prostheses" as prostheses {
+        + id: UUID <<PK>>
+        + customer_id: UUID <<FK>>
+        + model_id: UUID <<FK>>
+        + chip_id: VARCHAR(100) <<UNIQUE>>
+        + serial_number: VARCHAR(100)
+        + manufacture_date: DATE
+        + created_at: TIMESTAMP
+        + updated_at: TIMESTAMP
+        --
+        <<INDEX>> idx_prostheses_chip(chip_id)
+        <<INDEX>> idx_prostheses_customer(customer_id)
+    }
+
+    customers "1" -- "0..*" prostheses : has
+    models "1" -- "0..*" prostheses : defines
+}
+
+package "OLTP: Telemetry Database (PostgreSQL)" {
+
+    class "telemetry.raw_telemetry" as telemetry {
+        + id: BIGSERIAL <<PK>>
+        + chip_id: VARCHAR(100)
+        + event_time: TIMESTAMP
+        + movement_type: INTEGER
+        + response_time_ms: FLOAT
+        + battery_level: FLOAT
+        + error_code: INTEGER
+        + raw_data: JSONB
+        + created_at: TIMESTAMP
+        --
+        <<INDEX>> idx_telemetry_chip_time(chip_id, event_time)
+        <<INDEX>> idx_telemetry_time(event_time)
+    }
+
+    prostheses "1" .. "0..*" telemetry : chip_id
+}
+
+package "OLAP: ClickHouse" {
+
+    package "Reports Mart" {
+        class "reports.user_prosthesis_stats" as stats {
+            + user_id: UUID
+            + ldap_username: String
+            + prosthesis_id: UUID
+            + chip_id: String
+            + date: Date
+            + hour: DateTime
+            + movements_count: UInt32
+            + avg_response_time: Float32
+            + avg_battery_level: Float32
+            + error_count: UInt32
+            + error_rate: Float32
+            + customer_name: String
+            + customer_email: String
+            + prosthesis_model: String
+            + created_at: DateTime
+            --
+            <<ENGINE>> MergeTree()
+            <<PARTITION>> toYYYYMM(date)
+            <<ORDER>> (ldap_username, date, hour)
+            <<TTL>> date + INTERVAL 365 DAY
+        }
+    }
+
+    package "CDC Tables" {
+        class "reports.crm_customers" as cdc_customers {
+            + id: UUID
+            + name: String
+            + email: String
+            + ldap_username: String
+            + created_at: DateTime64(3)
+            + updated_at: DateTime64(3)
+            + _version: UInt64
+            + _deleted: UInt8
+            --
+            <<ENGINE>> ReplacingMergeTree(_version)
+            <<ORDER>> id
+        }
+
+        class "reports.crm_prostheses" as cdc_prostheses {
+            + id: UUID
+            + customer_id: UUID
+            + model_id: UUID
+            + chip_id: String
+            + serial_number: String
+            + created_at: DateTime64(3)
+            + updated_at: DateTime64(3)
+            + _version: UInt64
+            + _deleted: UInt8
+            --
+            <<ENGINE>> ReplacingMergeTree(_version)
+            <<ORDER>> id
+        }
+
+        class "reports.crm_prosthesis_models" as cdc_models {
+            + id: UUID
+            + name: String
+            + description: String
+            + warranty_years: UInt8
+            + created_at: DateTime64(3)
+            + _version: UInt64
+            + _deleted: UInt8
+            --
+            <<ENGINE>> ReplacingMergeTree(_version)
+            <<ORDER>> id
+        }
+
+        class "reports.cdc_customer_data" as cdc_view <<View>> {
+            + customer_id: UUID
+            + customer_name: String
+            + customer_email: String
+            + ldap_username: String
+            + prosthesis_id: UUID
+            + chip_id: String
+            + prosthesis_model: String
+            --
+            <<VIEW>> JOIN all CDC tables FINAL
+        }
+    }
+
+    package "Kafka Tables" {
+        class "reports.kafka_crm_customers" as kafka_customers {
+            + _raw: String
+            --
+            <<ENGINE>> Kafka()
+            <<TOPIC>> crm.crm.customers
+            <<FORMAT>> JSONAsString
+        }
+
+        class "reports.kafka_crm_prostheses" as kafka_prostheses {
+            + _raw: String
+            --
+            <<ENGINE>> Kafka()
+            <<TOPIC>> crm.crm.prostheses
+            <<FORMAT>> JSONAsString
+        }
+
+        class "reports.kafka_crm_models" as kafka_models {
+            + _raw: String
+            --
+            <<ENGINE>> Kafka()
+            <<TOPIC>> crm.crm.prosthesis_models
+            <<FORMAT>> JSONAsString
+        }
+    }
+
+    package "Materialized Views" {
+        class "reports.mv_kafka_customers" as mv_customers <<MaterializedView>> {
+            <<TO>> crm_customers
+            <<FROM>> kafka_crm_customers
+            Transform JSON → target schema
+        }
+
+        class "reports.mv_kafka_prostheses" as mv_prostheses <<MaterializedView>> {
+            <<TO>> crm_prostheses
+            <<FROM>> kafka_crm_prostheses
+            Transform JSON → target schema
+        }
+
+        class "reports.mv_kafka_models" as mv_models <<MaterializedView>> {
+            <<TO>> crm_prosthesis_models
+            <<FROM>> kafka_crm_models
+            Transform JSON → target schema
+        }
+    }
+
+    ' CDC relationships
+    kafka_customers --> mv_customers : triggers
+    kafka_prostheses --> mv_prostheses : triggers
+    kafka_models --> mv_models : triggers
+
+    mv_customers --> cdc_customers : inserts
+    mv_prostheses --> cdc_prostheses : inserts
+    mv_models --> cdc_models : inserts
+
+    cdc_customers "1" -- "0..*" cdc_prostheses : customer_id
+    cdc_models "1" -- "0..*" cdc_prostheses : model_id
+
+    cdc_view ..> cdc_customers : SELECT FINAL
+    cdc_view ..> cdc_prostheses : SELECT FINAL
+    cdc_view ..> cdc_models : SELECT FINAL
+
+    ' ETL relationships
+    customers ..> stats : ETL
+    prostheses ..> stats : ETL
+    models ..> stats : ETL
+    telemetry ..> stats : ETL
+}
+
+package "Object Storage: MinIO S3" {
+
+    class "reports-bucket" as s3_bucket {
+        + {user_id}/list/reports.json
+        + {user_id}/summary/summary.json
+        + {user_id}/daily/{date}/report.json
+        --
+        <<BUCKET>> reports-bucket
+        <<POLICY>> public download
+    }
+}
+
+stats ..> s3_bucket : cache
+
+@enduml

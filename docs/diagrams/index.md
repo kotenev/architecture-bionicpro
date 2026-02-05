@@ -20,6 +20,13 @@
 | [Sequence Diagrams](sequences.md) | Диаграммы последовательности для ключевых потоков |
 | [Deployment Diagram](deployment.md) | Диаграмма развёртывания (Docker containers) |
 
+## Architecture as Code
+
+| Формат | Файл | Описание |
+|--------|------|----------|
+| [Structurizr DSL](structurizr.md) | `workspace.dsl` | C4 Model в формате DSL (рекомендуется) |
+| [ArchiMate](archimate.md) | `bionicpro.archimate` | Enterprise Architecture для Archi |
+
 ## Формат диаграмм
 
 Все диаграммы созданы в формате **PlantUML** и находятся в каталоге `docs/diagrams/`.
@@ -54,20 +61,36 @@ plantuml -tsvg docs/diagrams/*.puml
 ## Структура файлов
 
 ```
-docs/diagrams/
-├── c4-level1-context.puml          # C4 Level 1: System Context
-├── c4-level2-container.puml        # C4 Level 2: Container Diagram
-├── c4-level3-bff-component.puml    # C4 Level 3: BFF Components
-├── c4-level3-reports-component.puml # C4 Level 3: Reports Service
-├── c4-level3-etl-component.puml    # C4 Level 3: ETL Pipeline
-├── c4-level3-cdc-component.puml    # C4 Level 3: CDC Pipeline
-├── c4-level4-bff-classes.puml      # C4 Level 4: BFF Class Diagram
-├── c4-level4-reports-classes.puml  # C4 Level 4: Reports Classes
-├── c4-level4-etl-classes.puml      # C4 Level 4: ETL Classes
-├── c4-level4-data-model.puml       # Data Model Class Diagram
-├── sequence-auth-flow.puml         # Auth Flow Sequence
-├── sequence-cdc-flow.puml          # CDC Flow Sequence
-├── sequence-reports-flow.puml      # Reports Flow Sequence
-├── sequence-etl-flow.puml          # ETL Flow Sequence
-└── deployment-diagram.puml         # Deployment Diagram
+docs/
+├── architecture/
+│   ├── workspace.dsl               # Structurizr DSL (Architecture as Code)
+│   └── bionicpro.archimate         # ArchiMate model for Archi
+└── diagrams/
+    ├── c4-level1-context.puml          # C4 Level 1: System Context
+    ├── c4-level2-container.puml        # C4 Level 2: Container Diagram
+    ├── c4-level3-bff-component.puml    # C4 Level 3: BFF Components
+    ├── c4-level3-reports-component.puml # C4 Level 3: Reports Service
+    ├── c4-level3-etl-component.puml    # C4 Level 3: ETL Pipeline
+    ├── c4-level3-cdc-component.puml    # C4 Level 3: CDC Pipeline
+    ├── c4-level4-bff-classes.puml      # C4 Level 4: BFF Class Diagram
+    ├── c4-level4-reports-classes.puml  # C4 Level 4: Reports Classes
+    ├── c4-level4-etl-classes.puml      # C4 Level 4: ETL Classes
+    ├── c4-level4-data-model.puml       # Data Model Class Diagram
+    ├── sequence-auth-flow.puml         # Auth Flow Sequence
+    ├── sequence-cdc-flow.puml          # CDC Flow Sequence
+    ├── sequence-reports-flow.puml      # Reports Flow Sequence
+    ├── sequence-etl-flow.puml          # ETL Flow Sequence
+    └── deployment-diagram.puml         # Deployment Diagram
 ```
+
+## Сравнение форматов
+
+| Критерий | PlantUML | Structurizr DSL | ArchiMate |
+|----------|----------|-----------------|-----------|
+| **Тип** | Диаграммы | Architecture as Code | Enterprise Architecture |
+| **Version Control** | Да | Да | Частично |
+| **Автогенерация** | Нет | Да | Нет |
+| **C4 Model** | Ручной | Нативный | Mapping |
+| **Динамические views** | Нет | Да | Да |
+| **IDE Support** | VS Code, IntelliJ | VS Code | Archi |
+| **Export** | PNG, SVG | PNG, SVG, PlantUML | HTML, PNG |
