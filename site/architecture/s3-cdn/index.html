@@ -129,6 +129,8 @@
           
   
   
+    
+  
   Architecture
 
         </a>
@@ -137,6 +139,8 @@
 <a class="md-tabs__link" href="../../deployment/quickstart/">
           
   
+  
+    
   
   Deployment
 
@@ -147,14 +151,18 @@
           
   
   
+    
+  
   API Reference
 
         </a>
 </li>
 <li class="md-tabs__item">
-<a class="md-tabs__link" href="../../diagrams/c4-diagrams/">
+<a class="md-tabs__link" href="../../diagrams/">
           
   
+  
+    
   
   Diagrams
 
@@ -747,7 +755,8 @@
 </li>
 <li class="md-nav__item md-nav__item--nested">
 <input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_5" type="checkbox"/>
-<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../diagrams/">
 <span class="md-ellipsis">
     
   
@@ -756,8 +765,11 @@
 
     
   </span>
+</a>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
 <span class="md-nav__icon md-icon"></span>
 </label>
+</div>
 <nav aria-expanded="false" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
 <label class="md-nav__title" for="__nav_5">
 <span class="md-nav__icon md-icon"></span>
@@ -769,11 +781,83 @@
           </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="../../diagrams/c4-diagrams/">
+<a class="md-nav__link" href="../../diagrams/c4-level1/">
 <span class="md-ellipsis">
     
   
-    C4 Diagrams
+    C4 Level 1 - Context
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../diagrams/c4-level2/">
+<span class="md-ellipsis">
+    
+  
+    C4 Level 2 - Container
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../diagrams/c4-level3/">
+<span class="md-ellipsis">
+    
+  
+    C4 Level 3 - Component
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../diagrams/c4-level4/">
+<span class="md-ellipsis">
+    
+  
+    C4 Level 4 - Code
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../diagrams/sequences/">
+<span class="md-ellipsis">
+    
+  
+    Sequence Diagrams
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../diagrams/deployment/">
+<span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../diagrams/archimate/">
+<span class="md-ellipsis">
+    
+  
+    ArchiMate Model
   
 
     
@@ -1211,108 +1295,108 @@
     RS-&gt;&gt;S3: 6. PUT report.json
     RS-&gt;&gt;RS: 7. Return CDN URL</code></pre>
 <h2 id="s3-storage-structure">S3 Storage Structure<a class="headerlink" href="#s3-storage-structure" title="Permanent link">¶</a></h2>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a>reports-bucket/
-<a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a>├── {user_id}/
-<a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a>│   ├── list/
-<a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a>│   │   └── reports.json          # Список доступных отчётов
-<a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a>│   ├── summary/
-<a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a>│   │   └── summary.json          # Сводная статистика
-<a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a>│   └── daily/
-<a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a>│       ├── 2024-01-15/
-<a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a>│       │   └── report.json       # Детальный отчёт за дату
-<a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a>│       ├── 2024-01-14/
-<a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a>│       │   └── report.json
-<a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a>│       └── ...
-</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a>reports-bucket/
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a>├── {user_id}/
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a>│   ├── list/
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a>│   │   └── reports.json          # Список доступных отчётов
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a>│   ├── summary/
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a>│   │   └── summary.json          # Сводная статистика
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a>│   └── daily/
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a>│       ├── 2024-01-15/
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a>│       │   └── report.json       # Детальный отчёт за дату
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a>│       ├── 2024-01-14/
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a>│       │   └── report.json
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a>│       └── ...
+</span></code></pre></div>
 <h3 id="reportsjson">Пример reports.json<a class="headerlink" href="#reportsjson" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="p">{</span>
-<a href="#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">  </span><span class="nt">"user_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"550e8400-e29b-41d4-a716-446655440000"</span><span class="p">,</span>
-<a href="#__codelineno-1-3" id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">  </span><span class="nt">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ivan.petrov"</span><span class="p">,</span>
-<a href="#__codelineno-1-4" id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">  </span><span class="nt">"generated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00Z"</span><span class="p">,</span>
-<a href="#__codelineno-1-5" id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">  </span><span class="nt">"reports"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a href="#__codelineno-1-6" id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">    </span><span class="p">{</span>
-<a href="#__codelineno-1-7" id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">      </span><span class="nt">"date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15"</span><span class="p">,</span>
-<a href="#__codelineno-1-8" id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">      </span><span class="nt">"cdn_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8002/reports/550e8400.../daily/2024-01-15/report.json"</span>
-<a href="#__codelineno-1-9" id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">    </span><span class="p">},</span>
-<a href="#__codelineno-1-10" id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">    </span><span class="p">{</span>
-<a href="#__codelineno-1-11" id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">      </span><span class="nt">"date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-14"</span><span class="p">,</span>
-<a href="#__codelineno-1-12" id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="w">      </span><span class="nt">"cdn_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8002/reports/550e8400.../daily/2024-01-14/report.json"</span>
-<a href="#__codelineno-1-13" id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="w">    </span><span class="p">}</span>
-<a href="#__codelineno-1-14" id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="w">  </span><span class="p">]</span>
-<a href="#__codelineno-1-15" id="__codelineno-1-15" name="__codelineno-1-15"></a><span class="p">}</span>
-</code></pre></div>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="p">{</span>
+</span><span id="__span-1-2"><a href="#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="w">  </span><span class="nt">"user_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"550e8400-e29b-41d4-a716-446655440000"</span><span class="p">,</span>
+</span><span id="__span-1-3"><a href="#__codelineno-1-3" id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="w">  </span><span class="nt">"username"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ivan.petrov"</span><span class="p">,</span>
+</span><span id="__span-1-4"><a href="#__codelineno-1-4" id="__codelineno-1-4" name="__codelineno-1-4"></a><span class="w">  </span><span class="nt">"generated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15T10:30:00Z"</span><span class="p">,</span>
+</span><span id="__span-1-5"><a href="#__codelineno-1-5" id="__codelineno-1-5" name="__codelineno-1-5"></a><span class="w">  </span><span class="nt">"reports"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-1-6"><a href="#__codelineno-1-6" id="__codelineno-1-6" name="__codelineno-1-6"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-1-7"><a href="#__codelineno-1-7" id="__codelineno-1-7" name="__codelineno-1-7"></a><span class="w">      </span><span class="nt">"date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-15"</span><span class="p">,</span>
+</span><span id="__span-1-8"><a href="#__codelineno-1-8" id="__codelineno-1-8" name="__codelineno-1-8"></a><span class="w">      </span><span class="nt">"cdn_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8002/reports/550e8400.../daily/2024-01-15/report.json"</span>
+</span><span id="__span-1-9"><a href="#__codelineno-1-9" id="__codelineno-1-9" name="__codelineno-1-9"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-1-10"><a href="#__codelineno-1-10" id="__codelineno-1-10" name="__codelineno-1-10"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-1-11"><a href="#__codelineno-1-11" id="__codelineno-1-11" name="__codelineno-1-11"></a><span class="w">      </span><span class="nt">"date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2024-01-14"</span><span class="p">,</span>
+</span><span id="__span-1-12"><a href="#__codelineno-1-12" id="__codelineno-1-12" name="__codelineno-1-12"></a><span class="w">      </span><span class="nt">"cdn_url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8002/reports/550e8400.../daily/2024-01-14/report.json"</span>
+</span><span id="__span-1-13"><a href="#__codelineno-1-13" id="__codelineno-1-13" name="__codelineno-1-13"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-1-14"><a href="#__codelineno-1-14" id="__codelineno-1-14" name="__codelineno-1-14"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-1-15"><a href="#__codelineno-1-15" id="__codelineno-1-15" name="__codelineno-1-15"></a><span class="p">}</span>
+</span></code></pre></div>
 <h2 id="minio-configuration">MinIO Configuration<a class="headerlink" href="#minio-configuration" title="Permanent link">¶</a></h2>
 <h3 id="docker-compose">Docker Compose<a class="headerlink" href="#docker-compose" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nt">minio</span><span class="p">:</span>
-<a href="#__codelineno-2-2" id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minio/minio:RELEASE.2024-01-18T22-51-28Z</span>
-<a href="#__codelineno-2-3" id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span><span class="nt">environment</span><span class="p">:</span>
-<a href="#__codelineno-2-4" id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="nt">MINIO_ROOT_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minioadmin</span>
-<a href="#__codelineno-2-5" id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="nt">MINIO_ROOT_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minioadmin123</span>
-<a href="#__codelineno-2-6" id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span>
-<a href="#__codelineno-2-7" id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./minio-data:/data</span>
-<a href="#__codelineno-2-8" id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
-<a href="#__codelineno-2-9" id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"9001:9001"</span><span class="w">   </span><span class="c1"># Console UI</span>
-<a href="#__codelineno-2-10" id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"9002:9000"</span><span class="w">   </span><span class="c1"># S3 API</span>
-<a href="#__codelineno-2-11" id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">server /data --console-address ":9001"</span>
-</code></pre></div>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nt">minio</span><span class="p">:</span>
+</span><span id="__span-2-2"><a href="#__codelineno-2-2" id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minio/minio:RELEASE.2024-01-18T22-51-28Z</span>
+</span><span id="__span-2-3"><a href="#__codelineno-2-3" id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="w">  </span><span class="nt">environment</span><span class="p">:</span>
+</span><span id="__span-2-4"><a href="#__codelineno-2-4" id="__codelineno-2-4" name="__codelineno-2-4"></a><span class="w">    </span><span class="nt">MINIO_ROOT_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minioadmin</span>
+</span><span id="__span-2-5"><a href="#__codelineno-2-5" id="__codelineno-2-5" name="__codelineno-2-5"></a><span class="w">    </span><span class="nt">MINIO_ROOT_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">minioadmin123</span>
+</span><span id="__span-2-6"><a href="#__codelineno-2-6" id="__codelineno-2-6" name="__codelineno-2-6"></a><span class="w">  </span><span class="nt">volumes</span><span class="p">:</span>
+</span><span id="__span-2-7"><a href="#__codelineno-2-7" id="__codelineno-2-7" name="__codelineno-2-7"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./minio-data:/data</span>
+</span><span id="__span-2-8"><a href="#__codelineno-2-8" id="__codelineno-2-8" name="__codelineno-2-8"></a><span class="w">  </span><span class="nt">ports</span><span class="p">:</span>
+</span><span id="__span-2-9"><a href="#__codelineno-2-9" id="__codelineno-2-9" name="__codelineno-2-9"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"9001:9001"</span><span class="w">   </span><span class="c1"># Console UI</span>
+</span><span id="__span-2-10"><a href="#__codelineno-2-10" id="__codelineno-2-10" name="__codelineno-2-10"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"9002:9000"</span><span class="w">   </span><span class="c1"># S3 API</span>
+</span><span id="__span-2-11"><a href="#__codelineno-2-11" id="__codelineno-2-11" name="__codelineno-2-11"></a><span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">server /data --console-address ":9001"</span>
+</span></code></pre></div>
 <h3 id="bucket-initialization">Bucket Initialization<a class="headerlink" href="#bucket-initialization" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># minio-init service</span>
-<a href="#__codelineno-3-2" id="__codelineno-3-2" name="__codelineno-3-2"></a>mc<span class="w"> </span><span class="nb">alias</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span>myminio<span class="w"> </span>http://minio:9000<span class="w"> </span>minioadmin<span class="w"> </span>minioadmin123
-<a href="#__codelineno-3-3" id="__codelineno-3-3" name="__codelineno-3-3"></a>mc<span class="w"> </span>mb<span class="w"> </span>myminio/reports-bucket<span class="w"> </span>--ignore-existing
-<a href="#__codelineno-3-4" id="__codelineno-3-4" name="__codelineno-3-4"></a>mc<span class="w"> </span>anonymous<span class="w"> </span><span class="nb">set</span><span class="w"> </span>download<span class="w"> </span>myminio/reports-bucket
-</code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a href="#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="c1"># minio-init service</span>
+</span><span id="__span-3-2"><a href="#__codelineno-3-2" id="__codelineno-3-2" name="__codelineno-3-2"></a>mc<span class="w"> </span><span class="nb">alias</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span>myminio<span class="w"> </span>http://minio:9000<span class="w"> </span>minioadmin<span class="w"> </span>minioadmin123
+</span><span id="__span-3-3"><a href="#__codelineno-3-3" id="__codelineno-3-3" name="__codelineno-3-3"></a>mc<span class="w"> </span>mb<span class="w"> </span>myminio/reports-bucket<span class="w"> </span>--ignore-existing
+</span><span id="__span-3-4"><a href="#__codelineno-3-4" id="__codelineno-3-4" name="__codelineno-3-4"></a>mc<span class="w"> </span>anonymous<span class="w"> </span><span class="nb">set</span><span class="w"> </span>download<span class="w"> </span>myminio/reports-bucket
+</span></code></pre></div>
 <h2 id="nginx-cdn-configuration">Nginx CDN Configuration<a class="headerlink" href="#nginx-cdn-configuration" title="Permanent link">¶</a></h2>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-4-1" id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="c1"># nginx-cdn/nginx.conf</span>
-<a href="#__codelineno-4-2" id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="k">worker_processes</span><span class="w"> </span><span class="s">auto</span><span class="p">;</span>
-<a href="#__codelineno-4-3" id="__codelineno-4-3" name="__codelineno-4-3"></a>
-<a href="#__codelineno-4-4" id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="k">events</span><span class="w"> </span><span class="p">{</span>
-<a href="#__codelineno-4-5" id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="kn">worker_connections</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span>
-<a href="#__codelineno-4-6" id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="p">}</span>
-<a href="#__codelineno-4-7" id="__codelineno-4-7" name="__codelineno-4-7"></a>
-<a href="#__codelineno-4-8" id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="k">http</span><span class="w"> </span><span class="p">{</span>
-<a href="#__codelineno-4-9" id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">    </span><span class="c1"># Cache configuration</span>
-<a href="#__codelineno-4-10" id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">    </span><span class="kn">proxy_cache_path</span><span class="w"> </span><span class="s">/var/cache/nginx</span>
-<a href="#__codelineno-4-11" id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">        </span><span class="s">levels=1:2</span>
-<a href="#__codelineno-4-12" id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="w">        </span><span class="s">keys_zone=reports_cache:10m</span>
-<a href="#__codelineno-4-13" id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">        </span><span class="s">max_size=1g</span>
-<a href="#__codelineno-4-14" id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">        </span><span class="s">inactive=5m</span>
-<a href="#__codelineno-4-15" id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="w">        </span><span class="s">use_temp_path=off</span><span class="p">;</span>
-<a href="#__codelineno-4-16" id="__codelineno-4-16" name="__codelineno-4-16"></a>
-<a href="#__codelineno-4-17" id="__codelineno-4-17" name="__codelineno-4-17"></a><span class="w">    </span><span class="kn">server</span><span class="w"> </span><span class="p">{</span>
-<a href="#__codelineno-4-18" id="__codelineno-4-18" name="__codelineno-4-18"></a><span class="w">        </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
-<a href="#__codelineno-4-19" id="__codelineno-4-19" name="__codelineno-4-19"></a>
-<a href="#__codelineno-4-20" id="__codelineno-4-20" name="__codelineno-4-20"></a><span class="w">        </span><span class="c1"># Health check</span>
-<a href="#__codelineno-4-21" id="__codelineno-4-21" name="__codelineno-4-21"></a><span class="w">        </span><span class="kn">location</span><span class="w"> </span><span class="s">/health</span><span class="w"> </span><span class="p">{</span>
-<a href="#__codelineno-4-22" id="__codelineno-4-22" name="__codelineno-4-22"></a><span class="w">            </span><span class="kn">return</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="s">'OK'</span><span class="p">;</span>
-<a href="#__codelineno-4-23" id="__codelineno-4-23" name="__codelineno-4-23"></a><span class="w">            </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Content-Type</span><span class="w"> </span><span class="s">text/plain</span><span class="p">;</span>
-<a href="#__codelineno-4-24" id="__codelineno-4-24" name="__codelineno-4-24"></a><span class="w">        </span><span class="p">}</span>
-<a href="#__codelineno-4-25" id="__codelineno-4-25" name="__codelineno-4-25"></a>
-<a href="#__codelineno-4-26" id="__codelineno-4-26" name="__codelineno-4-26"></a><span class="w">        </span><span class="c1"># Reports proxy with caching</span>
-<a href="#__codelineno-4-27" id="__codelineno-4-27" name="__codelineno-4-27"></a><span class="w">        </span><span class="kn">location</span><span class="w"> </span><span class="s">/reports/</span><span class="w"> </span><span class="p">{</span>
-<a href="#__codelineno-4-28" id="__codelineno-4-28" name="__codelineno-4-28"></a><span class="w">            </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://minio:9000/reports-bucket/</span><span class="p">;</span>
-<a href="#__codelineno-4-29" id="__codelineno-4-29" name="__codelineno-4-29"></a>
-<a href="#__codelineno-4-30" id="__codelineno-4-30" name="__codelineno-4-30"></a><span class="w">            </span><span class="c1"># Cache settings</span>
-<a href="#__codelineno-4-31" id="__codelineno-4-31" name="__codelineno-4-31"></a><span class="w">            </span><span class="kn">proxy_cache</span><span class="w"> </span><span class="s">reports_cache</span><span class="p">;</span>
-<a href="#__codelineno-4-32" id="__codelineno-4-32" name="__codelineno-4-32"></a><span class="w">            </span><span class="kn">proxy_cache_valid</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="mi">5m</span><span class="p">;</span>
-<a href="#__codelineno-4-33" id="__codelineno-4-33" name="__codelineno-4-33"></a><span class="w">            </span><span class="kn">proxy_cache_valid</span><span class="w"> </span><span class="mi">404</span><span class="w"> </span><span class="mi">1m</span><span class="p">;</span>
-<a href="#__codelineno-4-34" id="__codelineno-4-34" name="__codelineno-4-34"></a><span class="w">            </span><span class="kn">proxy_cache_use_stale</span><span class="w"> </span><span class="s">error</span><span class="w"> </span><span class="s">timeout</span><span class="w"> </span><span class="s">updating</span><span class="p">;</span>
-<a href="#__codelineno-4-35" id="__codelineno-4-35" name="__codelineno-4-35"></a><span class="w">            </span><span class="kn">proxy_cache_lock</span><span class="w"> </span><span class="no">on</span><span class="p">;</span>
-<a href="#__codelineno-4-36" id="__codelineno-4-36" name="__codelineno-4-36"></a>
-<a href="#__codelineno-4-37" id="__codelineno-4-37" name="__codelineno-4-37"></a><span class="w">            </span><span class="c1"># Cache status header</span>
-<a href="#__codelineno-4-38" id="__codelineno-4-38" name="__codelineno-4-38"></a><span class="w">            </span><span class="kn">add_header</span><span class="w"> </span><span class="s">X-Cache-Status</span><span class="w"> </span><span class="nv">$upstream_cache_status</span><span class="p">;</span>
-<a href="#__codelineno-4-39" id="__codelineno-4-39" name="__codelineno-4-39"></a>
-<a href="#__codelineno-4-40" id="__codelineno-4-40" name="__codelineno-4-40"></a><span class="w">            </span><span class="c1"># CORS headers</span>
-<a href="#__codelineno-4-41" id="__codelineno-4-41" name="__codelineno-4-41"></a><span class="w">            </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Access-Control-Allow-Origin</span><span class="w"> </span><span class="s">*</span><span class="p">;</span>
-<a href="#__codelineno-4-42" id="__codelineno-4-42" name="__codelineno-4-42"></a><span class="w">            </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Access-Control-Allow-Methods</span><span class="w"> </span><span class="s">'GET,</span><span class="w"> </span><span class="s">OPTIONS'</span><span class="p">;</span>
-<a href="#__codelineno-4-43" id="__codelineno-4-43" name="__codelineno-4-43"></a><span class="w">            </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Access-Control-Allow-Headers</span><span class="w"> </span><span class="s">'Content-Type'</span><span class="p">;</span>
-<a href="#__codelineno-4-44" id="__codelineno-4-44" name="__codelineno-4-44"></a>
-<a href="#__codelineno-4-45" id="__codelineno-4-45" name="__codelineno-4-45"></a><span class="w">            </span><span class="c1"># Compression</span>
-<a href="#__codelineno-4-46" id="__codelineno-4-46" name="__codelineno-4-46"></a><span class="w">            </span><span class="kn">gzip</span><span class="w"> </span><span class="no">on</span><span class="p">;</span>
-<a href="#__codelineno-4-47" id="__codelineno-4-47" name="__codelineno-4-47"></a><span class="w">            </span><span class="kn">gzip_types</span><span class="w"> </span><span class="s">application/json</span><span class="p">;</span>
-<a href="#__codelineno-4-48" id="__codelineno-4-48" name="__codelineno-4-48"></a><span class="w">        </span><span class="p">}</span>
-<a href="#__codelineno-4-49" id="__codelineno-4-49" name="__codelineno-4-49"></a><span class="w">    </span><span class="p">}</span>
-<a href="#__codelineno-4-50" id="__codelineno-4-50" name="__codelineno-4-50"></a><span class="p">}</span>
-</code></pre></div>
+<div class="language-nginx highlight"><pre><span></span><code><span id="__span-4-1"><a href="#__codelineno-4-1" id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="c1"># nginx-cdn/nginx.conf</span>
+</span><span id="__span-4-2"><a href="#__codelineno-4-2" id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="k">worker_processes</span><span class="w"> </span><span class="s">auto</span><span class="p">;</span>
+</span><span id="__span-4-3"><a href="#__codelineno-4-3" id="__codelineno-4-3" name="__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a href="#__codelineno-4-4" id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="k">events</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-5"><a href="#__codelineno-4-5" id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="kn">worker_connections</span><span class="w"> </span><span class="mi">1024</span><span class="p">;</span>
+</span><span id="__span-4-6"><a href="#__codelineno-4-6" id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="p">}</span>
+</span><span id="__span-4-7"><a href="#__codelineno-4-7" id="__codelineno-4-7" name="__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a href="#__codelineno-4-8" id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="k">http</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-9"><a href="#__codelineno-4-9" id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">    </span><span class="c1"># Cache configuration</span>
+</span><span id="__span-4-10"><a href="#__codelineno-4-10" id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">    </span><span class="kn">proxy_cache_path</span><span class="w"> </span><span class="s">/var/cache/nginx</span>
+</span><span id="__span-4-11"><a href="#__codelineno-4-11" id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="w">        </span><span class="s">levels=1:2</span>
+</span><span id="__span-4-12"><a href="#__codelineno-4-12" id="__codelineno-4-12" name="__codelineno-4-12"></a><span class="w">        </span><span class="s">keys_zone=reports_cache:10m</span>
+</span><span id="__span-4-13"><a href="#__codelineno-4-13" id="__codelineno-4-13" name="__codelineno-4-13"></a><span class="w">        </span><span class="s">max_size=1g</span>
+</span><span id="__span-4-14"><a href="#__codelineno-4-14" id="__codelineno-4-14" name="__codelineno-4-14"></a><span class="w">        </span><span class="s">inactive=5m</span>
+</span><span id="__span-4-15"><a href="#__codelineno-4-15" id="__codelineno-4-15" name="__codelineno-4-15"></a><span class="w">        </span><span class="s">use_temp_path=off</span><span class="p">;</span>
+</span><span id="__span-4-16"><a href="#__codelineno-4-16" id="__codelineno-4-16" name="__codelineno-4-16"></a>
+</span><span id="__span-4-17"><a href="#__codelineno-4-17" id="__codelineno-4-17" name="__codelineno-4-17"></a><span class="w">    </span><span class="kn">server</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-18"><a href="#__codelineno-4-18" id="__codelineno-4-18" name="__codelineno-4-18"></a><span class="w">        </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
+</span><span id="__span-4-19"><a href="#__codelineno-4-19" id="__codelineno-4-19" name="__codelineno-4-19"></a>
+</span><span id="__span-4-20"><a href="#__codelineno-4-20" id="__codelineno-4-20" name="__codelineno-4-20"></a><span class="w">        </span><span class="c1"># Health check</span>
+</span><span id="__span-4-21"><a href="#__codelineno-4-21" id="__codelineno-4-21" name="__codelineno-4-21"></a><span class="w">        </span><span class="kn">location</span><span class="w"> </span><span class="s">/health</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-22"><a href="#__codelineno-4-22" id="__codelineno-4-22" name="__codelineno-4-22"></a><span class="w">            </span><span class="kn">return</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="s">'OK'</span><span class="p">;</span>
+</span><span id="__span-4-23"><a href="#__codelineno-4-23" id="__codelineno-4-23" name="__codelineno-4-23"></a><span class="w">            </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Content-Type</span><span class="w"> </span><span class="s">text/plain</span><span class="p">;</span>
+</span><span id="__span-4-24"><a href="#__codelineno-4-24" id="__codelineno-4-24" name="__codelineno-4-24"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-4-25"><a href="#__codelineno-4-25" id="__codelineno-4-25" name="__codelineno-4-25"></a>
+</span><span id="__span-4-26"><a href="#__codelineno-4-26" id="__codelineno-4-26" name="__codelineno-4-26"></a><span class="w">        </span><span class="c1"># Reports proxy with caching</span>
+</span><span id="__span-4-27"><a href="#__codelineno-4-27" id="__codelineno-4-27" name="__codelineno-4-27"></a><span class="w">        </span><span class="kn">location</span><span class="w"> </span><span class="s">/reports/</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-28"><a href="#__codelineno-4-28" id="__codelineno-4-28" name="__codelineno-4-28"></a><span class="w">            </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://minio:9000/reports-bucket/</span><span class="p">;</span>
+</span><span id="__span-4-29"><a href="#__codelineno-4-29" id="__codelineno-4-29" name="__codelineno-4-29"></a>
+</span><span id="__span-4-30"><a href="#__codelineno-4-30" id="__codelineno-4-30" name="__codelineno-4-30"></a><span class="w">            </span><span class="c1"># Cache settings</span>
+</span><span id="__span-4-31"><a href="#__codelineno-4-31" id="__codelineno-4-31" name="__codelineno-4-31"></a><span class="w">            </span><span class="kn">proxy_cache</span><span class="w"> </span><span class="s">reports_cache</span><span class="p">;</span>
+</span><span id="__span-4-32"><a href="#__codelineno-4-32" id="__codelineno-4-32" name="__codelineno-4-32"></a><span class="w">            </span><span class="kn">proxy_cache_valid</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="mi">5m</span><span class="p">;</span>
+</span><span id="__span-4-33"><a href="#__codelineno-4-33" id="__codelineno-4-33" name="__codelineno-4-33"></a><span class="w">            </span><span class="kn">proxy_cache_valid</span><span class="w"> </span><span class="mi">404</span><span class="w"> </span><span class="mi">1m</span><span class="p">;</span>
+</span><span id="__span-4-34"><a href="#__codelineno-4-34" id="__codelineno-4-34" name="__codelineno-4-34"></a><span class="w">            </span><span class="kn">proxy_cache_use_stale</span><span class="w"> </span><span class="s">error</span><span class="w"> </span><span class="s">timeout</span><span class="w"> </span><span class="s">updating</span><span class="p">;</span>
+</span><span id="__span-4-35"><a href="#__codelineno-4-35" id="__codelineno-4-35" name="__codelineno-4-35"></a><span class="w">            </span><span class="kn">proxy_cache_lock</span><span class="w"> </span><span class="no">on</span><span class="p">;</span>
+</span><span id="__span-4-36"><a href="#__codelineno-4-36" id="__codelineno-4-36" name="__codelineno-4-36"></a>
+</span><span id="__span-4-37"><a href="#__codelineno-4-37" id="__codelineno-4-37" name="__codelineno-4-37"></a><span class="w">            </span><span class="c1"># Cache status header</span>
+</span><span id="__span-4-38"><a href="#__codelineno-4-38" id="__codelineno-4-38" name="__codelineno-4-38"></a><span class="w">            </span><span class="kn">add_header</span><span class="w"> </span><span class="s">X-Cache-Status</span><span class="w"> </span><span class="nv">$upstream_cache_status</span><span class="p">;</span>
+</span><span id="__span-4-39"><a href="#__codelineno-4-39" id="__codelineno-4-39" name="__codelineno-4-39"></a>
+</span><span id="__span-4-40"><a href="#__codelineno-4-40" id="__codelineno-4-40" name="__codelineno-4-40"></a><span class="w">            </span><span class="c1"># CORS headers</span>
+</span><span id="__span-4-41"><a href="#__codelineno-4-41" id="__codelineno-4-41" name="__codelineno-4-41"></a><span class="w">            </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Access-Control-Allow-Origin</span><span class="w"> </span><span class="s">*</span><span class="p">;</span>
+</span><span id="__span-4-42"><a href="#__codelineno-4-42" id="__codelineno-4-42" name="__codelineno-4-42"></a><span class="w">            </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Access-Control-Allow-Methods</span><span class="w"> </span><span class="s">'GET,</span><span class="w"> </span><span class="s">OPTIONS'</span><span class="p">;</span>
+</span><span id="__span-4-43"><a href="#__codelineno-4-43" id="__codelineno-4-43" name="__codelineno-4-43"></a><span class="w">            </span><span class="kn">add_header</span><span class="w"> </span><span class="s">Access-Control-Allow-Headers</span><span class="w"> </span><span class="s">'Content-Type'</span><span class="p">;</span>
+</span><span id="__span-4-44"><a href="#__codelineno-4-44" id="__codelineno-4-44" name="__codelineno-4-44"></a>
+</span><span id="__span-4-45"><a href="#__codelineno-4-45" id="__codelineno-4-45" name="__codelineno-4-45"></a><span class="w">            </span><span class="c1"># Compression</span>
+</span><span id="__span-4-46"><a href="#__codelineno-4-46" id="__codelineno-4-46" name="__codelineno-4-46"></a><span class="w">            </span><span class="kn">gzip</span><span class="w"> </span><span class="no">on</span><span class="p">;</span>
+</span><span id="__span-4-47"><a href="#__codelineno-4-47" id="__codelineno-4-47" name="__codelineno-4-47"></a><span class="w">            </span><span class="kn">gzip_types</span><span class="w"> </span><span class="s">application/json</span><span class="p">;</span>
+</span><span id="__span-4-48"><a href="#__codelineno-4-48" id="__codelineno-4-48" name="__codelineno-4-48"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-4-49"><a href="#__codelineno-4-49" id="__codelineno-4-49" name="__codelineno-4-49"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-4-50"><a href="#__codelineno-4-50" id="__codelineno-4-50" name="__codelineno-4-50"></a><span class="p">}</span>
+</span></code></pre></div>
 <h3 id="cache-headers">Cache Headers<a class="headerlink" href="#cache-headers" title="Permanent link">¶</a></h3>
 <table>
 <thead>
@@ -1342,133 +1426,133 @@
 </table>
 <h2 id="reports-service-implementation">Reports Service Implementation<a class="headerlink" href="#reports-service-implementation" title="Permanent link">¶</a></h2>
 <h3 id="s3-client">S3 Client<a class="headerlink" href="#s3-client" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-5-1" id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="c1"># reports-service/app/services/s3_service.py</span>
-<a href="#__codelineno-5-2" id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
-<a href="#__codelineno-5-3" id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">botocore.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
-<a href="#__codelineno-5-4" id="__codelineno-5-4" name="__codelineno-5-4"></a>
-<a href="#__codelineno-5-5" id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">S3Service</span><span class="p">:</span>
-<a href="#__codelineno-5-6" id="__codelineno-5-6" name="__codelineno-5-6"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a href="#__codelineno-5-7" id="__codelineno-5-7" name="__codelineno-5-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
-<a href="#__codelineno-5-8" id="__codelineno-5-8" name="__codelineno-5-8"></a>            <span class="s1">'s3'</span><span class="p">,</span>
-<a href="#__codelineno-5-9" id="__codelineno-5-9" name="__codelineno-5-9"></a>            <span class="n">endpoint_url</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'S3_ENDPOINT_URL'</span><span class="p">,</span> <span class="s1">'http://minio:9000'</span><span class="p">),</span>
-<a href="#__codelineno-5-10" id="__codelineno-5-10" name="__codelineno-5-10"></a>            <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'S3_ACCESS_KEY'</span><span class="p">,</span> <span class="s1">'minioadmin'</span><span class="p">),</span>
-<a href="#__codelineno-5-11" id="__codelineno-5-11" name="__codelineno-5-11"></a>            <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'S3_SECRET_KEY'</span><span class="p">,</span> <span class="s1">'minioadmin123'</span><span class="p">),</span>
-<a href="#__codelineno-5-12" id="__codelineno-5-12" name="__codelineno-5-12"></a>            <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span><span class="n">signature_version</span><span class="o">=</span><span class="s1">'s3v4'</span><span class="p">),</span>
-<a href="#__codelineno-5-13" id="__codelineno-5-13" name="__codelineno-5-13"></a>            <span class="n">region_name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'S3_REGION'</span><span class="p">,</span> <span class="s1">'us-east-1'</span><span class="p">)</span>
-<a href="#__codelineno-5-14" id="__codelineno-5-14" name="__codelineno-5-14"></a>        <span class="p">)</span>
-<a href="#__codelineno-5-15" id="__codelineno-5-15" name="__codelineno-5-15"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'S3_BUCKET_NAME'</span><span class="p">,</span> <span class="s1">'reports-bucket'</span><span class="p">)</span>
-<a href="#__codelineno-5-16" id="__codelineno-5-16" name="__codelineno-5-16"></a>
-<a href="#__codelineno-5-17" id="__codelineno-5-17" name="__codelineno-5-17"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<a href="#__codelineno-5-18" id="__codelineno-5-18" name="__codelineno-5-18"></a><span class="w">        </span><span class="sd">"""Проверить существование объекта"""</span>
-<a href="#__codelineno-5-19" id="__codelineno-5-19" name="__codelineno-5-19"></a>        <span class="k">try</span><span class="p">:</span>
-<a href="#__codelineno-5-20" id="__codelineno-5-20" name="__codelineno-5-20"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">head_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
-<a href="#__codelineno-5-21" id="__codelineno-5-21" name="__codelineno-5-21"></a>            <span class="k">return</span> <span class="kc">True</span>
-<a href="#__codelineno-5-22" id="__codelineno-5-22" name="__codelineno-5-22"></a>        <span class="k">except</span><span class="p">:</span>
-<a href="#__codelineno-5-23" id="__codelineno-5-23" name="__codelineno-5-23"></a>            <span class="k">return</span> <span class="kc">False</span>
-<a href="#__codelineno-5-24" id="__codelineno-5-24" name="__codelineno-5-24"></a>
-<a href="#__codelineno-5-25" id="__codelineno-5-25" name="__codelineno-5-25"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">put_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<a href="#__codelineno-5-26" id="__codelineno-5-26" name="__codelineno-5-26"></a><span class="w">        </span><span class="sd">"""Сохранить отчёт в S3"""</span>
-<a href="#__codelineno-5-27" id="__codelineno-5-27" name="__codelineno-5-27"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">put_object</span><span class="p">(</span>
-<a href="#__codelineno-5-28" id="__codelineno-5-28" name="__codelineno-5-28"></a>            <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
-<a href="#__codelineno-5-29" id="__codelineno-5-29" name="__codelineno-5-29"></a>            <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
-<a href="#__codelineno-5-30" id="__codelineno-5-30" name="__codelineno-5-30"></a>            <span class="n">Body</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-<a href="#__codelineno-5-31" id="__codelineno-5-31" name="__codelineno-5-31"></a>            <span class="n">ContentType</span><span class="o">=</span><span class="s1">'application/json'</span>
-<a href="#__codelineno-5-32" id="__codelineno-5-32" name="__codelineno-5-32"></a>        <span class="p">)</span>
-<a href="#__codelineno-5-33" id="__codelineno-5-33" name="__codelineno-5-33"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cdn_url</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-<a href="#__codelineno-5-34" id="__codelineno-5-34" name="__codelineno-5-34"></a>
-<a href="#__codelineno-5-35" id="__codelineno-5-35" name="__codelineno-5-35"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">delete_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<a href="#__codelineno-5-36" id="__codelineno-5-36" name="__codelineno-5-36"></a><span class="w">        </span><span class="sd">"""Удалить отчёт из S3"""</span>
-<a href="#__codelineno-5-37" id="__codelineno-5-37" name="__codelineno-5-37"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">delete_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
-<a href="#__codelineno-5-38" id="__codelineno-5-38" name="__codelineno-5-38"></a>
-<a href="#__codelineno-5-39" id="__codelineno-5-39" name="__codelineno-5-39"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_cdn_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<a href="#__codelineno-5-40" id="__codelineno-5-40" name="__codelineno-5-40"></a><span class="w">        </span><span class="sd">"""Получить CDN URL для объекта"""</span>
-<a href="#__codelineno-5-41" id="__codelineno-5-41" name="__codelineno-5-41"></a>        <span class="n">cdn_base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'CDN_BASE_URL'</span><span class="p">,</span> <span class="s1">'http://localhost:8002'</span><span class="p">)</span>
-<a href="#__codelineno-5-42" id="__codelineno-5-42" name="__codelineno-5-42"></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cdn_base</span><span class="si">}</span><span class="s2">/reports/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span>
-</code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a href="#__codelineno-5-1" id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="c1"># reports-service/app/services/s3_service.py</span>
+</span><span id="__span-5-2"><a href="#__codelineno-5-2" id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
+</span><span id="__span-5-3"><a href="#__codelineno-5-3" id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">botocore.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+</span><span id="__span-5-4"><a href="#__codelineno-5-4" id="__codelineno-5-4" name="__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a href="#__codelineno-5-5" id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">S3Service</span><span class="p">:</span>
+</span><span id="__span-5-6"><a href="#__codelineno-5-6" id="__codelineno-5-6" name="__codelineno-5-6"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-5-7"><a href="#__codelineno-5-7" id="__codelineno-5-7" name="__codelineno-5-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span>
+</span><span id="__span-5-8"><a href="#__codelineno-5-8" id="__codelineno-5-8" name="__codelineno-5-8"></a>            <span class="s1">'s3'</span><span class="p">,</span>
+</span><span id="__span-5-9"><a href="#__codelineno-5-9" id="__codelineno-5-9" name="__codelineno-5-9"></a>            <span class="n">endpoint_url</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'S3_ENDPOINT_URL'</span><span class="p">,</span> <span class="s1">'http://minio:9000'</span><span class="p">),</span>
+</span><span id="__span-5-10"><a href="#__codelineno-5-10" id="__codelineno-5-10" name="__codelineno-5-10"></a>            <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'S3_ACCESS_KEY'</span><span class="p">,</span> <span class="s1">'minioadmin'</span><span class="p">),</span>
+</span><span id="__span-5-11"><a href="#__codelineno-5-11" id="__codelineno-5-11" name="__codelineno-5-11"></a>            <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'S3_SECRET_KEY'</span><span class="p">,</span> <span class="s1">'minioadmin123'</span><span class="p">),</span>
+</span><span id="__span-5-12"><a href="#__codelineno-5-12" id="__codelineno-5-12" name="__codelineno-5-12"></a>            <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span><span class="n">signature_version</span><span class="o">=</span><span class="s1">'s3v4'</span><span class="p">),</span>
+</span><span id="__span-5-13"><a href="#__codelineno-5-13" id="__codelineno-5-13" name="__codelineno-5-13"></a>            <span class="n">region_name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'S3_REGION'</span><span class="p">,</span> <span class="s1">'us-east-1'</span><span class="p">)</span>
+</span><span id="__span-5-14"><a href="#__codelineno-5-14" id="__codelineno-5-14" name="__codelineno-5-14"></a>        <span class="p">)</span>
+</span><span id="__span-5-15"><a href="#__codelineno-5-15" id="__codelineno-5-15" name="__codelineno-5-15"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">bucket</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'S3_BUCKET_NAME'</span><span class="p">,</span> <span class="s1">'reports-bucket'</span><span class="p">)</span>
+</span><span id="__span-5-16"><a href="#__codelineno-5-16" id="__codelineno-5-16" name="__codelineno-5-16"></a>
+</span><span id="__span-5-17"><a href="#__codelineno-5-17" id="__codelineno-5-17" name="__codelineno-5-17"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-5-18"><a href="#__codelineno-5-18" id="__codelineno-5-18" name="__codelineno-5-18"></a><span class="w">        </span><span class="sd">"""Проверить существование объекта"""</span>
+</span><span id="__span-5-19"><a href="#__codelineno-5-19" id="__codelineno-5-19" name="__codelineno-5-19"></a>        <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-5-20"><a href="#__codelineno-5-20" id="__codelineno-5-20" name="__codelineno-5-20"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">head_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+</span><span id="__span-5-21"><a href="#__codelineno-5-21" id="__codelineno-5-21" name="__codelineno-5-21"></a>            <span class="k">return</span> <span class="kc">True</span>
+</span><span id="__span-5-22"><a href="#__codelineno-5-22" id="__codelineno-5-22" name="__codelineno-5-22"></a>        <span class="k">except</span><span class="p">:</span>
+</span><span id="__span-5-23"><a href="#__codelineno-5-23" id="__codelineno-5-23" name="__codelineno-5-23"></a>            <span class="k">return</span> <span class="kc">False</span>
+</span><span id="__span-5-24"><a href="#__codelineno-5-24" id="__codelineno-5-24" name="__codelineno-5-24"></a>
+</span><span id="__span-5-25"><a href="#__codelineno-5-25" id="__codelineno-5-25" name="__codelineno-5-25"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">put_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-5-26"><a href="#__codelineno-5-26" id="__codelineno-5-26" name="__codelineno-5-26"></a><span class="w">        </span><span class="sd">"""Сохранить отчёт в S3"""</span>
+</span><span id="__span-5-27"><a href="#__codelineno-5-27" id="__codelineno-5-27" name="__codelineno-5-27"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">put_object</span><span class="p">(</span>
+</span><span id="__span-5-28"><a href="#__codelineno-5-28" id="__codelineno-5-28" name="__codelineno-5-28"></a>            <span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span>
+</span><span id="__span-5-29"><a href="#__codelineno-5-29" id="__codelineno-5-29" name="__codelineno-5-29"></a>            <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+</span><span id="__span-5-30"><a href="#__codelineno-5-30" id="__codelineno-5-30" name="__codelineno-5-30"></a>            <span class="n">Body</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+</span><span id="__span-5-31"><a href="#__codelineno-5-31" id="__codelineno-5-31" name="__codelineno-5-31"></a>            <span class="n">ContentType</span><span class="o">=</span><span class="s1">'application/json'</span>
+</span><span id="__span-5-32"><a href="#__codelineno-5-32" id="__codelineno-5-32" name="__codelineno-5-32"></a>        <span class="p">)</span>
+</span><span id="__span-5-33"><a href="#__codelineno-5-33" id="__codelineno-5-33" name="__codelineno-5-33"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cdn_url</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="__span-5-34"><a href="#__codelineno-5-34" id="__codelineno-5-34" name="__codelineno-5-34"></a>
+</span><span id="__span-5-35"><a href="#__codelineno-5-35" id="__codelineno-5-35" name="__codelineno-5-35"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">delete_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+</span><span id="__span-5-36"><a href="#__codelineno-5-36" id="__codelineno-5-36" name="__codelineno-5-36"></a><span class="w">        </span><span class="sd">"""Удалить отчёт из S3"""</span>
+</span><span id="__span-5-37"><a href="#__codelineno-5-37" id="__codelineno-5-37" name="__codelineno-5-37"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">delete_object</span><span class="p">(</span><span class="n">Bucket</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bucket</span><span class="p">,</span> <span class="n">Key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+</span><span id="__span-5-38"><a href="#__codelineno-5-38" id="__codelineno-5-38" name="__codelineno-5-38"></a>
+</span><span id="__span-5-39"><a href="#__codelineno-5-39" id="__codelineno-5-39" name="__codelineno-5-39"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_cdn_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="__span-5-40"><a href="#__codelineno-5-40" id="__codelineno-5-40" name="__codelineno-5-40"></a><span class="w">        </span><span class="sd">"""Получить CDN URL для объекта"""</span>
+</span><span id="__span-5-41"><a href="#__codelineno-5-41" id="__codelineno-5-41" name="__codelineno-5-41"></a>        <span class="n">cdn_base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'CDN_BASE_URL'</span><span class="p">,</span> <span class="s1">'http://localhost:8002'</span><span class="p">)</span>
+</span><span id="__span-5-42"><a href="#__codelineno-5-42" id="__codelineno-5-42" name="__codelineno-5-42"></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cdn_base</span><span class="si">}</span><span class="s2">/reports/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span>
+</span></code></pre></div>
 <h3 id="cdn-endpoints">CDN Endpoints<a class="headerlink" href="#cdn-endpoints" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="c1"># reports-service/app/main.py</span>
-<a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a>
-<a href="#__codelineno-6-3" id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/api/reports/cdn/list"</span><span class="p">)</span>
-<a href="#__codelineno-6-4" id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_reports_cdn</span><span class="p">(</span>
-<a href="#__codelineno-6-5" id="__codelineno-6-5" name="__codelineno-6-5"></a>    <span class="n">user</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_current_user</span><span class="p">),</span>
-<a href="#__codelineno-6-6" id="__codelineno-6-6" name="__codelineno-6-6"></a>    <span class="n">s3</span><span class="p">:</span> <span class="n">S3Service</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(),</span>
-<a href="#__codelineno-6-7" id="__codelineno-6-7" name="__codelineno-6-7"></a>    <span class="n">ch</span><span class="p">:</span> <span class="n">ClickHouseService</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">()</span>
-<a href="#__codelineno-6-8" id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="p">):</span>
-<a href="#__codelineno-6-9" id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">    </span><span class="sd">"""Получить CDN URL для списка отчётов"""</span>
-<a href="#__codelineno-6-10" id="__codelineno-6-10" name="__codelineno-6-10"></a>    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"sub"</span><span class="p">)</span>
-<a href="#__codelineno-6-11" id="__codelineno-6-11" name="__codelineno-6-11"></a>    <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">/list/reports.json"</span>
-<a href="#__codelineno-6-12" id="__codelineno-6-12" name="__codelineno-6-12"></a>
-<a href="#__codelineno-6-13" id="__codelineno-6-13" name="__codelineno-6-13"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">s3</span><span class="o">.</span><span class="n">check_exists</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-<a href="#__codelineno-6-14" id="__codelineno-6-14" name="__codelineno-6-14"></a>        <span class="c1"># Cache miss - генерируем отчёт</span>
-<a href="#__codelineno-6-15" id="__codelineno-6-15" name="__codelineno-6-15"></a>        <span class="n">reports</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ch</span><span class="o">.</span><span class="n">get_user_reports</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"preferred_username"</span><span class="p">))</span>
-<a href="#__codelineno-6-16" id="__codelineno-6-16" name="__codelineno-6-16"></a>        <span class="n">cdn_url</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">put_report</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">reports</span><span class="p">)</span>
-<a href="#__codelineno-6-17" id="__codelineno-6-17" name="__codelineno-6-17"></a>    <span class="k">else</span><span class="p">:</span>
-<a href="#__codelineno-6-18" id="__codelineno-6-18" name="__codelineno-6-18"></a>        <span class="n">cdn_url</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_cdn_url</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-<a href="#__codelineno-6-19" id="__codelineno-6-19" name="__codelineno-6-19"></a>
-<a href="#__codelineno-6-20" id="__codelineno-6-20" name="__codelineno-6-20"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">"cdn_url"</span><span class="p">:</span> <span class="n">cdn_url</span><span class="p">}</span>
-<a href="#__codelineno-6-21" id="__codelineno-6-21" name="__codelineno-6-21"></a>
-<a href="#__codelineno-6-22" id="__codelineno-6-22" name="__codelineno-6-22"></a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/api/reports/cdn/</span><span class="si">{date}</span><span class="s2">"</span><span class="p">)</span>
-<a href="#__codelineno-6-23" id="__codelineno-6-23" name="__codelineno-6-23"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_report_cdn</span><span class="p">(</span>
-<a href="#__codelineno-6-24" id="__codelineno-6-24" name="__codelineno-6-24"></a>    <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<a href="#__codelineno-6-25" id="__codelineno-6-25" name="__codelineno-6-25"></a>    <span class="n">user</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_current_user</span><span class="p">),</span>
-<a href="#__codelineno-6-26" id="__codelineno-6-26" name="__codelineno-6-26"></a>    <span class="n">s3</span><span class="p">:</span> <span class="n">S3Service</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(),</span>
-<a href="#__codelineno-6-27" id="__codelineno-6-27" name="__codelineno-6-27"></a>    <span class="n">ch</span><span class="p">:</span> <span class="n">ClickHouseService</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">()</span>
-<a href="#__codelineno-6-28" id="__codelineno-6-28" name="__codelineno-6-28"></a><span class="p">):</span>
-<a href="#__codelineno-6-29" id="__codelineno-6-29" name="__codelineno-6-29"></a><span class="w">    </span><span class="sd">"""Получить CDN URL для отчёта за дату"""</span>
-<a href="#__codelineno-6-30" id="__codelineno-6-30" name="__codelineno-6-30"></a>    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"sub"</span><span class="p">)</span>
-<a href="#__codelineno-6-31" id="__codelineno-6-31" name="__codelineno-6-31"></a>    <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">/daily/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s2">/report.json"</span>
-<a href="#__codelineno-6-32" id="__codelineno-6-32" name="__codelineno-6-32"></a>
-<a href="#__codelineno-6-33" id="__codelineno-6-33" name="__codelineno-6-33"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">s3</span><span class="o">.</span><span class="n">check_exists</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
-<a href="#__codelineno-6-34" id="__codelineno-6-34" name="__codelineno-6-34"></a>        <span class="n">report</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ch</span><span class="o">.</span><span class="n">get_report_by_date</span><span class="p">(</span>
-<a href="#__codelineno-6-35" id="__codelineno-6-35" name="__codelineno-6-35"></a>            <span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"preferred_username"</span><span class="p">),</span> <span class="n">date</span>
-<a href="#__codelineno-6-36" id="__codelineno-6-36" name="__codelineno-6-36"></a>        <span class="p">)</span>
-<a href="#__codelineno-6-37" id="__codelineno-6-37" name="__codelineno-6-37"></a>        <span class="n">cdn_url</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">put_report</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">report</span><span class="p">)</span>
-<a href="#__codelineno-6-38" id="__codelineno-6-38" name="__codelineno-6-38"></a>    <span class="k">else</span><span class="p">:</span>
-<a href="#__codelineno-6-39" id="__codelineno-6-39" name="__codelineno-6-39"></a>        <span class="n">cdn_url</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_cdn_url</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-<a href="#__codelineno-6-40" id="__codelineno-6-40" name="__codelineno-6-40"></a>
-<a href="#__codelineno-6-41" id="__codelineno-6-41" name="__codelineno-6-41"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">"cdn_url"</span><span class="p">:</span> <span class="n">cdn_url</span><span class="p">,</span> <span class="s2">"date"</span><span class="p">:</span> <span class="n">date</span><span class="p">}</span>
-</code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="c1"># reports-service/app/main.py</span>
+</span><span id="__span-6-2"><a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a href="#__codelineno-6-3" id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/api/reports/cdn/list"</span><span class="p">)</span>
+</span><span id="__span-6-4"><a href="#__codelineno-6-4" id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_reports_cdn</span><span class="p">(</span>
+</span><span id="__span-6-5"><a href="#__codelineno-6-5" id="__codelineno-6-5" name="__codelineno-6-5"></a>    <span class="n">user</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_current_user</span><span class="p">),</span>
+</span><span id="__span-6-6"><a href="#__codelineno-6-6" id="__codelineno-6-6" name="__codelineno-6-6"></a>    <span class="n">s3</span><span class="p">:</span> <span class="n">S3Service</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(),</span>
+</span><span id="__span-6-7"><a href="#__codelineno-6-7" id="__codelineno-6-7" name="__codelineno-6-7"></a>    <span class="n">ch</span><span class="p">:</span> <span class="n">ClickHouseService</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">()</span>
+</span><span id="__span-6-8"><a href="#__codelineno-6-8" id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="p">):</span>
+</span><span id="__span-6-9"><a href="#__codelineno-6-9" id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">    </span><span class="sd">"""Получить CDN URL для списка отчётов"""</span>
+</span><span id="__span-6-10"><a href="#__codelineno-6-10" id="__codelineno-6-10" name="__codelineno-6-10"></a>    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"sub"</span><span class="p">)</span>
+</span><span id="__span-6-11"><a href="#__codelineno-6-11" id="__codelineno-6-11" name="__codelineno-6-11"></a>    <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">/list/reports.json"</span>
+</span><span id="__span-6-12"><a href="#__codelineno-6-12" id="__codelineno-6-12" name="__codelineno-6-12"></a>
+</span><span id="__span-6-13"><a href="#__codelineno-6-13" id="__codelineno-6-13" name="__codelineno-6-13"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">s3</span><span class="o">.</span><span class="n">check_exists</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+</span><span id="__span-6-14"><a href="#__codelineno-6-14" id="__codelineno-6-14" name="__codelineno-6-14"></a>        <span class="c1"># Cache miss - генерируем отчёт</span>
+</span><span id="__span-6-15"><a href="#__codelineno-6-15" id="__codelineno-6-15" name="__codelineno-6-15"></a>        <span class="n">reports</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ch</span><span class="o">.</span><span class="n">get_user_reports</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"preferred_username"</span><span class="p">))</span>
+</span><span id="__span-6-16"><a href="#__codelineno-6-16" id="__codelineno-6-16" name="__codelineno-6-16"></a>        <span class="n">cdn_url</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">put_report</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">reports</span><span class="p">)</span>
+</span><span id="__span-6-17"><a href="#__codelineno-6-17" id="__codelineno-6-17" name="__codelineno-6-17"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-6-18"><a href="#__codelineno-6-18" id="__codelineno-6-18" name="__codelineno-6-18"></a>        <span class="n">cdn_url</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_cdn_url</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="__span-6-19"><a href="#__codelineno-6-19" id="__codelineno-6-19" name="__codelineno-6-19"></a>
+</span><span id="__span-6-20"><a href="#__codelineno-6-20" id="__codelineno-6-20" name="__codelineno-6-20"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">"cdn_url"</span><span class="p">:</span> <span class="n">cdn_url</span><span class="p">}</span>
+</span><span id="__span-6-21"><a href="#__codelineno-6-21" id="__codelineno-6-21" name="__codelineno-6-21"></a>
+</span><span id="__span-6-22"><a href="#__codelineno-6-22" id="__codelineno-6-22" name="__codelineno-6-22"></a><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/api/reports/cdn/</span><span class="si">{date}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-6-23"><a href="#__codelineno-6-23" id="__codelineno-6-23" name="__codelineno-6-23"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_report_cdn</span><span class="p">(</span>
+</span><span id="__span-6-24"><a href="#__codelineno-6-24" id="__codelineno-6-24" name="__codelineno-6-24"></a>    <span class="n">date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="__span-6-25"><a href="#__codelineno-6-25" id="__codelineno-6-25" name="__codelineno-6-25"></a>    <span class="n">user</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_current_user</span><span class="p">),</span>
+</span><span id="__span-6-26"><a href="#__codelineno-6-26" id="__codelineno-6-26" name="__codelineno-6-26"></a>    <span class="n">s3</span><span class="p">:</span> <span class="n">S3Service</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(),</span>
+</span><span id="__span-6-27"><a href="#__codelineno-6-27" id="__codelineno-6-27" name="__codelineno-6-27"></a>    <span class="n">ch</span><span class="p">:</span> <span class="n">ClickHouseService</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">()</span>
+</span><span id="__span-6-28"><a href="#__codelineno-6-28" id="__codelineno-6-28" name="__codelineno-6-28"></a><span class="p">):</span>
+</span><span id="__span-6-29"><a href="#__codelineno-6-29" id="__codelineno-6-29" name="__codelineno-6-29"></a><span class="w">    </span><span class="sd">"""Получить CDN URL для отчёта за дату"""</span>
+</span><span id="__span-6-30"><a href="#__codelineno-6-30" id="__codelineno-6-30" name="__codelineno-6-30"></a>    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"sub"</span><span class="p">)</span>
+</span><span id="__span-6-31"><a href="#__codelineno-6-31" id="__codelineno-6-31" name="__codelineno-6-31"></a>    <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">/daily/</span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s2">/report.json"</span>
+</span><span id="__span-6-32"><a href="#__codelineno-6-32" id="__codelineno-6-32" name="__codelineno-6-32"></a>
+</span><span id="__span-6-33"><a href="#__codelineno-6-33" id="__codelineno-6-33" name="__codelineno-6-33"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">s3</span><span class="o">.</span><span class="n">check_exists</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+</span><span id="__span-6-34"><a href="#__codelineno-6-34" id="__codelineno-6-34" name="__codelineno-6-34"></a>        <span class="n">report</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ch</span><span class="o">.</span><span class="n">get_report_by_date</span><span class="p">(</span>
+</span><span id="__span-6-35"><a href="#__codelineno-6-35" id="__codelineno-6-35" name="__codelineno-6-35"></a>            <span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"preferred_username"</span><span class="p">),</span> <span class="n">date</span>
+</span><span id="__span-6-36"><a href="#__codelineno-6-36" id="__codelineno-6-36" name="__codelineno-6-36"></a>        <span class="p">)</span>
+</span><span id="__span-6-37"><a href="#__codelineno-6-37" id="__codelineno-6-37" name="__codelineno-6-37"></a>        <span class="n">cdn_url</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">put_report</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">report</span><span class="p">)</span>
+</span><span id="__span-6-38"><a href="#__codelineno-6-38" id="__codelineno-6-38" name="__codelineno-6-38"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-6-39"><a href="#__codelineno-6-39" id="__codelineno-6-39" name="__codelineno-6-39"></a>        <span class="n">cdn_url</span> <span class="o">=</span> <span class="n">s3</span><span class="o">.</span><span class="n">get_cdn_url</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span id="__span-6-40"><a href="#__codelineno-6-40" id="__codelineno-6-40" name="__codelineno-6-40"></a>
+</span><span id="__span-6-41"><a href="#__codelineno-6-41" id="__codelineno-6-41" name="__codelineno-6-41"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">"cdn_url"</span><span class="p">:</span> <span class="n">cdn_url</span><span class="p">,</span> <span class="s2">"date"</span><span class="p">:</span> <span class="n">date</span><span class="p">}</span>
+</span></code></pre></div>
 <h2 id="cache-invalidation">Cache Invalidation<a class="headerlink" href="#cache-invalidation" title="Permanent link">¶</a></h2>
 <h3 id="after-etl">After ETL<a class="headerlink" href="#after-etl" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="c1"># airflow/dags/bionicpro_reports_etl.py</span>
-<a href="#__codelineno-7-2" id="__codelineno-7-2" name="__codelineno-7-2"></a>
-<a href="#__codelineno-7-3" id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">invalidate_cache</span><span class="p">(</span><span class="o">**</span><span class="n">context</span><span class="p">):</span>
-<a href="#__codelineno-7-4" id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">    </span><span class="sd">"""Инвалидация кэша после ETL"""</span>
-<a href="#__codelineno-7-5" id="__codelineno-7-5" name="__codelineno-7-5"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
-<a href="#__codelineno-7-6" id="__codelineno-7-6" name="__codelineno-7-6"></a>
-<a href="#__codelineno-7-7" id="__codelineno-7-7" name="__codelineno-7-7"></a>    <span class="c1"># Получить список user_ids, для которых обновились данные</span>
-<a href="#__codelineno-7-8" id="__codelineno-7-8" name="__codelineno-7-8"></a>    <span class="n">user_ids</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s1">'ti'</span><span class="p">]</span><span class="o">.</span><span class="n">xcom_pull</span><span class="p">(</span><span class="n">task_ids</span><span class="o">=</span><span class="s1">'load_to_clickhouse'</span><span class="p">)</span>
-<a href="#__codelineno-7-9" id="__codelineno-7-9" name="__codelineno-7-9"></a>
-<a href="#__codelineno-7-10" id="__codelineno-7-10" name="__codelineno-7-10"></a>    <span class="c1"># Вызвать инвалидацию для каждого пользователя</span>
-<a href="#__codelineno-7-11" id="__codelineno-7-11" name="__codelineno-7-11"></a>    <span class="k">for</span> <span class="n">user_id</span> <span class="ow">in</span> <span class="n">user_ids</span><span class="p">:</span>
-<a href="#__codelineno-7-12" id="__codelineno-7-12" name="__codelineno-7-12"></a>        <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-<a href="#__codelineno-7-13" id="__codelineno-7-13" name="__codelineno-7-13"></a>            <span class="s1">'http://reports-service:8001/api/reports/invalidate'</span><span class="p">,</span>
-<a href="#__codelineno-7-14" id="__codelineno-7-14" name="__codelineno-7-14"></a>            <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">'user_id'</span><span class="p">:</span> <span class="n">user_id</span><span class="p">}</span>
-<a href="#__codelineno-7-15" id="__codelineno-7-15" name="__codelineno-7-15"></a>        <span class="p">)</span>
-</code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="c1"># airflow/dags/bionicpro_reports_etl.py</span>
+</span><span id="__span-7-2"><a href="#__codelineno-7-2" id="__codelineno-7-2" name="__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a href="#__codelineno-7-3" id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">invalidate_cache</span><span class="p">(</span><span class="o">**</span><span class="n">context</span><span class="p">):</span>
+</span><span id="__span-7-4"><a href="#__codelineno-7-4" id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">    </span><span class="sd">"""Инвалидация кэша после ETL"""</span>
+</span><span id="__span-7-5"><a href="#__codelineno-7-5" id="__codelineno-7-5" name="__codelineno-7-5"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+</span><span id="__span-7-6"><a href="#__codelineno-7-6" id="__codelineno-7-6" name="__codelineno-7-6"></a>
+</span><span id="__span-7-7"><a href="#__codelineno-7-7" id="__codelineno-7-7" name="__codelineno-7-7"></a>    <span class="c1"># Получить список user_ids, для которых обновились данные</span>
+</span><span id="__span-7-8"><a href="#__codelineno-7-8" id="__codelineno-7-8" name="__codelineno-7-8"></a>    <span class="n">user_ids</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s1">'ti'</span><span class="p">]</span><span class="o">.</span><span class="n">xcom_pull</span><span class="p">(</span><span class="n">task_ids</span><span class="o">=</span><span class="s1">'load_to_clickhouse'</span><span class="p">)</span>
+</span><span id="__span-7-9"><a href="#__codelineno-7-9" id="__codelineno-7-9" name="__codelineno-7-9"></a>
+</span><span id="__span-7-10"><a href="#__codelineno-7-10" id="__codelineno-7-10" name="__codelineno-7-10"></a>    <span class="c1"># Вызвать инвалидацию для каждого пользователя</span>
+</span><span id="__span-7-11"><a href="#__codelineno-7-11" id="__codelineno-7-11" name="__codelineno-7-11"></a>    <span class="k">for</span> <span class="n">user_id</span> <span class="ow">in</span> <span class="n">user_ids</span><span class="p">:</span>
+</span><span id="__span-7-12"><a href="#__codelineno-7-12" id="__codelineno-7-12" name="__codelineno-7-12"></a>        <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+</span><span id="__span-7-13"><a href="#__codelineno-7-13" id="__codelineno-7-13" name="__codelineno-7-13"></a>            <span class="s1">'http://reports-service:8001/api/reports/invalidate'</span><span class="p">,</span>
+</span><span id="__span-7-14"><a href="#__codelineno-7-14" id="__codelineno-7-14" name="__codelineno-7-14"></a>            <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">'user_id'</span><span class="p">:</span> <span class="n">user_id</span><span class="p">}</span>
+</span><span id="__span-7-15"><a href="#__codelineno-7-15" id="__codelineno-7-15" name="__codelineno-7-15"></a>        <span class="p">)</span>
+</span></code></pre></div>
 <h3 id="invalidation-endpoint">Invalidation Endpoint<a class="headerlink" href="#invalidation-endpoint" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-8-1" id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/api/reports/invalidate"</span><span class="p">)</span>
-<a href="#__codelineno-8-2" id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">invalidate_cache</span><span class="p">(</span>
-<a href="#__codelineno-8-3" id="__codelineno-8-3" name="__codelineno-8-3"></a>    <span class="n">request</span><span class="p">:</span> <span class="n">InvalidateRequest</span><span class="p">,</span>
-<a href="#__codelineno-8-4" id="__codelineno-8-4" name="__codelineno-8-4"></a>    <span class="n">s3</span><span class="p">:</span> <span class="n">S3Service</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(),</span>
-<a href="#__codelineno-8-5" id="__codelineno-8-5" name="__codelineno-8-5"></a>    <span class="n">redis</span><span class="p">:</span> <span class="n">Redis</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">()</span>
-<a href="#__codelineno-8-6" id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="p">):</span>
-<a href="#__codelineno-8-7" id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="w">    </span><span class="sd">"""Инвалидация кэша для пользователя"""</span>
-<a href="#__codelineno-8-8" id="__codelineno-8-8" name="__codelineno-8-8"></a>    <span class="n">user_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user_id</span>
-<a href="#__codelineno-8-9" id="__codelineno-8-9" name="__codelineno-8-9"></a>
-<a href="#__codelineno-8-10" id="__codelineno-8-10" name="__codelineno-8-10"></a>    <span class="c1"># Удалить объекты из S3</span>
-<a href="#__codelineno-8-11" id="__codelineno-8-11" name="__codelineno-8-11"></a>    <span class="n">s3</span><span class="o">.</span><span class="n">delete_prefix</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">/"</span><span class="p">)</span>
-<a href="#__codelineno-8-12" id="__codelineno-8-12" name="__codelineno-8-12"></a>
-<a href="#__codelineno-8-13" id="__codelineno-8-13" name="__codelineno-8-13"></a>    <span class="c1"># Очистить Redis кэш</span>
-<a href="#__codelineno-8-14" id="__codelineno-8-14" name="__codelineno-8-14"></a>    <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"report:</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">:*"</span>
-<a href="#__codelineno-8-15" id="__codelineno-8-15" name="__codelineno-8-15"></a>    <span class="n">keys</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
-<a href="#__codelineno-8-16" id="__codelineno-8-16" name="__codelineno-8-16"></a>    <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>
-<a href="#__codelineno-8-17" id="__codelineno-8-17" name="__codelineno-8-17"></a>        <span class="n">redis</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="o">*</span><span class="n">keys</span><span class="p">)</span>
-<a href="#__codelineno-8-18" id="__codelineno-8-18" name="__codelineno-8-18"></a>
-<a href="#__codelineno-8-19" id="__codelineno-8-19" name="__codelineno-8-19"></a>    <span class="c1"># CDN кэш истечёт по TTL (5 минут)</span>
-<a href="#__codelineno-8-20" id="__codelineno-8-20" name="__codelineno-8-20"></a>
-<a href="#__codelineno-8-21" id="__codelineno-8-21" name="__codelineno-8-21"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="s2">"invalidated"</span><span class="p">,</span> <span class="s2">"user_id"</span><span class="p">:</span> <span class="n">user_id</span><span class="p">}</span>
-</code></pre></div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a href="#__codelineno-8-1" id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/api/reports/invalidate"</span><span class="p">)</span>
+</span><span id="__span-8-2"><a href="#__codelineno-8-2" id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">invalidate_cache</span><span class="p">(</span>
+</span><span id="__span-8-3"><a href="#__codelineno-8-3" id="__codelineno-8-3" name="__codelineno-8-3"></a>    <span class="n">request</span><span class="p">:</span> <span class="n">InvalidateRequest</span><span class="p">,</span>
+</span><span id="__span-8-4"><a href="#__codelineno-8-4" id="__codelineno-8-4" name="__codelineno-8-4"></a>    <span class="n">s3</span><span class="p">:</span> <span class="n">S3Service</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(),</span>
+</span><span id="__span-8-5"><a href="#__codelineno-8-5" id="__codelineno-8-5" name="__codelineno-8-5"></a>    <span class="n">redis</span><span class="p">:</span> <span class="n">Redis</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">()</span>
+</span><span id="__span-8-6"><a href="#__codelineno-8-6" id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="p">):</span>
+</span><span id="__span-8-7"><a href="#__codelineno-8-7" id="__codelineno-8-7" name="__codelineno-8-7"></a><span class="w">    </span><span class="sd">"""Инвалидация кэша для пользователя"""</span>
+</span><span id="__span-8-8"><a href="#__codelineno-8-8" id="__codelineno-8-8" name="__codelineno-8-8"></a>    <span class="n">user_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">user_id</span>
+</span><span id="__span-8-9"><a href="#__codelineno-8-9" id="__codelineno-8-9" name="__codelineno-8-9"></a>
+</span><span id="__span-8-10"><a href="#__codelineno-8-10" id="__codelineno-8-10" name="__codelineno-8-10"></a>    <span class="c1"># Удалить объекты из S3</span>
+</span><span id="__span-8-11"><a href="#__codelineno-8-11" id="__codelineno-8-11" name="__codelineno-8-11"></a>    <span class="n">s3</span><span class="o">.</span><span class="n">delete_prefix</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">/"</span><span class="p">)</span>
+</span><span id="__span-8-12"><a href="#__codelineno-8-12" id="__codelineno-8-12" name="__codelineno-8-12"></a>
+</span><span id="__span-8-13"><a href="#__codelineno-8-13" id="__codelineno-8-13" name="__codelineno-8-13"></a>    <span class="c1"># Очистить Redis кэш</span>
+</span><span id="__span-8-14"><a href="#__codelineno-8-14" id="__codelineno-8-14" name="__codelineno-8-14"></a>    <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"report:</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">:*"</span>
+</span><span id="__span-8-15"><a href="#__codelineno-8-15" id="__codelineno-8-15" name="__codelineno-8-15"></a>    <span class="n">keys</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+</span><span id="__span-8-16"><a href="#__codelineno-8-16" id="__codelineno-8-16" name="__codelineno-8-16"></a>    <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>
+</span><span id="__span-8-17"><a href="#__codelineno-8-17" id="__codelineno-8-17" name="__codelineno-8-17"></a>        <span class="n">redis</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="o">*</span><span class="n">keys</span><span class="p">)</span>
+</span><span id="__span-8-18"><a href="#__codelineno-8-18" id="__codelineno-8-18" name="__codelineno-8-18"></a>
+</span><span id="__span-8-19"><a href="#__codelineno-8-19" id="__codelineno-8-19" name="__codelineno-8-19"></a>    <span class="c1"># CDN кэш истечёт по TTL (5 минут)</span>
+</span><span id="__span-8-20"><a href="#__codelineno-8-20" id="__codelineno-8-20" name="__codelineno-8-20"></a>
+</span><span id="__span-8-21"><a href="#__codelineno-8-21" id="__codelineno-8-21" name="__codelineno-8-21"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">"status"</span><span class="p">:</span> <span class="s2">"invalidated"</span><span class="p">,</span> <span class="s2">"user_id"</span><span class="p">:</span> <span class="n">user_id</span><span class="p">}</span>
+</span></code></pre></div>
 <h2 id="cdn-api-endpoints">CDN API Endpoints<a class="headerlink" href="#cdn-api-endpoints" title="Permanent link">¶</a></h2>
 <table>
 <thead>
@@ -1503,16 +1587,16 @@
 </table>
 <h2 id="performance-benefits">Performance Benefits<a class="headerlink" href="#performance-benefits" title="Permanent link">¶</a></h2>
 <h3 id="_4">Без кэширования<a class="headerlink" href="#_4" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-9-1" id="__codelineno-9-1" name="__codelineno-9-1"></a>User Request → BFF → Reports Service → ClickHouse → Response
-<a href="#__codelineno-9-2" id="__codelineno-9-2" name="__codelineno-9-2"></a>Latency: 200-500ms per request
-<a href="#__codelineno-9-3" id="__codelineno-9-3" name="__codelineno-9-3"></a>ClickHouse load: High (every request)
-</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a href="#__codelineno-9-1" id="__codelineno-9-1" name="__codelineno-9-1"></a>User Request → BFF → Reports Service → ClickHouse → Response
+</span><span id="__span-9-2"><a href="#__codelineno-9-2" id="__codelineno-9-2" name="__codelineno-9-2"></a>Latency: 200-500ms per request
+</span><span id="__span-9-3"><a href="#__codelineno-9-3" id="__codelineno-9-3" name="__codelineno-9-3"></a>ClickHouse load: High (every request)
+</span></code></pre></div>
 <h3 id="_5">С кэшированием<a class="headerlink" href="#_5" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-10-1" id="__codelineno-10-1" name="__codelineno-10-1"></a>User Request → BFF → Reports Service → S3 (HEAD) → CDN URL
-<a href="#__codelineno-10-2" id="__codelineno-10-2" name="__codelineno-10-2"></a>User Request → CDN → S3 (or cache) → Response
-<a href="#__codelineno-10-3" id="__codelineno-10-3" name="__codelineno-10-3"></a>Latency: 20-50ms (cache hit)
-<a href="#__codelineno-10-4" id="__codelineno-10-4" name="__codelineno-10-4"></a>ClickHouse load: Low (only on cache miss)
-</code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a href="#__codelineno-10-1" id="__codelineno-10-1" name="__codelineno-10-1"></a>User Request → BFF → Reports Service → S3 (HEAD) → CDN URL
+</span><span id="__span-10-2"><a href="#__codelineno-10-2" id="__codelineno-10-2" name="__codelineno-10-2"></a>User Request → CDN → S3 (or cache) → Response
+</span><span id="__span-10-3"><a href="#__codelineno-10-3" id="__codelineno-10-3" name="__codelineno-10-3"></a>Latency: 20-50ms (cache hit)
+</span><span id="__span-10-4"><a href="#__codelineno-10-4" id="__codelineno-10-4" name="__codelineno-10-4"></a>ClickHouse load: Low (only on cache miss)
+</span></code></pre></div>
 <h3 id="metrics">Metrics<a class="headerlink" href="#metrics" title="Permanent link">¶</a></h3>
 <table>
 <thead>
@@ -1547,30 +1631,30 @@
 </table>
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">¶</a></h2>
 <h3 id="minio">Проверка MinIO<a class="headerlink" href="#minio" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-11-1" id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1"># Health check</span>
-<a href="#__codelineno-11-2" id="__codelineno-11-2" name="__codelineno-11-2"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:9002/minio/health/live
-<a href="#__codelineno-11-3" id="__codelineno-11-3" name="__codelineno-11-3"></a>
-<a href="#__codelineno-11-4" id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="c1"># Список объектов в bucket</span>
-<a href="#__codelineno-11-5" id="__codelineno-11-5" name="__codelineno-11-5"></a>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>minio<span class="w"> </span>mc<span class="w"> </span>ls<span class="w"> </span>local/reports-bucket<span class="w"> </span>--recursive
-</code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a href="#__codelineno-11-1" id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1"># Health check</span>
+</span><span id="__span-11-2"><a href="#__codelineno-11-2" id="__codelineno-11-2" name="__codelineno-11-2"></a>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:9002/minio/health/live
+</span><span id="__span-11-3"><a href="#__codelineno-11-3" id="__codelineno-11-3" name="__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a href="#__codelineno-11-4" id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="c1"># Список объектов в bucket</span>
+</span><span id="__span-11-5"><a href="#__codelineno-11-5" id="__codelineno-11-5" name="__codelineno-11-5"></a>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>minio<span class="w"> </span>mc<span class="w"> </span>ls<span class="w"> </span>local/reports-bucket<span class="w"> </span>--recursive
+</span></code></pre></div>
 <h3 id="cdn">Проверка CDN<a class="headerlink" href="#cdn" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-12-1" id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="c1"># Health check</span>
-<a href="#__codelineno-12-2" id="__codelineno-12-2" name="__codelineno-12-2"></a>curl<span class="w"> </span>-I<span class="w"> </span>http://localhost:8002/health
-<a href="#__codelineno-12-3" id="__codelineno-12-3" name="__codelineno-12-3"></a>
-<a href="#__codelineno-12-4" id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="c1"># Запрос с проверкой cache status</span>
-<a href="#__codelineno-12-5" id="__codelineno-12-5" name="__codelineno-12-5"></a>curl<span class="w"> </span>-I<span class="w"> </span>http://localhost:8002/reports/user-id/list/reports.json
-<a href="#__codelineno-12-6" id="__codelineno-12-6" name="__codelineno-12-6"></a><span class="c1"># X-Cache-Status: HIT или MISS</span>
-</code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a href="#__codelineno-12-1" id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="c1"># Health check</span>
+</span><span id="__span-12-2"><a href="#__codelineno-12-2" id="__codelineno-12-2" name="__codelineno-12-2"></a>curl<span class="w"> </span>-I<span class="w"> </span>http://localhost:8002/health
+</span><span id="__span-12-3"><a href="#__codelineno-12-3" id="__codelineno-12-3" name="__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a href="#__codelineno-12-4" id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="c1"># Запрос с проверкой cache status</span>
+</span><span id="__span-12-5"><a href="#__codelineno-12-5" id="__codelineno-12-5" name="__codelineno-12-5"></a>curl<span class="w"> </span>-I<span class="w"> </span>http://localhost:8002/reports/user-id/list/reports.json
+</span><span id="__span-12-6"><a href="#__codelineno-12-6" id="__codelineno-12-6" name="__codelineno-12-6"></a><span class="c1"># X-Cache-Status: HIT или MISS</span>
+</span></code></pre></div>
 <h3 id="_6">Очистка кэша<a class="headerlink" href="#_6" title="Permanent link">¶</a></h3>
-<div class="highlight"><pre><span></span><code><a href="#__codelineno-13-1" id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="c1"># Очистить Nginx cache</span>
-<a href="#__codelineno-13-2" id="__codelineno-13-2" name="__codelineno-13-2"></a>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>nginx-cdn<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/var/cache/nginx/*
-<a href="#__codelineno-13-3" id="__codelineno-13-3" name="__codelineno-13-3"></a>
-<a href="#__codelineno-13-4" id="__codelineno-13-4" name="__codelineno-13-4"></a><span class="c1"># Очистить S3 bucket</span>
-<a href="#__codelineno-13-5" id="__codelineno-13-5" name="__codelineno-13-5"></a>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>minio<span class="w"> </span>mc<span class="w"> </span>rm<span class="w"> </span>--recursive<span class="w"> </span>--force<span class="w"> </span>local/reports-bucket/
-<a href="#__codelineno-13-6" id="__codelineno-13-6" name="__codelineno-13-6"></a>
-<a href="#__codelineno-13-7" id="__codelineno-13-7" name="__codelineno-13-7"></a><span class="c1"># Очистить Redis</span>
-<a href="#__codelineno-13-8" id="__codelineno-13-8" name="__codelineno-13-8"></a>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>redis<span class="w"> </span>redis-cli<span class="w"> </span>FLUSHDB
-</code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a href="#__codelineno-13-1" id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="c1"># Очистить Nginx cache</span>
+</span><span id="__span-13-2"><a href="#__codelineno-13-2" id="__codelineno-13-2" name="__codelineno-13-2"></a>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>nginx-cdn<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/var/cache/nginx/*
+</span><span id="__span-13-3"><a href="#__codelineno-13-3" id="__codelineno-13-3" name="__codelineno-13-3"></a>
+</span><span id="__span-13-4"><a href="#__codelineno-13-4" id="__codelineno-13-4" name="__codelineno-13-4"></a><span class="c1"># Очистить S3 bucket</span>
+</span><span id="__span-13-5"><a href="#__codelineno-13-5" id="__codelineno-13-5" name="__codelineno-13-5"></a>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>minio<span class="w"> </span>mc<span class="w"> </span>rm<span class="w"> </span>--recursive<span class="w"> </span>--force<span class="w"> </span>local/reports-bucket/
+</span><span id="__span-13-6"><a href="#__codelineno-13-6" id="__codelineno-13-6" name="__codelineno-13-6"></a>
+</span><span id="__span-13-7"><a href="#__codelineno-13-7" id="__codelineno-13-7" name="__codelineno-13-7"></a><span class="c1"># Очистить Redis</span>
+</span><span id="__span-13-8"><a href="#__codelineno-13-8" id="__codelineno-13-8" name="__codelineno-13-8"></a>docker-compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>redis<span class="w"> </span>redis-cli<span class="w"> </span>FLUSHDB
+</span></code></pre></div>
 <h2 id="_7">См. также<a class="headerlink" href="#_7" title="Permanent link">¶</a></h2>
 <ul>
 <li><a href="../overview/">Architecture Overview</a></li>
@@ -1607,7 +1691,7 @@
 <div class="md-dialog" data-md-component="dialog">
 <div class="md-dialog__inner md-typeset"></div>
 </div>
-<script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0415\u0449\u0451 1 \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.more.other": "\u0415\u0449\u0451 # \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.none": "\u0421\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0435", "search.result.other": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439: #", "search.result.placeholder": "\u041d\u0430\u0447\u043d\u0438\u0442\u0435 \u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0434\u043b\u044f \u043f\u043e\u0438\u0441\u043a\u0430", "search.result.term.missing": "\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442", "select.version": "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0435\u0440\u0441\u0438\u044e"}, "version": null}</script>
+<script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0415\u0449\u0451 1 \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.more.other": "\u0415\u0449\u0451 # \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.none": "\u0421\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0435", "search.result.other": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439: #", "search.result.placeholder": "\u041d\u0430\u0447\u043d\u0438\u0442\u0435 \u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0434\u043b\u044f \u043f\u043e\u0438\u0441\u043a\u0430", "search.result.term.missing": "\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442", "select.version": "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0435\u0440\u0441\u0438\u044e"}, "version": null}</script>
 <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
 </body>
 </html>

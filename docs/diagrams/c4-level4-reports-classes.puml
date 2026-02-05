@@ -1,0 +1,246 @@
+@startuml BionicPRO_C4_Level4_Reports_Classes
+!theme plain
+
+title BionicPRO - C4 Level 4: Reports Service Class Diagram
+
+package "reports-service" {
+
+    package "Routers" {
+        class ReportsRouter {
+            - ch_service: ClickHouseService
+            - cache_service: CacheService
+            --
+            + get_reports(user: User): ReportsList
+            + get_report_by_date(date: str, user: User): DailyReport
+            + get_summary(user: User): UserSummary
+        }
+
+        class CDNRouter {
+            - s3_service: S3Service
+            - ch_service: ClickHouseService
+            - cache_service: CacheService
+            - report_generator: ReportGenerator
+            --
+            + get_cdn_list(user: User): CDNResponse
+            + get_cdn_summary(user: User): CDNResponse
+            + get_cdn_report(date: str, user: User): CDNResponse
+            + invalidate_cache(request: InvalidateRequest): void
+        }
+
+        class HealthRouter {
+            - ch_service: ClickHouseService
+            - cdc_monitor: CDCMonitor
+            --
+            + health(): HealthResponse
+            + liveness(): LivenessResponse
+            + cdc_health(): CDCHealthResponse
+        }
+    }
+
+    package "Services" {
+        class ClickHouseService {
+            - client: ClickHouseClient
+            - database: str
+            --
+            + get_user_reports(username: str): List[ReportDate]
+            + get_report_by_date(username: str, date: str): DailyReport
+            + get_user_summary(username: str): UserSummary
+            + get_cdc_table_stats(): Dict[str, TableStats]
+            + execute_query(query: str, params: dict): QueryResult
+        }
+
+        class S3Service {
+            - client: S3Client
+            - bucket: str
+            - cdn_base_url: str
+            --
+            + check_exists(key: str): bool
+            + put_object(key: str, data: dict): str
+            + get_object(key: str): Optional[dict]
+            + delete_object(key: str): void
+            + delete_prefix(prefix: str): int
+            + get_cdn_url(key: str): str
+        }
+
+        class CacheService {
+            - redis: Redis
+            - default_ttl: int
+            --
+            + get(key: str): Optional[str]
+            + set(key: str, value: str, ttl: int): void
+            + delete(key: str): void
+            + delete_pattern(pattern: str): int
+            + get_json(key: str): Optional[dict]
+            + set_json(key: str, data: dict, ttl: int): void
+        }
+
+        class ReportGenerator {
+            - ch_service: ClickHouseService
+            - s3_service: S3Service
+            --
+            + generate_reports_list(user_id: str, username: str): dict
+            + generate_summary(user_id: str, username: str): dict
+            + generate_daily_report(user_id: str, username: str, date: str): dict
+            + store_and_get_cdn_url(user_id: str, report_type: str, data: dict): str
+        }
+
+        class CDCMonitor {
+            - ch_service: ClickHouseService
+            - kafka_admin: KafkaAdminClient
+            --
+            + get_cdc_status(): CDCStatus
+            + get_table_row_counts(): Dict[str, int]
+            + get_kafka_lag(): Dict[str, int]
+            + check_debezium_status(): DebeziumStatus
+        }
+    }
+
+    package "Auth" {
+        class JWTHandler {
+            - keycloak_url: str
+            - realm: str
+            - public_key: RSAPublicKey
+            --
+            + decode_token(token: str): TokenPayload
+            + validate_token(token: str): bool
+            + get_current_user(credentials: HTTPAuthorizationCredentials): User
+            + refresh_public_key(): void
+        }
+
+        class User {
+            + sub: str
+            + preferred_username: str
+            + email: str
+            + roles: List[str]
+        }
+    }
+
+    package "Models" {
+        class ReportsList {
+            + reports: List[ReportDate]
+            + total: int
+            + user: str
+        }
+
+        class ReportDate {
+            + date: str
+            + cdn_url: Optional[str]
+        }
+
+        class DailyReport {
+            + date: str
+            + user: str
+            + prosthesis_model: str
+            + chip_id: str
+            + summary: DailySummary
+            + hourly_data: List[HourlyData]
+        }
+
+        class DailySummary {
+            + total_movements: int
+            + avg_response_time_ms: float
+            + avg_battery_level: float
+            + total_errors: int
+            + uptime_hours: int
+        }
+
+        class HourlyData {
+            + hour: datetime
+            + movements_count: int
+            + avg_response_time: float
+            + battery_level: float
+            + error_count: int
+        }
+
+        class UserSummary {
+            + user: str
+            + prosthesis_model: str
+            + total_days: int
+            + summary: AggregatedSummary
+        }
+
+        class CDNResponse {
+            + cdn_url: str
+            + expires_in: Optional[int]
+        }
+
+        class CDCHealthResponse {
+            + status: str
+            + cdc_tables: Dict[str, TableStats]
+            + kafka_lag: Dict[str, int]
+            + debezium: DebeziumStatus
+        }
+
+        class InvalidateRequest {
+            + user_id: Optional[str]
+            + all_users: bool
+        }
+    }
+
+    package "Dependencies" {
+        class Dependencies {
+            --
+            + get_clickhouse_service(): ClickHouseService
+            + get_s3_service(): S3Service
+            + get_cache_service(): CacheService
+            + get_report_generator(): ReportGenerator
+            + get_cdc_monitor(): CDCMonitor
+            + get_current_user(): User
+        }
+    }
+
+    package "Config" {
+        class Settings {
+            + CLICKHOUSE_HOST: str
+            + CLICKHOUSE_PORT: int
+            + CLICKHOUSE_DATABASE: str
+            + REDIS_HOST: str
+            + REDIS_PORT: int
+            + S3_ENDPOINT_URL: str
+            + S3_ACCESS_KEY: str
+            + S3_SECRET_KEY: str
+            + S3_BUCKET_NAME: str
+            + CDN_BASE_URL: str
+            + KEYCLOAK_URL: str
+            + KEYCLOAK_REALM: str
+            + CACHE_TTL_SECONDS: int
+        }
+    }
+}
+
+' Router relationships
+ReportsRouter --> ClickHouseService
+ReportsRouter --> CacheService
+ReportsRouter --> JWTHandler
+
+CDNRouter --> S3Service
+CDNRouter --> ClickHouseService
+CDNRouter --> CacheService
+CDNRouter --> ReportGenerator
+CDNRouter --> JWTHandler
+
+HealthRouter --> ClickHouseService
+HealthRouter --> CDCMonitor
+
+' Service relationships
+ReportGenerator --> ClickHouseService
+ReportGenerator --> S3Service
+
+CDCMonitor --> ClickHouseService
+
+' Model relationships
+ReportsRouter --> ReportsList
+ReportsRouter --> DailyReport
+ReportsRouter --> UserSummary
+
+CDNRouter --> CDNResponse
+CDNRouter --> InvalidateRequest
+
+HealthRouter --> CDCHealthResponse
+
+DailyReport --> DailySummary
+DailyReport --> HourlyData
+
+JWTHandler --> User
+
+@enduml

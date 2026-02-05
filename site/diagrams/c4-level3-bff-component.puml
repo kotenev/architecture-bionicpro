@@ -1,0 +1,57 @@
+@startuml BionicPRO_C4_Level3_BFF_Component
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title BionicPRO - C4 Level 3: BFF Auth Service Components
+
+Container_Boundary(bff, "BFF Auth Service (bionicpro-auth)") {
+
+    Component(auth_controller, "Auth Controller", "Flask Blueprint", "Endpoints:\n/auth/login\n/auth/callback\n/auth/logout\n/auth/me")
+
+    Component(proxy_controller, "Proxy Controller", "Flask Blueprint", "Проксирование запросов\nк backend сервисам\n/api/*")
+
+    Component(pkce_service, "PKCE Service", "Python", "Генерация code_verifier,\ncode_challenge (S256)")
+
+    Component(token_service, "Token Service", "Python", "Обмен кода на токены,\nrefresh токенов,\nшифрование/дешифрование")
+
+    Component(session_service, "Session Service", "Python", "Управление сессиями:\nсоздание, валидация,\nротация session_id")
+
+    Component(keycloak_client, "Keycloak Client", "Python, requests", "HTTP клиент для\nKeycloak API")
+
+    Component(redis_client, "Redis Client", "Python, redis-py", "Клиент для Redis:\nсессии, токены")
+
+    Component(encryption, "Encryption Module", "Python, cryptography", "Fernet шифрование\nтокенов")
+
+    Component(middleware, "Security Middleware", "Flask", "CORS, Security Headers,\nSession Validation")
+}
+
+' External dependencies
+Container_Ext(keycloak, "Keycloak", "Identity Provider")
+ContainerDb_Ext(redis, "Redis", "Session Store")
+Container_Ext(reports_svc, "Reports Service", "Backend API")
+Container_Ext(frontend, "Frontend", "React SPA")
+
+' Internal relationships
+Rel(auth_controller, pkce_service, "Uses")
+Rel(auth_controller, token_service, "Uses")
+Rel(auth_controller, session_service, "Uses")
+
+Rel(proxy_controller, session_service, "Validates session")
+Rel(proxy_controller, token_service, "Gets token")
+
+Rel(token_service, keycloak_client, "Exchange/Refresh")
+Rel(token_service, encryption, "Encrypt/Decrypt")
+Rel(token_service, redis_client, "Store/Retrieve")
+
+Rel(session_service, redis_client, "CRUD")
+
+Rel(middleware, session_service, "Validate")
+
+' External relationships
+Rel(keycloak_client, keycloak, "HTTP", "OAuth2/OIDC")
+Rel(redis_client, redis, "TCP", "Redis Protocol")
+Rel(proxy_controller, reports_svc, "HTTP", "REST + JWT")
+Rel(frontend, auth_controller, "HTTPS", "Session Cookie")
+Rel(frontend, proxy_controller, "HTTPS", "Session Cookie")
+
+SHOW_LEGEND()
+@enduml

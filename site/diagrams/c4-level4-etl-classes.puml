@@ -1,0 +1,209 @@
+@startuml BionicPRO_C4_Level4_ETL_Classes
+!theme plain
+
+title BionicPRO - C4 Level 4: ETL Jobs Class Diagram
+
+package "airflow.dags" {
+
+    package "DAGs" {
+        class BionicProReportsETL {
+            + dag_id: str = "bionicpro_reports_etl"
+            + schedule_interval: str = "*/15 * * * *"
+            + default_args: dict
+            --
+            + create_dag(): DAG
+        }
+
+        class BionicProReportsCDCETL {
+            + dag_id: str = "bionicpro_reports_cdc_etl"
+            + schedule_interval: str = "*/15 * * * *"
+            + default_args: dict
+            --
+            + create_dag(): DAG
+        }
+    }
+
+    package "Tasks" {
+        class ExtractCRMTask {
+            - postgres_hook: PostgresHook
+            - conn_id: str = "bionicpro_crm_db"
+            --
+            + execute(context: dict): DataFrame
+            - build_query(): str
+            - fetch_customers(): DataFrame
+            - fetch_prostheses(): DataFrame
+            - fetch_models(): DataFrame
+        }
+
+        class ExtractTelemetryTask {
+            - postgres_hook: PostgresHook
+            - conn_id: str = "bionicpro_telemetry_db"
+            - lookback_hours: int = 168
+            --
+            + execute(context: dict): DataFrame
+            - build_aggregation_query(): str
+            - aggregate_by_hour(): DataFrame
+        }
+
+        class ExtractCRMFromClickHouseTask {
+            - clickhouse_client: ClickHouseClient
+            --
+            + execute(context: dict): DataFrame
+            - fetch_cdc_customer_data(): DataFrame
+        }
+
+        class TransformTask {
+            --
+            + execute(context: dict): DataFrame
+            - join_datasets(crm: DataFrame, telemetry: DataFrame): DataFrame
+            - calculate_metrics(df: DataFrame): DataFrame
+            - add_derived_columns(df: DataFrame): DataFrame
+            - validate_data(df: DataFrame): bool
+        }
+
+        class LoadToClickHouseTask {
+            - clickhouse_client: ClickHouseClient
+            - table_name: str = "user_prosthesis_stats"
+            --
+            + execute(context: dict): List[str]
+            - insert_data(df: DataFrame): int
+            - get_affected_user_ids(df: DataFrame): List[str]
+        }
+
+        class InvalidateCacheTask {
+            - http_hook: HttpHook
+            - reports_service_url: str
+            --
+            + execute(context: dict): void
+            - invalidate_users(user_ids: List[str]): void
+        }
+    }
+
+    package "Hooks" {
+        class PostgresHook {
+            - conn_id: str
+            - connection: Connection
+            --
+            + get_conn(): Connection
+            + get_pandas_df(sql: str): DataFrame
+            + run(sql: str): void
+        }
+
+        class ClickHouseHook {
+            - conn_id: str
+            - client: ClickHouseClient
+            --
+            + get_conn(): ClickHouseClient
+            + execute(query: str, params: dict): QueryResult
+            + insert_dataframe(table: str, df: DataFrame): int
+        }
+
+        class HttpHook {
+            - conn_id: str
+            - base_url: str
+            --
+            + run(endpoint: str, data: dict, method: str): Response
+        }
+    }
+
+    package "Models" {
+        class CRMData {
+            + customer_id: UUID
+            + customer_name: str
+            + customer_email: str
+            + ldap_username: str
+            + prosthesis_id: UUID
+            + chip_id: str
+            + prosthesis_model: str
+        }
+
+        class TelemetryData {
+            + chip_id: str
+            + hour: datetime
+            + movements_count: int
+            + avg_response_time: float
+            + avg_battery_level: float
+            + error_count: int
+        }
+
+        class TransformedData {
+            + user_id: UUID
+            + ldap_username: str
+            + prosthesis_id: UUID
+            + chip_id: str
+            + date: date
+            + hour: datetime
+            + movements_count: int
+            + avg_response_time: float
+            + avg_battery_level: float
+            + error_count: int
+            + error_rate: float
+            + customer_name: str
+            + customer_email: str
+            + prosthesis_model: str
+        }
+
+        class ETLConfig {
+            + lookback_hours: int = 168
+            + batch_size: int = 10000
+            + max_retries: int = 3
+            + retry_delay_seconds: int = 300
+        }
+    }
+
+    package "Utils" {
+        class DataValidator {
+            --
+            + validate_crm_data(df: DataFrame): ValidationResult
+            + validate_telemetry_data(df: DataFrame): ValidationResult
+            + check_required_columns(df: DataFrame, columns: List[str]): bool
+            + check_data_types(df: DataFrame, schema: dict): bool
+        }
+
+        class MetricsCalculator {
+            --
+            + calculate_error_rate(errors: int, total: int): float
+            + calculate_daily_aggregates(df: DataFrame): DataFrame
+            + calculate_moving_average(df: DataFrame, window: int): DataFrame
+        }
+
+        class AirflowUtils {
+            --
+            + get_execution_date(context: dict): datetime
+            + push_to_xcom(context: dict, key: str, value: any): void
+            + pull_from_xcom(context: dict, task_id: str, key: str): any
+        }
+    }
+}
+
+' DAG to Task relationships
+BionicProReportsETL --> ExtractCRMTask
+BionicProReportsETL --> ExtractTelemetryTask
+BionicProReportsETL --> TransformTask
+BionicProReportsETL --> LoadToClickHouseTask
+BionicProReportsETL --> InvalidateCacheTask
+
+BionicProReportsCDCETL --> ExtractCRMFromClickHouseTask
+BionicProReportsCDCETL --> ExtractTelemetryTask
+BionicProReportsCDCETL --> TransformTask
+BionicProReportsCDCETL --> LoadToClickHouseTask
+
+' Task to Hook relationships
+ExtractCRMTask --> PostgresHook
+ExtractTelemetryTask --> PostgresHook
+ExtractCRMFromClickHouseTask --> ClickHouseHook
+LoadToClickHouseTask --> ClickHouseHook
+InvalidateCacheTask --> HttpHook
+
+' Task to Model relationships
+ExtractCRMTask --> CRMData
+ExtractTelemetryTask --> TelemetryData
+ExtractCRMFromClickHouseTask --> CRMData
+TransformTask --> TransformedData
+
+' Task to Utils relationships
+TransformTask --> DataValidator
+TransformTask --> MetricsCalculator
+TransformTask --> AirflowUtils
+
+@enduml

@@ -1,0 +1,68 @@
+@startuml BionicPRO_C4_Level3_Reports_Component
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title BionicPRO - C4 Level 3: Reports Service Components
+
+Container_Boundary(reports, "Reports Service") {
+
+    Component(reports_router, "Reports Router", "FastAPI Router", "REST endpoints:\nGET /api/reports\nGET /api/reports/{date}\nGET /api/reports/summary")
+
+    Component(cdn_router, "CDN Router", "FastAPI Router", "CDN endpoints:\nGET /api/reports/cdn/*\nPOST /api/reports/invalidate")
+
+    Component(health_router, "Health Router", "FastAPI Router", "Health checks:\nGET /health\nGET /health/live\nGET /health/cdc")
+
+    Component(jwt_handler, "JWT Handler", "Python", "Валидация JWT токенов,\nизвлечение user_id,\nпроверка прав")
+
+    Component(clickhouse_service, "ClickHouse Service", "Python, clickhouse-connect", "Запросы к OLAP:\nuser_prosthesis_stats,\nCDC tables")
+
+    Component(s3_service, "S3 Service", "Python, boto3", "Работа с MinIO:\nPUT/GET/DELETE объектов,\nгенерация CDN URLs")
+
+    Component(cache_service, "Cache Service", "Python, redis-py", "Кэширование:\nметаданные отчётов,\nинвалидация")
+
+    Component(cdc_monitor, "CDC Monitor", "Python", "Мониторинг CDC:\nKafka lag,\ntable row counts")
+
+    Component(report_generator, "Report Generator", "Python", "Генерация JSON отчётов\nиз данных ClickHouse")
+
+    Component(dependencies, "Dependencies", "FastAPI Depends", "DI контейнер:\nсервисы, auth")
+}
+
+' External dependencies
+ContainerDb_Ext(clickhouse, "ClickHouse", "OLAP Database")
+ContainerDb_Ext(minio, "MinIO S3", "Object Storage")
+ContainerDb_Ext(redis, "Redis", "Cache")
+Container_Ext(kafka, "Kafka", "CDC Events")
+Container_Ext(bff, "BFF Auth", "Token validation")
+
+' Internal relationships
+Rel(reports_router, jwt_handler, "Auth")
+Rel(reports_router, clickhouse_service, "Query")
+Rel(reports_router, cache_service, "Cache")
+Rel(reports_router, report_generator, "Generate")
+
+Rel(cdn_router, jwt_handler, "Auth")
+Rel(cdn_router, s3_service, "S3 ops")
+Rel(cdn_router, cache_service, "Invalidate")
+Rel(cdn_router, report_generator, "Generate")
+
+Rel(health_router, clickhouse_service, "Check")
+Rel(health_router, cdc_monitor, "Check CDC")
+
+Rel(report_generator, clickhouse_service, "Fetch data")
+Rel(report_generator, s3_service, "Store report")
+
+Rel(cdc_monitor, clickhouse_service, "Query CDC tables")
+
+Rel(dependencies, jwt_handler, "Provides")
+Rel(dependencies, clickhouse_service, "Provides")
+Rel(dependencies, s3_service, "Provides")
+Rel(dependencies, cache_service, "Provides")
+
+' External relationships
+Rel(clickhouse_service, clickhouse, "TCP/9000", "Native Protocol")
+Rel(s3_service, minio, "HTTP", "S3 API")
+Rel(cache_service, redis, "TCP", "Redis Protocol")
+Rel(cdc_monitor, kafka, "HTTP", "Consumer Groups API")
+Rel(jwt_handler, bff, "HTTP", "Token info")
+
+SHOW_LEGEND()
+@enduml

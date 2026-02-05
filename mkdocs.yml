@@ -14,10 +14,12 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - navigation.indexes
     - search.suggest
     - search.highlight
     - content.tabs.link
     - content.code.copy
+    - content.code.annotate
   palette:
     - scheme: default
       primary: indigo
@@ -42,6 +44,8 @@ plugins:
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences:
@@ -52,12 +56,20 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.details
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
   - admonition
   - tables
   - attr_list
   - md_in_html
+  - def_list
+  - footnotes
   - toc:
       permalink: true
+      toc_depth: 3
 
 nav:
   - Home: index.md
@@ -78,7 +90,15 @@ nav:
     - Auth API: api/auth.md
     - CDC Health: api/cdc-health.md
   - Diagrams:
-    - C4 Diagrams: diagrams/c4-diagrams.md
+    - Overview: diagrams/index.md
+    - C4 Level 1 - Context: diagrams/c4-level1.md
+    - C4 Level 2 - Container: diagrams/c4-level2.md
+    - C4 Level 3 - Component: diagrams/c4-level3.md
+    - C4 Level 4 - Code: diagrams/c4-level4.md
+    - Sequence Diagrams: diagrams/sequences.md
+    - Deployment: diagrams/deployment.md
+    - Structurizr DSL: diagrams/structurizr.md
+    - ArchiMate Model: diagrams/archimate.md
 
 extra:
   social:

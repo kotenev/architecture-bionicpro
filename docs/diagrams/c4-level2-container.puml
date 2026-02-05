@@ -1,0 +1,92 @@
+@startuml BionicPRO_C4_Level2_Container
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title BionicPRO - C4 Level 2: Container Diagram
+
+' ==================== ACTORS ====================
+Person(user, "Пользователь протеза", "Просматривает отчёты о работе протеза")
+Person(operator, "Оператор CRM", "Управляет заказами и клиентами")
+
+' ==================== EXTERNAL SYSTEMS ====================
+System_Ext(prosthesis, "Бионический протез", "ESP32, C++")
+System_Ext(ldap, "LDAP Servers", "OpenLDAP")
+System_Ext(external_idp, "External IdPs", "Яндекс ID, Google")
+
+' ==================== BIONICPRO BOUNDARY ====================
+System_Boundary(bionicpro, "BionicPRO Platform") {
+
+    ' --- Presentation Layer ---
+    Container(frontend, "Frontend SPA", "React 18, TypeScript", "Веб-приложение для пользователей протезов и операторов")
+    Container(mobile, "Mobile App", "React Native", "Мобильное приложение для настройки протеза")
+
+    ' --- Security Layer ---
+    Container(keycloak, "Keycloak", "Java, Keycloak 26.5", "Identity Provider:\n- OAuth2/OIDC\n- User Federation\n- MFA/TOTP")
+    Container(bff, "BFF Auth Service", "Python, Flask", "Backend-for-Frontend:\n- PKCE flow\n- Token storage\n- Session management")
+    ContainerDb(redis, "Redis", "Redis 7", "Session store,\ntoken cache")
+
+    ' --- Application Layer ---
+    Container(reports_svc, "Reports Service", "Python, FastAPI", "REST API для отчётов:\n- GET /api/reports\n- CDN URLs\n- Cache management")
+    Container(api_gateway, "API Gateway", "Spring Boot", "Маршрутизация,\nrate limiting")
+
+    ' --- ETL Layer ---
+    Container(airflow, "Apache Airflow", "Python, Airflow 2.8", "ETL оркестратор:\n- DAG scheduling\n- Task monitoring")
+    Container(etl_jobs, "ETL Jobs", "Python, PySpark", "Extract, Transform, Load")
+
+    ' --- CDC Layer ---
+    Container(debezium, "Debezium Connect", "Java, Kafka Connect", "CDC коннектор для PostgreSQL")
+    Container(kafka, "Apache Kafka", "Kafka 3.6", "Message broker для CDC событий")
+    Container(zookeeper, "Zookeeper", "Zookeeper", "Координатор Kafka")
+
+    ' --- Data Layer ---
+    ContainerDb(crm_db, "CRM Database", "PostgreSQL 14", "OLTP: клиенты,\nзаказы, протезы")
+    ContainerDb(telemetry_db, "Telemetry Database", "PostgreSQL 14", "OLTP: данные\nтелеметрии")
+    ContainerDb(clickhouse, "ClickHouse", "ClickHouse 24.1", "OLAP: витрина\nотчётов, CDC данные")
+
+    ' --- Caching Layer ---
+    ContainerDb(minio, "MinIO S3", "MinIO", "Object storage\nдля отчётов")
+    Container(nginx_cdn, "Nginx CDN", "Nginx 1.25", "CDN proxy\nс кэшированием")
+}
+
+' ==================== RELATIONSHIPS ====================
+
+' User flows
+Rel(user, frontend, "Использует", "HTTPS")
+Rel(user, mobile, "Использует", "HTTPS")
+Rel(operator, frontend, "Использует", "HTTPS")
+
+' Frontend to Backend
+Rel(frontend, bff, "API requests", "HTTPS + Cookie")
+Rel(mobile, bff, "API requests", "HTTPS + Cookie")
+Rel(bff, keycloak, "OAuth2 PKCE", "HTTPS")
+Rel(bff, redis, "Sessions, tokens", "TCP")
+Rel(bff, reports_svc, "Proxy", "HTTP + JWT")
+
+' Security
+Rel(keycloak, ldap, "User Federation", "LDAPS")
+Rel(keycloak, external_idp, "Identity Brokering", "OAuth2")
+
+' Reports flow
+Rel(reports_svc, clickhouse, "SELECT", "TCP/9000")
+Rel(reports_svc, minio, "PUT/GET", "S3 API")
+Rel(reports_svc, redis, "Cache", "TCP")
+Rel(frontend, nginx_cdn, "Fetch reports", "HTTPS")
+Rel(nginx_cdn, minio, "Proxy", "HTTP")
+
+' ETL flow
+Rel(airflow, etl_jobs, "Schedule", "Executor")
+Rel(etl_jobs, crm_db, "Extract", "SQL")
+Rel(etl_jobs, telemetry_db, "Extract", "SQL")
+Rel(etl_jobs, clickhouse, "Load", "TCP")
+
+' CDC flow
+Rel(crm_db, debezium, "WAL", "Logical Replication")
+Rel(debezium, kafka, "Publish", "Kafka Protocol")
+Rel(zookeeper, kafka, "Coordinate", "ZK Protocol")
+Rel(kafka, clickhouse, "Consume", "KafkaEngine")
+
+' Telemetry ingestion
+Rel(prosthesis, api_gateway, "Телеметрия", "HTTPS/4G")
+Rel(api_gateway, telemetry_db, "Write", "SQL")
+
+SHOW_LEGEND()
+@enduml

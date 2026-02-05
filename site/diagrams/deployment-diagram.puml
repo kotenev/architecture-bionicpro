@@ -1,0 +1,146 @@
+@startuml BionicPRO_Deployment
+!theme plain
+
+title BionicPRO - Deployment Diagram
+
+node "Docker Host" {
+
+    node "Frontend Container" as fe_node {
+        artifact "frontend:3000" as fe
+        component "React 18\nTypeScript\nTailwind CSS" as fe_tech
+    }
+
+    node "Security Layer" {
+
+        node "Keycloak Container" as kc_node {
+            artifact "keycloak:8080" as kc
+            component "Keycloak 26.5\nOAuth2/OIDC\nMFA/TOTP" as kc_tech
+        }
+
+        node "LDAP Container" as ldap_node {
+            artifact "ldap:389" as ldap
+            component "OpenLDAP 1.5\nUser Directory" as ldap_tech
+        }
+
+        node "BFF Container" as bff_node {
+            artifact "bionicpro-auth:8000" as bff
+            component "Python 3.11\nFlask 3.0\nPKCE Flow" as bff_tech
+        }
+
+        node "Redis Container" as redis_node {
+            database "redis:6379" as redis
+            component "Redis 7\nSession Store" as redis_tech
+        }
+    }
+
+    node "Application Layer" {
+
+        node "Reports Service Container" as rs_node {
+            artifact "reports-service:8001" as rs
+            component "Python 3.11\nFastAPI 0.109\nREST API" as rs_tech
+        }
+
+        node "Airflow Containers" as af_node {
+            artifact "airflow-webserver:8081" as af_web
+            artifact "airflow-scheduler" as af_sched
+            component "Airflow 2.8.1\nETL Orchestration" as af_tech
+        }
+    }
+
+    node "Data Layer" {
+
+        node "PostgreSQL Containers" {
+            database "crm_db:5435" as crm_db
+            database "telemetry_db:5436" as tel_db
+            database "keycloak_db:5433" as kc_db
+            database "airflow_db" as af_db
+            component "PostgreSQL 14\nOLTP" as pg_tech
+        }
+
+        node "ClickHouse Container" as ch_node {
+            database "clickhouse:8123/9000" as ch
+            component "ClickHouse 24.1\nOLAP\nKafkaEngine" as ch_tech
+        }
+    }
+
+    node "CDC Pipeline" {
+
+        node "Kafka Container" as kfk_node {
+            artifact "kafka:9092" as kfk
+            component "Kafka 3.6\nMessage Broker" as kfk_tech
+        }
+
+        node "Zookeeper Container" as zk_node {
+            artifact "zookeeper:2181" as zk
+            component "Zookeeper\nCoordination" as zk_tech
+        }
+
+        node "Debezium Container" as dbz_node {
+            artifact "debezium:8083" as dbz
+            component "Debezium 2.4\nCDC Connector" as dbz_tech
+        }
+    }
+
+    node "Caching Layer" {
+
+        node "MinIO Container" as s3_node {
+            database "minio:9001/9002" as s3
+            component "MinIO\nS3 Storage" as s3_tech
+        }
+
+        node "Nginx CDN Container" as cdn_node {
+            artifact "nginx-cdn:8002" as cdn
+            component "Nginx 1.25\nReverse Proxy\nCache" as cdn_tech
+        }
+    }
+}
+
+cloud "External Systems" {
+    node "Yandex ID" as yandex
+    node "Other IdPs" as other_idp
+}
+
+node "User Devices" {
+    node "Browser" as browser
+    node "Mobile App" as mobile
+    node "Prosthesis (ESP32)" as prosthesis
+}
+
+' User connections
+browser --> fe : HTTPS:3000
+mobile --> bff : HTTPS:8000
+prosthesis --> rs : HTTPS:8001/4G
+
+' Frontend to backend
+fe --> bff : HTTP:8000
+fe --> cdn : HTTP:8002
+
+' Security flow
+bff --> kc : HTTP:8080
+bff --> redis : TCP:6379
+bff --> rs : HTTP:8001
+kc --> ldap : LDAP:389
+kc --> kc_db : TCP:5432
+kc --> yandex : HTTPS
+kc --> other_idp : HTTPS
+
+' Reports flow
+rs --> ch : TCP:9000
+rs --> redis : TCP:6379
+rs --> s3 : HTTP:9000
+cdn --> s3 : HTTP:9000
+
+' ETL flow
+af_web --> af_db : TCP:5432
+af_sched --> crm_db : TCP:5432
+af_sched --> tel_db : TCP:5432
+af_sched --> ch : TCP:9000
+af_sched --> rs : HTTP:8001
+
+' CDC flow
+crm_db --> dbz : Logical\nReplication
+dbz --> kfk : TCP:9092
+zk <--> kfk : TCP:2181
+kfk --> ch : TCP:9092
+
+@enduml

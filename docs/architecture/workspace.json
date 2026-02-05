@@ -1,0 +1,2349 @@
+{
+  "configuration" : {
+    "scope" : "SoftwareSystem"
+  },
+  "description" : "Enterprise Architecture for Bionic Prosthetics Management Platform",
+  "documentation" : { },
+  "id" : 1,
+  "lastModifiedDate" : "2026-02-04T20:04:25Z",
+  "model" : {
+    "deploymentNodes" : [ {
+      "children" : [ {
+        "children" : [ {
+          "containerInstances" : [ {
+            "containerId" : "10",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "98",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.e548ed78-6f8f-445d-92ce-c61f790cd28e.65fd04de-a6fe-45e6-a6f2-d788ee727bd0"
+            },
+            "relationships" : [ {
+              "description" : "OAuth2 redirect (browser)",
+              "destinationId" : "100",
+              "id" : "101",
+              "linkedRelationshipId" : "55",
+              "sourceId" : "98",
+              "technology" : "HTTP:8080"
+            }, {
+              "description" : "API запросы + Session Cookie",
+              "destinationId" : "106",
+              "id" : "107",
+              "linkedRelationshipId" : "53",
+              "sourceId" : "98",
+              "technology" : "HTTP:8000"
+            }, {
+              "description" : "Загрузка отчётов",
+              "destinationId" : "143",
+              "id" : "144",
+              "linkedRelationshipId" : "54",
+              "sourceId" : "98",
+              "technology" : "HTTP:8002"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "description" : "React SPA контейнер",
+          "environment" : "Production",
+          "id" : "97",
+          "instances" : "1",
+          "name" : "frontend-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.e548ed78-6f8f-445d-92ce-c61f790cd28e"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "19",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "100",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.90ef1ee7-65f0-45e3-8961-02e32b79d582.f6ad332c-1e9c-422e-b0f7-89fa852bd365"
+            },
+            "relationships" : [ {
+              "description" : "User Federation",
+              "destinationId" : "103",
+              "id" : "104",
+              "linkedRelationshipId" : "59",
+              "sourceId" : "100",
+              "technology" : "LDAP:389"
+            }, {
+              "description" : "Хранение конфигурации",
+              "destinationId" : "147",
+              "id" : "148",
+              "linkedRelationshipId" : "60",
+              "sourceId" : "100",
+              "technology" : "TCP:5432"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "description" : "Identity Provider контейнер",
+          "environment" : "Production",
+          "id" : "99",
+          "instances" : "1",
+          "name" : "keycloak-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.90ef1ee7-65f0-45e3-8961-02e32b79d582"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "20",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "103",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.0380d84d-3f21-4b42-8c06-390eb7ee1d6e.b758aa43-28df-49a2-bed3-9b2c060be1bc"
+            },
+            "tags" : "Container Instance"
+          } ],
+          "description" : "Directory Service контейнер",
+          "environment" : "Production",
+          "id" : "102",
+          "instances" : "1",
+          "name" : "ldap-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.0380d84d-3f21-4b42-8c06-390eb7ee1d6e"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "11",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "106",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.20a8e9e8-8087-4024-a614-08697ceee35d.7fd871ae-317c-4db5-9045-f8d95f204f4f"
+            },
+            "relationships" : [ {
+              "description" : "OAuth2 PKCE flow",
+              "destinationId" : "100",
+              "id" : "108",
+              "linkedRelationshipId" : "56",
+              "sourceId" : "106",
+              "technology" : "HTTP:8080"
+            }, {
+              "description" : "Хранение зашифрованных токенов",
+              "destinationId" : "110",
+              "id" : "111",
+              "linkedRelationshipId" : "57",
+              "sourceId" : "106",
+              "technology" : "TCP:6379"
+            }, {
+              "description" : "Проксирование + JWT",
+              "destinationId" : "113",
+              "id" : "114",
+              "linkedRelationshipId" : "58",
+              "sourceId" : "106",
+              "technology" : "HTTP:8001"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "description" : "BFF Authentication контейнер",
+          "environment" : "Production",
+          "id" : "105",
+          "instances" : "1",
+          "name" : "bff-auth-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.20a8e9e8-8087-4024-a614-08697ceee35d"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "21",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "110",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.85a87cbd-8432-4b2d-8f5e-87f2b33c4182.f8919185-0f27-4666-8d43-ecbe4618b332"
+            },
+            "tags" : "Container Instance"
+          } ],
+          "description" : "Session Store контейнер",
+          "environment" : "Production",
+          "id" : "109",
+          "instances" : "1",
+          "name" : "redis-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.85a87cbd-8432-4b2d-8f5e-87f2b33c4182"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "22",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "113",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.dc2184e1-9b46-42bd-aacc-d8b0a7d9dfe6.d0256f69-9652-4946-8a9a-bfc8e2a03b83"
+            },
+            "relationships" : [ {
+              "description" : "Кэширование",
+              "destinationId" : "110",
+              "id" : "115",
+              "linkedRelationshipId" : "64",
+              "sourceId" : "113",
+              "technology" : "TCP:6379"
+            }, {
+              "description" : "Запросы отчётов",
+              "destinationId" : "126",
+              "id" : "127",
+              "linkedRelationshipId" : "63",
+              "sourceId" : "113",
+              "technology" : "TCP:9000"
+            }, {
+              "description" : "S3 операции",
+              "destinationId" : "140",
+              "id" : "141",
+              "linkedRelationshipId" : "65",
+              "sourceId" : "113",
+              "technology" : "HTTP:9000"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "description" : "Reports API контейнер",
+          "environment" : "Production",
+          "id" : "112",
+          "instances" : "1",
+          "name" : "reports-service-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.dc2184e1-9b46-42bd-aacc-d8b0a7d9dfe6"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "29",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "117",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.5eeb7eb6-2dfa-45fa-b4ec-3d5465826d23.c6ba5756-1936-4959-9427-8287eb34edef"
+            },
+            "relationships" : [ {
+              "description" : "Invalidate cache",
+              "destinationId" : "113",
+              "id" : "118",
+              "linkedRelationshipId" : "70",
+              "sourceId" : "117",
+              "technology" : "HTTP:8001"
+            }, {
+              "description" : "Extract CRM data",
+              "destinationId" : "120",
+              "id" : "121",
+              "linkedRelationshipId" : "67",
+              "sourceId" : "117",
+              "technology" : "TCP:5432"
+            }, {
+              "description" : "Extract Telemetry data",
+              "destinationId" : "123",
+              "id" : "124",
+              "linkedRelationshipId" : "68",
+              "sourceId" : "117",
+              "technology" : "TCP:5432"
+            }, {
+              "description" : "Load transformed data",
+              "destinationId" : "126",
+              "id" : "128",
+              "linkedRelationshipId" : "69",
+              "sourceId" : "117",
+              "technology" : "TCP:9000"
+            }, {
+              "description" : "Metadata",
+              "destinationId" : "150",
+              "id" : "151",
+              "linkedRelationshipId" : "71",
+              "sourceId" : "117",
+              "technology" : "TCP:5432"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "description" : "ETL Orchestrator контейнер",
+          "environment" : "Production",
+          "id" : "116",
+          "instances" : "1",
+          "name" : "airflow-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.5eeb7eb6-2dfa-45fa-b4ec-3d5465826d23"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "30",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "120",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.e5a7f425-bf4c-4ada-a6e8-874e2b560331.ccd27990-208c-4d71-af66-7e3d8cb1b7dd"
+            },
+            "relationships" : [ {
+              "description" : "Logical Replication (WAL)",
+              "destinationId" : "136",
+              "id" : "137",
+              "linkedRelationshipId" : "72",
+              "sourceId" : "120",
+              "technology" : "TCP:5432"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "description" : "CRM PostgreSQL контейнер",
+          "environment" : "Production",
+          "id" : "119",
+          "instances" : "1",
+          "name" : "crm-db-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.e5a7f425-bf4c-4ada-a6e8-874e2b560331"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "31",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "123",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.2ed10d0c-c77f-43df-994a-e09d2d4915c3.6c063508-7afb-4f5d-9f49-382b455b3ff7"
+            },
+            "tags" : "Container Instance"
+          } ],
+          "description" : "Telemetry PostgreSQL контейнер",
+          "environment" : "Production",
+          "id" : "122",
+          "instances" : "1",
+          "name" : "telemetry-db-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.2ed10d0c-c77f-43df-994a-e09d2d4915c3"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "32",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "126",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.1c9a312a-3791-4cb4-88de-5f49f2cebc31.09d87876-1e82-4443-9d91-9e2a344812f6"
+            },
+            "tags" : "Container Instance"
+          } ],
+          "description" : "ClickHouse OLAP контейнер",
+          "environment" : "Production",
+          "id" : "125",
+          "instances" : "1",
+          "name" : "clickhouse-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.1c9a312a-3791-4cb4-88de-5f49f2cebc31"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "33",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "130",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.fcc669ee-6dd7-4490-9fcf-108f6c21c8fd.1e1ed7a9-4a1d-4216-90fc-f4bf0bdf7aae"
+            },
+            "relationships" : [ {
+              "description" : "KafkaEngine consume",
+              "destinationId" : "126",
+              "id" : "131",
+              "linkedRelationshipId" : "75",
+              "sourceId" : "130",
+              "technology" : "TCP:9092"
+            }, {
+              "description" : "Координация",
+              "destinationId" : "133",
+              "id" : "134",
+              "linkedRelationshipId" : "74",
+              "sourceId" : "130",
+              "technology" : "TCP:2181"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "description" : "Kafka Message Broker контейнер",
+          "environment" : "Production",
+          "id" : "129",
+          "instances" : "1",
+          "name" : "kafka-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.fcc669ee-6dd7-4490-9fcf-108f6c21c8fd"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "34",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "133",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.2b8112d6-7655-4068-88eb-c9e122846d0c.592711da-213d-42b9-8299-8d3ea1a3b035"
+            },
+            "tags" : "Container Instance"
+          } ],
+          "description" : "Zookeeper координатор контейнер",
+          "environment" : "Production",
+          "id" : "132",
+          "instances" : "1",
+          "name" : "zookeeper-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.2b8112d6-7655-4068-88eb-c9e122846d0c"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "35",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "136",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.0685d96f-def4-4a57-b3de-356145222ab8.58ad3faa-1587-41c2-90bf-d48fbb80e842"
+            },
+            "relationships" : [ {
+              "description" : "Publish CDC events",
+              "destinationId" : "130",
+              "id" : "138",
+              "linkedRelationshipId" : "73",
+              "sourceId" : "136",
+              "technology" : "TCP:9092"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "description" : "CDC Connector контейнер",
+          "environment" : "Production",
+          "id" : "135",
+          "instances" : "1",
+          "name" : "debezium-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.0685d96f-def4-4a57-b3de-356145222ab8"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "36",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "140",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.ea588dff-50f0-4a69-969c-e6b05de601d1.ff20db5e-f6a6-4e7d-8c6c-d757543c90ca"
+            },
+            "tags" : "Container Instance"
+          } ],
+          "description" : "S3 Object Storage контейнер",
+          "environment" : "Production",
+          "id" : "139",
+          "instances" : "1",
+          "name" : "minio-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.ea588dff-50f0-4a69-969c-e6b05de601d1"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "37",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "143",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.e7f3f40d-e1e3-4d0c-8fb1-65e335e0d656.faeae208-c78f-4e19-94f0-b20a17ef60b0"
+            },
+            "relationships" : [ {
+              "description" : "Проксирование",
+              "destinationId" : "140",
+              "id" : "145",
+              "linkedRelationshipId" : "66",
+              "sourceId" : "143",
+              "technology" : "HTTP:9000"
+            } ],
+            "tags" : "Container Instance"
+          } ],
+          "description" : "CDN Proxy контейнер",
+          "environment" : "Production",
+          "id" : "142",
+          "instances" : "1",
+          "name" : "nginx-cdn-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.e7f3f40d-e1e3-4d0c-8fb1-65e335e0d656"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "38",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "147",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.f57058e1-4cf5-40ad-8693-fee7d46ba40e.7060b24f-9f0e-45b9-b706-69bc0cb241b8"
+            },
+            "tags" : "Container Instance"
+          } ],
+          "description" : "Keycloak PostgreSQL контейнер",
+          "environment" : "Production",
+          "id" : "146",
+          "instances" : "1",
+          "name" : "keycloak-db-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.f57058e1-4cf5-40ad-8693-fee7d46ba40e"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        }, {
+          "containerInstances" : [ {
+            "containerId" : "39",
+            "deploymentGroups" : [ "Default" ],
+            "environment" : "Production",
+            "id" : "150",
+            "instanceId" : 1,
+            "properties" : {
+              "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.771d9619-5c67-4595-87c5-39c733069477.98cc35a2-eaa7-4053-9caa-e0f3fbf27eed"
+            },
+            "tags" : "Container Instance"
+          } ],
+          "description" : "Airflow PostgreSQL контейнер",
+          "environment" : "Production",
+          "id" : "149",
+          "instances" : "1",
+          "name" : "airflow-db-container",
+          "properties" : {
+            "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f.771d9619-5c67-4595-87c5-39c733069477"
+          },
+          "tags" : "Element,Deployment Node",
+          "technology" : "Docker"
+        } ],
+        "description" : "Внутренняя сеть Docker",
+        "environment" : "Production",
+        "id" : "96",
+        "instances" : "1",
+        "name" : "docker-network",
+        "properties" : {
+          "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22.5f7740ca-4cab-4a61-9205-fab0c77d582f"
+        },
+        "tags" : "Element,Deployment Node",
+        "technology" : "bridge"
+      } ],
+      "description" : "Хост для запуска Docker контейнеров",
+      "environment" : "Production",
+      "id" : "95",
+      "instances" : "1",
+      "name" : "Docker Host",
+      "properties" : {
+        "structurizr.dsl.identifier" : "61e1b7b2-f073-4eaa-a952-04d6ccd8ff44.a9342798-e7e7-41d8-a0f7-b9e66d880c22"
+      },
+      "tags" : "Element,Deployment Node",
+      "technology" : "Linux / macOS / Windows"
+    } ],
+    "people" : [ {
+      "description" : "Владелец бионического протеза, просматривает отчёты об использовании",
+      "id" : "1",
+      "name" : "Пользователь протеза",
+      "properties" : {
+        "structurizr.dsl.identifier" : "prostheticUser"
+      },
+      "relationships" : [ {
+        "description" : "Просматривает отчёты об использовании протеза",
+        "destinationId" : "9",
+        "id" : "40",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Просматривает отчёты",
+        "destinationId" : "10",
+        "id" : "48",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "HTTPS:3000"
+      } ],
+      "tags" : "Element,Person,User"
+    }, {
+      "description" : "Заказывает протезы через CRM",
+      "id" : "2",
+      "name" : "Покупатель",
+      "properties" : {
+        "structurizr.dsl.identifier" : "buyer"
+      },
+      "relationships" : [ {
+        "description" : "Оформляет заказы",
+        "destinationId" : "9",
+        "id" : "41",
+        "sourceId" : "2",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      } ],
+      "tags" : "Element,Person,User"
+    }, {
+      "description" : "Управляет заказами и клиентами в CRM системе",
+      "id" : "3",
+      "name" : "Оператор CRM",
+      "properties" : {
+        "structurizr.dsl.identifier" : "crmOperator"
+      },
+      "relationships" : [ {
+        "description" : "Управляет заказами и клиентами",
+        "destinationId" : "9",
+        "id" : "42",
+        "sourceId" : "3",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Работает с CRM",
+        "destinationId" : "30",
+        "id" : "49",
+        "sourceId" : "3",
+        "tags" : "Relationship",
+        "technology" : "SQL"
+      } ],
+      "tags" : "Element,Person,Operator"
+    }, {
+      "description" : "Анализирует данные телеметрии для улучшения протезов",
+      "id" : "4",
+      "name" : "ML-инженер",
+      "properties" : {
+        "structurizr.dsl.identifier" : "mlEngineer"
+      },
+      "relationships" : [ {
+        "description" : "Анализирует данные телеметрии",
+        "destinationId" : "9",
+        "id" : "43",
+        "sourceId" : "4",
+        "tags" : "Relationship",
+        "technology" : "SQL"
+      }, {
+        "description" : "Выполняет аналитические запросы",
+        "destinationId" : "32",
+        "id" : "50",
+        "sourceId" : "4",
+        "tags" : "Relationship",
+        "technology" : "HTTP:8123"
+      } ],
+      "tags" : "Element,Person,Engineer"
+    }, {
+      "description" : "Управляет системой, пользователями и конфигурацией",
+      "id" : "5",
+      "name" : "Администратор",
+      "properties" : {
+        "structurizr.dsl.identifier" : "administrator"
+      },
+      "relationships" : [ {
+        "description" : "Администрирует систему",
+        "destinationId" : "9",
+        "id" : "44",
+        "sourceId" : "5",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Управляет пользователями",
+        "destinationId" : "19",
+        "id" : "51",
+        "sourceId" : "5",
+        "tags" : "Relationship",
+        "technology" : "HTTP:8080"
+      }, {
+        "description" : "Мониторит ETL",
+        "destinationId" : "29",
+        "id" : "52",
+        "sourceId" : "5",
+        "tags" : "Relationship",
+        "technology" : "HTTP:8081"
+      } ],
+      "tags" : "Element,Person,Admin"
+    } ],
+    "softwareSystems" : [ {
+      "description" : "Внешний Identity Provider для аутентификации через Яндекс",
+      "documentation" : { },
+      "id" : "6",
+      "name" : "Яндекс ID",
+      "properties" : {
+        "structurizr.dsl.identifier" : "yandexId"
+      },
+      "tags" : "Element,Software System,External"
+    }, {
+      "description" : "Внешний Identity Provider для аутентификации через Google",
+      "documentation" : { },
+      "id" : "7",
+      "name" : "Google",
+      "properties" : {
+        "structurizr.dsl.identifier" : "googleIdp"
+      },
+      "tags" : "Element,Software System,External"
+    }, {
+      "description" : "IoT устройство, передающее телеметрию по 4G",
+      "documentation" : { },
+      "id" : "8",
+      "name" : "Бионический протез",
+      "properties" : {
+        "structurizr.dsl.identifier" : "prosthesisDevice"
+      },
+      "relationships" : [ {
+        "description" : "Отправляет телеметрию",
+        "destinationId" : "9",
+        "id" : "45",
+        "sourceId" : "8",
+        "tags" : "Relationship",
+        "technology" : "HTTPS/4G"
+      }, {
+        "description" : "Отправка телеметрии",
+        "destinationId" : "31",
+        "id" : "76",
+        "sourceId" : "8",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      } ],
+      "tags" : "Element,Software System,External,IoT"
+    }, {
+      "containers" : [ {
+        "description" : "React Single Page Application для пользователей протезов",
+        "documentation" : { },
+        "id" : "10",
+        "name" : "Frontend SPA",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.frontend"
+        },
+        "relationships" : [ {
+          "description" : "API запросы + Session Cookie",
+          "destinationId" : "11",
+          "id" : "53",
+          "sourceId" : "10",
+          "tags" : "Relationship",
+          "technology" : "HTTP:8000"
+        }, {
+          "description" : "Загрузка отчётов",
+          "destinationId" : "37",
+          "id" : "54",
+          "sourceId" : "10",
+          "tags" : "Relationship",
+          "technology" : "HTTP:8002"
+        }, {
+          "description" : "OAuth2 redirect (browser)",
+          "destinationId" : "19",
+          "id" : "55",
+          "sourceId" : "10",
+          "tags" : "Relationship",
+          "technology" : "HTTP:8080"
+        } ],
+        "tags" : "Element,Container,WebBrowser",
+        "technology" : "React 18, TypeScript"
+      }, {
+        "components" : [ {
+          "description" : "Endpoints: /auth/login, /auth/callback, /auth/logout",
+          "documentation" : { },
+          "id" : "12",
+          "name" : "AuthController",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.bffAuth.authController"
+          },
+          "relationships" : [ {
+            "description" : "Генерация PKCE",
+            "destinationId" : "14",
+            "id" : "77",
+            "sourceId" : "12",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          }, {
+            "description" : "Обмен кода на токены",
+            "destinationId" : "15",
+            "id" : "78",
+            "sourceId" : "12",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          }, {
+            "description" : "Управление сессиями",
+            "destinationId" : "16",
+            "id" : "79",
+            "sourceId" : "12",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Flask Blueprint"
+        }, {
+          "description" : "Проксирование запросов к Reports Service",
+          "documentation" : { },
+          "id" : "13",
+          "name" : "ProxyController",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.bffAuth.proxyController"
+          },
+          "relationships" : [ {
+            "description" : "Получение токена",
+            "destinationId" : "16",
+            "id" : "80",
+            "sourceId" : "13",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          }, {
+            "description" : "Refresh токена",
+            "destinationId" : "15",
+            "id" : "81",
+            "sourceId" : "13",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Flask Blueprint"
+        }, {
+          "description" : "Генерация PKCE (code_verifier, code_challenge)",
+          "documentation" : { },
+          "id" : "14",
+          "name" : "PKCEService",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.bffAuth.pkceService"
+          },
+          "tags" : "Element,Component",
+          "technology" : "Python"
+        }, {
+          "description" : "Обмен кода на токены, refresh",
+          "documentation" : { },
+          "id" : "15",
+          "name" : "TokenService",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.bffAuth.tokenService"
+          },
+          "relationships" : [ {
+            "description" : "Шифрование токенов",
+            "destinationId" : "17",
+            "id" : "82",
+            "sourceId" : "15",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          }, {
+            "description" : "HTTP запросы к Keycloak",
+            "destinationId" : "18",
+            "id" : "83",
+            "sourceId" : "15",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Python"
+        }, {
+          "description" : "Управление сессиями в Redis",
+          "documentation" : { },
+          "id" : "16",
+          "name" : "SessionService",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.bffAuth.sessionService"
+          },
+          "relationships" : [ {
+            "description" : "Redis операции",
+            "destinationId" : "21",
+            "id" : "84",
+            "sourceId" : "16",
+            "tags" : "Relationship",
+            "technology" : "TCP:6379"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Python"
+        }, {
+          "description" : "Шифрование токенов (Fernet)",
+          "documentation" : { },
+          "id" : "17",
+          "name" : "EncryptionService",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.bffAuth.encryptionService"
+          },
+          "tags" : "Element,Component",
+          "technology" : "Python"
+        }, {
+          "description" : "HTTP клиент для Keycloak",
+          "documentation" : { },
+          "id" : "18",
+          "name" : "KeycloakClient",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.bffAuth.keycloakClient"
+          },
+          "relationships" : [ {
+            "description" : "OAuth2 endpoints",
+            "destinationId" : "19",
+            "id" : "85",
+            "sourceId" : "18",
+            "tags" : "Relationship",
+            "technology" : "HTTP:8080"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Python"
+        } ],
+        "description" : "Backend-for-Frontend: хранение токенов, проксирование API",
+        "documentation" : { },
+        "id" : "11",
+        "name" : "BFF Auth Service",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.bffAuth"
+        },
+        "relationships" : [ {
+          "description" : "OAuth2 PKCE flow",
+          "destinationId" : "19",
+          "id" : "56",
+          "sourceId" : "11",
+          "tags" : "Relationship",
+          "technology" : "HTTP:8080"
+        }, {
+          "description" : "Хранение зашифрованных токенов",
+          "destinationId" : "21",
+          "id" : "57",
+          "sourceId" : "11",
+          "tags" : "Relationship",
+          "technology" : "TCP:6379"
+        }, {
+          "description" : "Проксирование + JWT",
+          "destinationId" : "22",
+          "id" : "58",
+          "sourceId" : "11",
+          "tags" : "Relationship",
+          "technology" : "HTTP:8001"
+        } ],
+        "tags" : "Element,Container,Service",
+        "technology" : "Python 3.11, Flask 3.0"
+      }, {
+        "description" : "Identity Provider: OAuth2/OIDC, LDAP Federation, MFA",
+        "documentation" : { },
+        "id" : "19",
+        "name" : "Keycloak",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.keycloak"
+        },
+        "relationships" : [ {
+          "description" : "User Federation",
+          "destinationId" : "20",
+          "id" : "59",
+          "sourceId" : "19",
+          "tags" : "Relationship",
+          "technology" : "LDAP:389"
+        }, {
+          "description" : "Хранение конфигурации",
+          "destinationId" : "38",
+          "id" : "60",
+          "sourceId" : "19",
+          "tags" : "Relationship",
+          "technology" : "TCP:5432"
+        }, {
+          "description" : "Identity Brokering",
+          "destinationId" : "6",
+          "id" : "61",
+          "sourceId" : "19",
+          "tags" : "Relationship",
+          "technology" : "HTTPS"
+        }, {
+          "description" : "Identity Brokering",
+          "destinationId" : "7",
+          "id" : "62",
+          "sourceId" : "19",
+          "tags" : "Relationship",
+          "technology" : "HTTPS"
+        } ],
+        "tags" : "Element,Container,Identity",
+        "technology" : "Keycloak 26.5.2"
+      }, {
+        "description" : "Directory Service для User Federation",
+        "documentation" : { },
+        "id" : "20",
+        "name" : "OpenLDAP",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.ldap"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "OpenLDAP 1.5.0"
+      }, {
+        "description" : "Session Storage, Token Cache",
+        "documentation" : { },
+        "id" : "21",
+        "name" : "Redis",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.redis"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "Redis 7"
+      }, {
+        "components" : [ {
+          "description" : "Endpoints: /api/reports, /api/reports/{date}",
+          "documentation" : { },
+          "id" : "23",
+          "name" : "ReportsRouter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.reportsService.reportsRouter"
+          },
+          "relationships" : [ {
+            "description" : "Валидация токена",
+            "destinationId" : "25",
+            "id" : "86",
+            "sourceId" : "23",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          }, {
+            "description" : "Получение данных",
+            "destinationId" : "26",
+            "id" : "87",
+            "sourceId" : "23",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "FastAPI Router"
+        }, {
+          "description" : "Endpoints: /api/reports/cdn/*",
+          "documentation" : { },
+          "id" : "24",
+          "name" : "CDNRouter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.reportsService.cdnRouter"
+          },
+          "relationships" : [ {
+            "description" : "Валидация токена",
+            "destinationId" : "25",
+            "id" : "88",
+            "sourceId" : "24",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          }, {
+            "description" : "S3 операции",
+            "destinationId" : "27",
+            "id" : "89",
+            "sourceId" : "24",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          }, {
+            "description" : "Генерация отчётов",
+            "destinationId" : "28",
+            "id" : "90",
+            "sourceId" : "24",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "FastAPI Router"
+        }, {
+          "description" : "Валидация JWT токенов Keycloak",
+          "documentation" : { },
+          "id" : "25",
+          "name" : "JWTHandler",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.reportsService.jwtHandler"
+          },
+          "tags" : "Element,Component",
+          "technology" : "Python"
+        }, {
+          "description" : "Запросы к ClickHouse OLAP",
+          "documentation" : { },
+          "id" : "26",
+          "name" : "ClickHouseService",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.reportsService.clickhouseService"
+          },
+          "relationships" : [ {
+            "description" : "SQL запросы",
+            "destinationId" : "32",
+            "id" : "93",
+            "sourceId" : "26",
+            "tags" : "Relationship",
+            "technology" : "TCP:9000"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Python"
+        }, {
+          "description" : "Работа с MinIO S3",
+          "documentation" : { },
+          "id" : "27",
+          "name" : "S3Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.reportsService.s3Service"
+          },
+          "relationships" : [ {
+            "description" : "S3 API",
+            "destinationId" : "36",
+            "id" : "94",
+            "sourceId" : "27",
+            "tags" : "Relationship",
+            "technology" : "HTTP:9000"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Python"
+        }, {
+          "description" : "Генерация JSON отчётов",
+          "documentation" : { },
+          "id" : "28",
+          "name" : "ReportGenerator",
+          "properties" : {
+            "structurizr.dsl.identifier" : "bionicpro.reportsService.reportGenerator"
+          },
+          "relationships" : [ {
+            "description" : "Данные для отчёта",
+            "destinationId" : "26",
+            "id" : "91",
+            "sourceId" : "28",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          }, {
+            "description" : "Сохранение в S3",
+            "destinationId" : "27",
+            "id" : "92",
+            "sourceId" : "28",
+            "tags" : "Relationship",
+            "technology" : "Python"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Python"
+        } ],
+        "description" : "REST API для отчётов об использовании протезов",
+        "documentation" : { },
+        "id" : "22",
+        "name" : "Reports Service",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.reportsService"
+        },
+        "relationships" : [ {
+          "description" : "Запросы отчётов",
+          "destinationId" : "32",
+          "id" : "63",
+          "sourceId" : "22",
+          "tags" : "Relationship",
+          "technology" : "TCP:9000"
+        }, {
+          "description" : "Кэширование",
+          "destinationId" : "21",
+          "id" : "64",
+          "sourceId" : "22",
+          "tags" : "Relationship",
+          "technology" : "TCP:6379"
+        }, {
+          "description" : "S3 операции",
+          "destinationId" : "36",
+          "id" : "65",
+          "sourceId" : "22",
+          "tags" : "Relationship",
+          "technology" : "HTTP:9000"
+        } ],
+        "tags" : "Element,Container,Service",
+        "technology" : "Python 3.11, FastAPI 0.109"
+      }, {
+        "description" : "ETL Orchestrator: планирование и выполнение pipeline",
+        "documentation" : { },
+        "id" : "29",
+        "name" : "Apache Airflow",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.airflow"
+        },
+        "relationships" : [ {
+          "description" : "Extract CRM data",
+          "destinationId" : "30",
+          "id" : "67",
+          "sourceId" : "29",
+          "tags" : "Relationship",
+          "technology" : "TCP:5432"
+        }, {
+          "description" : "Extract Telemetry data",
+          "destinationId" : "31",
+          "id" : "68",
+          "sourceId" : "29",
+          "tags" : "Relationship",
+          "technology" : "TCP:5432"
+        }, {
+          "description" : "Load transformed data",
+          "destinationId" : "32",
+          "id" : "69",
+          "sourceId" : "29",
+          "tags" : "Relationship",
+          "technology" : "TCP:9000"
+        }, {
+          "description" : "Invalidate cache",
+          "destinationId" : "22",
+          "id" : "70",
+          "sourceId" : "29",
+          "tags" : "Relationship",
+          "technology" : "HTTP:8001"
+        }, {
+          "description" : "Metadata",
+          "destinationId" : "39",
+          "id" : "71",
+          "sourceId" : "29",
+          "tags" : "Relationship",
+          "technology" : "TCP:5432"
+        } ],
+        "tags" : "Element,Container,Service",
+        "technology" : "Apache Airflow 2.8.1"
+      }, {
+        "description" : "OLTP база клиентов, протезов и заказов",
+        "documentation" : { },
+        "id" : "30",
+        "name" : "CRM Database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.crmDb"
+        },
+        "relationships" : [ {
+          "description" : "Logical Replication (WAL)",
+          "destinationId" : "35",
+          "id" : "72",
+          "sourceId" : "30",
+          "tags" : "Relationship",
+          "technology" : "TCP:5432"
+        } ],
+        "tags" : "Element,Container,Database",
+        "technology" : "PostgreSQL 14"
+      }, {
+        "description" : "OLTP база телеметрии с IoT устройств",
+        "documentation" : { },
+        "id" : "31",
+        "name" : "Telemetry Database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.telemetryDb"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "PostgreSQL 14"
+      }, {
+        "description" : "OLAP витрина для аналитики и отчётов",
+        "documentation" : { },
+        "id" : "32",
+        "name" : "ClickHouse",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.clickhouse"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "ClickHouse 24.1"
+      }, {
+        "description" : "Message Broker для CDC событий",
+        "documentation" : { },
+        "id" : "33",
+        "name" : "Apache Kafka",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.kafka"
+        },
+        "relationships" : [ {
+          "description" : "Координация",
+          "destinationId" : "34",
+          "id" : "74",
+          "sourceId" : "33",
+          "tags" : "Relationship",
+          "technology" : "TCP:2181"
+        }, {
+          "description" : "KafkaEngine consume",
+          "destinationId" : "32",
+          "id" : "75",
+          "sourceId" : "33",
+          "tags" : "Relationship",
+          "technology" : "TCP:9092"
+        } ],
+        "tags" : "Element,Container,Queue",
+        "technology" : "Confluent Kafka 7.5.0"
+      }, {
+        "description" : "Координатор кластера Kafka",
+        "documentation" : { },
+        "id" : "34",
+        "name" : "Zookeeper",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.zookeeper"
+        },
+        "tags" : "Element,Container,Infrastructure",
+        "technology" : "Apache Zookeeper 3.8"
+      }, {
+        "description" : "CDC коннектор для PostgreSQL",
+        "documentation" : { },
+        "id" : "35",
+        "name" : "Debezium Connect",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.debezium"
+        },
+        "relationships" : [ {
+          "description" : "Publish CDC events",
+          "destinationId" : "33",
+          "id" : "73",
+          "sourceId" : "35",
+          "tags" : "Relationship",
+          "technology" : "TCP:9092"
+        } ],
+        "tags" : "Element,Container,Service",
+        "technology" : "Debezium 2.4"
+      }, {
+        "description" : "S3-совместимое Object Storage для отчётов",
+        "documentation" : { },
+        "id" : "36",
+        "name" : "MinIO S3",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.minio"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "MinIO"
+      }, {
+        "description" : "Reverse proxy с HTTP кэшированием",
+        "documentation" : { },
+        "id" : "37",
+        "name" : "Nginx CDN",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.nginxCdn"
+        },
+        "relationships" : [ {
+          "description" : "Проксирование",
+          "destinationId" : "36",
+          "id" : "66",
+          "sourceId" : "37",
+          "tags" : "Relationship",
+          "technology" : "HTTP:9000"
+        } ],
+        "tags" : "Element,Container,Service",
+        "technology" : "Nginx 1.25"
+      }, {
+        "description" : "PostgreSQL для Keycloak",
+        "documentation" : { },
+        "id" : "38",
+        "name" : "Keycloak Database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.keycloakDb"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "PostgreSQL 14"
+      }, {
+        "description" : "PostgreSQL для Airflow metadata",
+        "documentation" : { },
+        "id" : "39",
+        "name" : "Airflow Database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "bionicpro.airflowDb"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "PostgreSQL 14"
+      } ],
+      "description" : "Платформа управления бионическими протезами: отчёты, аналитика, CRM",
+      "documentation" : {
+        "decisions" : [ {
+          "content" : "# 1. Использование BFF Pattern для аутентификации\n\nDate: 2024-01-15\n\n## Status\n\nAccepted\n\n## Context\n\nНеобходимо обеспечить безопасное хранение OAuth2 токенов и защиту от XSS атак.\n\n## Decision\n\nИспользовать Backend-for-Frontend (BFF) pattern:\n- Access/Refresh токены хранятся на сервере в Redis\n- Фронтенд получает только HTTP-only session cookies\n- BFF проксирует запросы к API, добавляя JWT\n\n## Consequences\n\n**Положительные:**\n- Токены недоступны из JavaScript (защита от XSS)\n- Автоматический refresh токенов на сервере\n- Централизованное управление сессиями\n\n**Отрицательные:**\n- Дополнительный компонент инфраструктуры\n- Все запросы проходят через BFF\n",
+          "date" : "2024-01-15T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "1",
+          "status" : "Accepted",
+          "title" : "Использование BFF Pattern для аутентификации"
+        }, {
+          "content" : "# 2. CDC вместо ETL для CRM данных\n\nDate: 2024-01-15\n\n## Status\n\nAccepted\n\n## Context\n\nETL pipeline каждые 15 минут создаёт значительную нагрузку на CRM базу данных (тяжёлые SELECT запросы).\n\n## Decision\n\nИспользовать Change Data Capture (CDC) через Debezium:\n- Debezium читает WAL PostgreSQL\n- События публикуются в Kafka\n- ClickHouse потребляет через KafkaEngine\n\n## Consequences\n\n**Положительные:**\n- Минимальная нагрузка на OLTP базу\n- Данные в OLAP обновляются за секунды (< 1s latency)\n- Независимость отчётов от доступности CRM\n\n**Отрицательные:**\n- Дополнительные компоненты (Kafka, Debezium)\n- Сложность отладки CDC pipeline\n",
+          "date" : "2024-01-15T00:00:00Z",
+          "format" : "Markdown",
+          "id" : "2",
+          "status" : "Accepted",
+          "title" : "CDC вместо ETL для CRM данных"
+        } ],
+        "sections" : [ {
+          "content" : "# Контекст системы\n\n## Назначение\n\nBionicPRO — платформа для управления бионическими протезами, которая обеспечивает:\n\n- Сбор телеметрии с протезов в реальном времени\n- Формирование отчётов для пользователей\n- Управление заказами через CRM\n- Безопасную аутентификацию с MFA\n\n## Пользователи системы\n\n| Роль | Описание |\n|------|----------|\n| Пользователь протеза | Владелец бионического протеза, просматривает отчёты |\n| Покупатель | Оформляет заказы на протезы |\n| Оператор CRM | Управляет заказами и клиентами |\n| ML-инженер | Анализирует данные телеметрии |\n| Администратор | Управляет системой и пользователями |\n\n## Внешние системы\n\n- **Яндекс ID** — внешний Identity Provider для аутентификации\n- **Google** — альтернативный Identity Provider\n- **Бионический протез** — IoT устройство, передающее телеметрию\n\n## Архитектурные принципы\n\n1. **Разделение OLTP/OLAP** — CRM работает с PostgreSQL, отчёты из ClickHouse\n2. **BFF Pattern** — токены хранятся на сервере, фронтенд работает с cookies\n3. **CDC для real-time данных** — изменения в CRM автоматически реплицируются\n4. **Многоуровневое кэширование** — Redis + S3 + Nginx CDN\n",
+          "filename" : "01-context.md",
+          "format" : "Markdown",
+          "order" : 1,
+          "title" : ""
+        }, {
+          "content" : "# Обзор системы BionicPRO\n\n## Назначение\n\nBionicPRO — платформа для управления бионическими протезами:\n\n- Сбор телеметрии с IoT устройств\n- Формирование отчётов для пользователей\n- Управление заказами через CRM\n- Безопасная аутентификация с MFA\n\n## Ключевые возможности\n\n| Задача | Компоненты |\n|--------|------------|\n| Task 1: Security | LDAP, Keycloak, BFF Auth |\n| Task 2: Reports & ETL | Airflow, ClickHouse, FastAPI |\n| Task 3: S3/CDN | MinIO, Nginx |\n| Task 4: CDC | Debezium, Kafka |\n\n## Архитектурные принципы\n\n1. **OLTP/OLAP разделение** — PostgreSQL для транзакций, ClickHouse для аналитики\n2. **BFF Pattern** — серверное хранение токенов\n3. **CDC** — real-time репликация данных\n4. **Multi-tier Caching** — Redis → S3 → CDN\n",
+          "filename" : "01-overview.md",
+          "format" : "Markdown",
+          "order" : 2,
+          "title" : ""
+        }, {
+          "content" : "# Архитектурные решения\n\n## ADR-001: Использование BFF Pattern\n\n**Статус:** Принято\n\n**Контекст:** Необходимо обеспечить безопасное хранение OAuth2 токенов.\n\n**Решение:** Использовать Backend-for-Frontend pattern — токены хранятся на сервере в Redis, фронтенд получает только HTTP-only session cookies.\n\n**Последствия:** Повышенная безопасность, но дополнительная сложность инфраструктуры.\n\n---\n\n## ADR-002: CDC вместо ETL для CRM данных\n\n**Статус:** Принято\n\n**Контекст:** ETL каждые 15 минут создаёт нагрузку на CRM базу данных.\n\n**Решение:** Использовать Debezium CDC для real-time репликации CRM → ClickHouse через Kafka.\n\n**Последствия:** Минимальная нагрузка на OLTP, данные в OLAP обновляются за секунды.\n\n---\n\n## ADR-003: ClickHouse для OLAP\n\n**Статус:** Принято\n\n**Контекст:** Требуется быстрая аналитика по большим объёмам телеметрии.\n\n**Решение:** Использовать ClickHouse как OLAP хранилище с партиционированием по месяцам.\n\n**Последствия:** Высокая производительность запросов, но требует отдельной инфраструктуры.\n\n---\n\n## ADR-004: MinIO + Nginx CDN для кэширования\n\n**Статус:** Принято\n\n**Контекст:** Снижение нагрузки на ClickHouse при частых запросах отчётов.\n\n**Решение:** Генерировать JSON отчёты в MinIO S3, раздавать через Nginx с HTTP кэшированием.\n\n**Последствия:** Latency снижается с 200ms до 30ms для закэшированных отчётов.\n",
+          "filename" : "02-decisions.md",
+          "format" : "Markdown",
+          "order" : 3,
+          "title" : ""
+        } ]
+      },
+      "id" : "9",
+      "name" : "BionicPRO Platform",
+      "properties" : {
+        "structurizr.dsl.identifier" : "bionicpro"
+      },
+      "relationships" : [ {
+        "description" : "Аутентификация через Яндекс",
+        "destinationId" : "6",
+        "id" : "46",
+        "sourceId" : "9",
+        "tags" : "Relationship",
+        "technology" : "OAuth2 OIDC"
+      }, {
+        "description" : "Аутентификация через Google",
+        "destinationId" : "7",
+        "id" : "47",
+        "sourceId" : "9",
+        "tags" : "Relationship",
+        "technology" : "OAuth2 OIDC"
+      } ],
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "BionicPRO",
+  "properties" : {
+    "structurizr.inspection.error" : "0",
+    "structurizr.inspection.info" : "0",
+    "structurizr.inspection.ignore" : "0",
+    "structurizr.inspection.warning" : "0"
+  },
+  "views" : {
+    "componentViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "11",
+      "description" : "Компоненты BFF Auth Service",
+      "elements" : [ {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "13",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "14",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "16",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "17",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "18",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "19",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "21",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "BFF_Components",
+      "name" : "Component View: BionicPRO Platform - BFF Auth Service",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "77"
+      }, {
+        "id" : "78"
+      }, {
+        "id" : "79"
+      }, {
+        "id" : "80"
+      }, {
+        "id" : "81"
+      }, {
+        "id" : "82"
+      }, {
+        "id" : "83"
+      }, {
+        "id" : "84"
+      }, {
+        "id" : "85"
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "22",
+      "description" : "Компоненты Reports Service",
+      "elements" : [ {
+        "id" : "23",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "24",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "25",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "26",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "27",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "28",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "32",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "36",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "Reports_Components",
+      "name" : "Component View: BionicPRO Platform - Reports Service",
+      "order" : 4,
+      "relationships" : [ {
+        "id" : "86"
+      }, {
+        "id" : "87"
+      }, {
+        "id" : "88"
+      }, {
+        "id" : "89"
+      }, {
+        "id" : "90"
+      }, {
+        "id" : "91"
+      }, {
+        "id" : "92"
+      }, {
+        "id" : "93"
+      }, {
+        "id" : "94"
+      } ]
+    } ],
+    "configuration" : {
+      "branding" : { },
+      "lastSavedView" : "Containers",
+      "styles" : {
+        "elements" : [ {
+          "background" : "#c00000",
+          "tag" : "Admin"
+        }, {
+          "background" : "#85bb65",
+          "color" : "#000000",
+          "tag" : "Component"
+        }, {
+          "background" : "#438dd5",
+          "color" : "#ffffff",
+          "tag" : "Container"
+        }, {
+          "shape" : "Cylinder",
+          "tag" : "Database"
+        }, {
+          "background" : "#70ad47",
+          "tag" : "Engineer"
+        }, {
+          "background" : "#999999",
+          "color" : "#ffffff",
+          "tag" : "External"
+        }, {
+          "background" : "#ff6600",
+          "color" : "#ffffff",
+          "shape" : "Hexagon",
+          "tag" : "Identity"
+        }, {
+          "background" : "#999999",
+          "color" : "#ffffff",
+          "tag" : "Infrastructure"
+        }, {
+          "background" : "#438dd5",
+          "color" : "#ffffff",
+          "shape" : "Robot",
+          "tag" : "IoT"
+        }, {
+          "background" : "#5b9bd5",
+          "tag" : "Operator"
+        }, {
+          "background" : "#08427b",
+          "color" : "#ffffff",
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "shape" : "Pipe",
+          "tag" : "Queue"
+        }, {
+          "shape" : "Hexagon",
+          "tag" : "Service"
+        }, {
+          "background" : "#1168bd",
+          "color" : "#ffffff",
+          "tag" : "Software System"
+        }, {
+          "background" : "#08427b",
+          "tag" : "User"
+        }, {
+          "shape" : "WebBrowser",
+          "tag" : "WebBrowser"
+        } ]
+      },
+      "terminology" : { },
+      "themes" : [ "https://static.structurizr.com/themes/default/theme.json" ]
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Контейнерная диаграмма BionicPRO",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "19",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "20",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "21",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "22",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "29",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "30",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "31",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "32",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "33",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "34",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "35",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "36",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "37",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "38",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "39",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "Containers",
+      "name" : "Container View: BionicPRO Platform",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "48"
+      }, {
+        "id" : "49"
+      }, {
+        "id" : "50"
+      }, {
+        "id" : "51"
+      }, {
+        "id" : "52"
+      }, {
+        "id" : "53"
+      }, {
+        "id" : "54"
+      }, {
+        "id" : "55"
+      }, {
+        "id" : "56"
+      }, {
+        "id" : "57"
+      }, {
+        "id" : "58"
+      }, {
+        "id" : "59"
+      }, {
+        "id" : "60"
+      }, {
+        "id" : "61"
+      }, {
+        "id" : "62"
+      }, {
+        "id" : "63"
+      }, {
+        "id" : "64"
+      }, {
+        "id" : "65"
+      }, {
+        "id" : "66"
+      }, {
+        "id" : "67"
+      }, {
+        "id" : "68"
+      }, {
+        "id" : "69"
+      }, {
+        "id" : "70"
+      }, {
+        "id" : "71"
+      }, {
+        "id" : "72"
+      }, {
+        "id" : "73"
+      }, {
+        "id" : "74"
+      }, {
+        "id" : "75"
+      }, {
+        "id" : "76"
+      } ],
+      "softwareSystemId" : "9"
+    } ],
+    "deploymentViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Docker Deployment",
+      "elements" : [ {
+        "id" : "95",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "96",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "97",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "98",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "99",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "100",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "102",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "103",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "105",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "106",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "109",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "110",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "112",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "113",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "116",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "117",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "119",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "120",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "122",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "123",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "125",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "126",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "129",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "130",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "132",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "133",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "135",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "136",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "139",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "140",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "142",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "143",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "146",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "147",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "149",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "150",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "environment" : "Production",
+      "key" : "Deployment",
+      "name" : "Deployment View: BionicPRO Platform - Production",
+      "order" : 5,
+      "relationships" : [ {
+        "id" : "101"
+      }, {
+        "id" : "104"
+      }, {
+        "id" : "107"
+      }, {
+        "id" : "108"
+      }, {
+        "id" : "111"
+      }, {
+        "id" : "114"
+      }, {
+        "id" : "115"
+      }, {
+        "id" : "118"
+      }, {
+        "id" : "121"
+      }, {
+        "id" : "124"
+      }, {
+        "id" : "127"
+      }, {
+        "id" : "128"
+      }, {
+        "id" : "131"
+      }, {
+        "id" : "134"
+      }, {
+        "id" : "137"
+      }, {
+        "id" : "138"
+      }, {
+        "id" : "141"
+      }, {
+        "id" : "144"
+      }, {
+        "id" : "145"
+      }, {
+        "id" : "148"
+      }, {
+        "id" : "151"
+      } ],
+      "softwareSystemId" : "9"
+    } ],
+    "dynamicViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "OAuth2 PKCE Authentication Flow",
+      "elementId" : "9",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "19",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "20",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "21",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "AuthFlow",
+      "name" : "Dynamic View: BionicPRO Platform",
+      "order" : 6,
+      "relationships" : [ {
+        "description" : "1. Click Login",
+        "id" : "48",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "2. GET /auth/login",
+        "id" : "53",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "3. Store PKCE verifier",
+        "id" : "57",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "4. Authorization Request",
+        "id" : "55",
+        "order" : "4",
+        "response" : false
+      }, {
+        "description" : "5. Validate credentials",
+        "id" : "59",
+        "order" : "5",
+        "response" : false
+      }, {
+        "description" : "6. Callback with code",
+        "id" : "53",
+        "order" : "6",
+        "response" : false
+      }, {
+        "description" : "7. Exchange code",
+        "id" : "56",
+        "order" : "7",
+        "response" : false
+      }, {
+        "description" : "8. Store tokens",
+        "id" : "57",
+        "order" : "8",
+        "response" : false
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "CDC Data Flow (CRM → ClickHouse)",
+      "elementId" : "9",
+      "elements" : [ {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "30",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "32",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "33",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "35",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "CDCFlow",
+      "name" : "Dynamic View: BionicPRO Platform",
+      "order" : 7,
+      "relationships" : [ {
+        "description" : "1. INSERT/UPDATE/DELETE",
+        "id" : "49",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "2. WAL event",
+        "id" : "72",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "3. Publish to topic",
+        "id" : "73",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "4. KafkaEngine consume",
+        "id" : "75",
+        "order" : "4",
+        "response" : false
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Reports with CDN Caching",
+      "elementId" : "9",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "22",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "32",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "36",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "37",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "ReportsFlow",
+      "name" : "Dynamic View: BionicPRO Platform",
+      "order" : 8,
+      "relationships" : [ {
+        "description" : "1. Request report",
+        "id" : "48",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "2. GET /api/reports/cdn",
+        "id" : "53",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "3. Proxy + JWT",
+        "id" : "58",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "4. Check S3",
+        "id" : "65",
+        "order" : "4",
+        "response" : false
+      }, {
+        "description" : "5. Query OLAP",
+        "id" : "63",
+        "order" : "5",
+        "response" : false
+      }, {
+        "description" : "6. GET from CDN",
+        "id" : "54",
+        "order" : "6",
+        "response" : false
+      }, {
+        "description" : "7. Proxy to S3",
+        "id" : "66",
+        "order" : "7",
+        "response" : false
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "ETL Pipeline Flow",
+      "elementId" : "9",
+      "elements" : [ {
+        "id" : "22",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "29",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "30",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "31",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "32",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "36",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalBoundariesVisible" : false,
+      "key" : "ETLFlow",
+      "name" : "Dynamic View: BionicPRO Platform",
+      "order" : 9,
+      "relationships" : [ {
+        "description" : "1. Extract CRM",
+        "id" : "67",
+        "order" : "1",
+        "response" : false
+      }, {
+        "description" : "2. Extract Telemetry",
+        "id" : "68",
+        "order" : "2",
+        "response" : false
+      }, {
+        "description" : "3. Load to OLAP",
+        "id" : "69",
+        "order" : "3",
+        "response" : false
+      }, {
+        "description" : "4. Invalidate cache",
+        "id" : "70",
+        "order" : "4",
+        "response" : false
+      }, {
+        "description" : "5. Delete from S3",
+        "id" : "65",
+        "order" : "5",
+        "response" : false
+      } ]
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "description" : "Контекст системы BionicPRO",
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "SystemContext",
+      "name" : "System Context View: BionicPRO Platform",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "40"
+      }, {
+        "id" : "41"
+      }, {
+        "id" : "42"
+      }, {
+        "id" : "43"
+      }, {
+        "id" : "44"
+      }, {
+        "id" : "45"
+      }, {
+        "id" : "46"
+      }, {
+        "id" : "47"
+      } ],
+      "softwareSystemId" : "9"
+    } ]
+  }
+}

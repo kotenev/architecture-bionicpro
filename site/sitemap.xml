@@ -57,7 +57,35 @@
          <lastmod>2026-02-04</lastmod>
     </url>
     <url>
-         <loc>https://bionicpro.example.com/docs/diagrams/c4-diagrams/</loc>
+         <loc>https://bionicpro.example.com/docs/diagrams/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://bionicpro.example.com/docs/diagrams/archimate/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://bionicpro.example.com/docs/diagrams/c4-level1/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://bionicpro.example.com/docs/diagrams/c4-level2/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://bionicpro.example.com/docs/diagrams/c4-level3/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://bionicpro.example.com/docs/diagrams/c4-level4/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://bionicpro.example.com/docs/diagrams/deployment/</loc>
+         <lastmod>2026-02-04</lastmod>
+    </url>
+    <url>
+         <loc>https://bionicpro.example.com/docs/diagrams/sequences/</loc>
          <lastmod>2026-02-04</lastmod>
     </url>
 </urlset>
